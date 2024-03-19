@@ -49,6 +49,9 @@
     "!*/__tests__"
   ],
   "dependencies": {
+    "@loopback/authentication": "^11.0.0",
+    "@loopback/authentication-jwt": "^0.15.0",
+    "@loopback/authorization": "^0.15.0",
     "@loopback/boot": "^7.0.0",
     "@loopback/core": "^6.0.0",
     "@loopback/repository": "^7.0.0",
@@ -59,11 +62,11 @@
   },
   "devDependencies": {
     "@loopback/build": "^11.0.0",
-    "source-map-support": "^0.5.21",
+    "@loopback/eslint-config": "^15.0.0",
     "@loopback/testlab": "^7.0.0",
     "@types/node": "^16.18.86",
-    "@loopback/eslint-config": "^15.0.0",
     "eslint": "^8.57.0",
+    "source-map-support": "^0.5.21",
     "typescript": "~5.2.2"
   }
 }

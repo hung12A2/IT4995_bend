@@ -53,6 +53,5 @@ export class PingController {
   @get('/ping')
   @response(200, PING_RESPONSE)
   async ping(): Promise<any> {
-    return this.service.test ("hello")
   }
 }

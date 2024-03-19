@@ -5,8 +5,8 @@ export class MerchantService extends BaseService {
         super (options)
     }
 
-    async test (where: any) {
-        const resp = await this.get<any> ('/ping', {})
-        return resp.data
-    }
+    // async test (where: any) {
+    //     const resp = await this.get<any> ('/ping', {})
+    //     return resp.data
+    // }
 }
