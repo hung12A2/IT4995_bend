@@ -1,0 +1,17 @@
+{
+  "name": "ecommercial",
+  "version": "2.0.0",
+  "license": "MIT",
+  "scripts": {},
+  "private": true,
+  "packageManager": "yarn@1.22.21",
+  "devDependencies": {
+    "turbo": "^1.12.5"
+  },
+  "workspaces": [
+    "app/**",
+    "packages/auth",
+    "packages/gateway"
+  ],
+  "dependencies": {}
+}

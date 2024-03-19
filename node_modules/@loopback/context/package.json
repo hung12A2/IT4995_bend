@@ -1,0 +1,64 @@
+{
+  "name": "@loopback/context",
+  "description": "Facilities to manage artifacts and their dependencies in your Node.js applications. The module exposes TypeScript/JavaScript APIs and decorators to register artifacts, declare dependencies, and resolve artifacts by keys. It also serves as an IoC container to support dependency injection",
+  "version": "7.0.0",
+  "keywords": [
+    "LoopBack",
+    "IoC",
+    "Inversion",
+    "Control",
+    "Container",
+    "Decorators",
+    "Context"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "IBM Corp. and LoopBack contributors",
+  "copyright.owner": "IBM Corp. and LoopBack contributors",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/loopbackio/loopback-next.git",
+    "directory": "packages/context"
+  },
+  "engines": {
+    "node": "18 || 20"
+  },
+  "scripts": {
+    "acceptance": "lb-mocha \"dist/__tests__/acceptance/**/*.js\"",
+    "build": "lb-tsc",
+    "clean": "lb-clean loopback-context*.tgz dist *.tsbuildinfo package",
+    "pretest": "npm run build",
+    "test": "lb-mocha \"dist/__tests__/**/*.js\"",
+    "unit": "lb-mocha \"dist/__tests__/unit/**/*.js\"",
+    "verify": "npm pack && tar xf loopback-context*.tgz && tree package && npm run clean"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "README.md",
+    "dist",
+    "src",
+    "!*/__tests__"
+  ],
+  "dependencies": {
+    "@loopback/metadata": "^7.0.0",
+    "@types/debug": "^4.1.12",
+    "debug": "^4.3.4",
+    "hyperid": "^3.2.0",
+    "p-event": "^4.2.0",
+    "tslib": "^2.6.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@loopback/build": "^11.0.0",
+    "@loopback/eslint-config": "^15.0.0",
+    "@loopback/testlab": "^7.0.0",
+    "@types/bluebird": "^3.5.42",
+    "@types/node": "^16.18.86",
+    "@types/uuid": "^9.0.8",
+    "bluebird": "^3.7.2"
+  },
+  "gitHead": "bb4864f7405492d9c86c7db6e714542a292a8790"
+}
