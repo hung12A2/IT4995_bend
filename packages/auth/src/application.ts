@@ -9,11 +9,15 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
-import { AuthenticationComponent } from '@loopback/authentication';
-import { JWTAuthenticationComponent, TokenServiceBindings } from '@loopback/authentication-jwt';
+import {AuthenticationComponent} from '@loopback/authentication';
+import {
+  JWTAuthenticationComponent,
+  TokenServiceBindings,
+} from '@loopback/authentication-jwt';
 import {AuthorizationComponent} from '@loopback/authorization';
-import { JWTService, UserManagementService } from './services';
-import { UserServiceBindings } from './keys';
+import {JWTService, UserManagementService} from './services';
+import {UserServiceBindings} from './keys';
+import {AdminManagmentService} from './services/adminManagement.service';
 
 export {ApplicationConfig};
 
@@ -26,7 +30,7 @@ export class AuthApplication extends BootMixin(
     this.component(AuthenticationComponent);
     this.component(JWTAuthenticationComponent);
     this.component(AuthorizationComponent);
-    this.setUpBinding()
+    this.setUpBinding();
 
     // Set up the custom sequence
     this.sequence(MySequence);
@@ -53,7 +57,8 @@ export class AuthApplication extends BootMixin(
   }
 
   setUpBinding(): void {
-    this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass (JWTService)
-    this.bind (UserServiceBindings.USER_SERVICE).toClass (UserManagementService)
+    this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
+    this.bind(UserServiceBindings.USER_SERVICE).toClass(UserManagementService);
+    this.bind(UserServiceBindings.ADMIN_SERVICE).toClass(AdminManagmentService);
   }
 }

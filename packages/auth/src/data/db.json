@@ -1,10 +1,14 @@
 {
   "ids": {
-    "User": 2
+    "User": 2,
+    "Admin": 2
   },
   "models": {
     "User": {
       "1": "{\"email\":\"string\",\"password\":\"string\",\"phoneNumber\":\"string\",\"gender\":\"string\",\"fullName\":\"string\",\"role\":\"customer\",\"permissions\":\"string\",\"id\":\"1\"}"
+    },
+    "Admin": {
+      "1": "{\"email\":\"admin\",\"password\":\"admin\",\"role\":\"admin\",\"permissions\":\"all\",\"additionalProp1\":{},\"id\":\"1\"}"
     }
   }
 }

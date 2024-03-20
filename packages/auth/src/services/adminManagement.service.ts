@@ -11,7 +11,7 @@ import {Admin, User} from '../models';
 import {AdminRepository, UserRepository} from '../repositories';
 import {Credentials} from '../types';
 
-export class UserManagementService implements UserService<User, Credentials> {
+export class AdminManagmentService implements UserService<Admin, Credentials> {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
@@ -19,28 +19,7 @@ export class UserManagementService implements UserService<User, Credentials> {
     public adminRepository: AdminRepository,
   ) {}
 
-  async verifyCredentials(credentials: Credentials): Promise<User> {
-    const {email, password} = credentials;
-    const invalidCredentialsError = 'Invalid email or password.';
-
-    if (!email) {
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-    }
-    const foundUser = await this.userRepository.findOne({
-      where: {email},
-    });
-
-    if (foundUser?.password !== password)
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-
-    if (!foundUser) {
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-    }
-
-    return foundUser;
-  }
-
-  public async verifyCredentialAdmin(credentials: Credentials): Promise<Admin> {
+  async verifyCredentials(credentials: Credentials): Promise<Admin> {
     const {email, password} = credentials;
     const invalidCredentialsError = 'Invalid email or password.';
 
@@ -61,35 +40,7 @@ export class UserManagementService implements UserService<User, Credentials> {
     return foundUser;
   }
 
-  convertToUserProfile(user: User): UserProfile {
-    // since first name and lastName are optional, no error is thrown if not provided
-    if (user.id) {
-      return {
-        [securityId]: user.id,
-        fullname: user.fullName,
-        gender: user.gender,
-        phonenumber: user.phoneNumber,
-        email: user.email,
-        id: user.id,
-        role: user.role,
-        isSeller: user.isSeller,
-        permissions: user.permissions,
-      };
-    } else
-      return {
-        [securityId]: '',
-        fullname: user.fullName,
-        email: user.email,
-        gender: user.gender,
-        phonenumber: user.phoneNumber,
-        id: user.id,
-        role: user.role,
-        isSeller: user.isSeller,
-        permissions: user.permissions,
-      };
-  }
-
-  public converToAdminProfile(admin: Admin): UserProfile {
+  convertToUserProfile(admin: Admin): UserProfile {
     if (admin.id) {
       return {
         [securityId]: admin.id,

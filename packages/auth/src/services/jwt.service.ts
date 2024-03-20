@@ -15,7 +15,7 @@ export class JWTService implements TokenService {
     private jwtSecret: string,
     @inject(TokenServiceBindings.TOKEN_EXPIRES_IN)
     private jwtExpiresIn: string,
-  ) { }
+  ) {}
 
   async verifyToken(token: string): Promise<UserProfile> {
     if (!token) {
@@ -30,20 +30,34 @@ export class JWTService implements TokenService {
       // decode user profile from token
       const decodedToken = await verifyAsync(token, this.jwtSecret);
       // don't copy over  token field 'iat' and 'exp', nor 'email' to user profile
-      userProfile = Object.assign(
-        {[securityId]: '', name: ''},
-        {
-          [securityId]: decodedToken.id,
-          fullname: decodedToken.fullname,
-          email: decodedToken.email,
-          gender: decodedToken.gender,
-          phoneNumber: decodedToken.phoneNumber,
-          id: decodedToken.id,
-          role: decodedToken.role,
-          permissions: decodedToken.permissions,
-          isSeller: decodedToken.isSeller
-        },
-      );
+      const role = decodedToken.role;
+      if (role == 'customer ') {
+        userProfile = Object.assign(
+          {[securityId]: '', name: ''},
+          {
+            [securityId]: decodedToken.id,
+            fullname: decodedToken.fullname,
+            email: decodedToken.email,
+            gender: decodedToken.gender,
+            phoneNumber: decodedToken.phoneNumber,
+            id: decodedToken.id,
+            role: decodedToken.role,
+            permissions: decodedToken.permissions,
+            isSeller: decodedToken.isSeller,
+          },
+        );
+      } else {
+        userProfile = Object.assign(
+          {[securityId]: '', name: ''},
+          {
+            [securityId]: decodedToken.id,
+            email: decodedToken.email,
+            id: decodedToken.id,
+            role: decodedToken.role,
+            permissions: decodedToken.permissions,
+          }
+        );
+      }
     } catch (error) {
       throw new HttpErrors.Unauthorized(
         `Error verifying token : ${error.message}`,
@@ -58,16 +72,28 @@ export class JWTService implements TokenService {
         'Error generating token : userProfile is null',
       );
     }
-    const userInfoForToken = {
-      fullname: userProfile.fullname,
-      email: userProfile.email,
-      gender: userProfile.gender,
-      phoneNumber: userProfile.phoneNumber,
-      id: userProfile.id,
-      role: userProfile.role,
-      permissions: userProfile.permissions, 
-      isSeller: userProfile.isSeller
-    };
+
+    let userInfoForToken;
+    if (userProfile.role == 'customer') {
+      userInfoForToken = {
+        fullname: userProfile.fullname,
+        email: userProfile.email,
+        gender: userProfile.gender,
+        phoneNumber: userProfile.phoneNumber,
+        id: userProfile.id,
+        role: userProfile.role,
+        permissions: userProfile.permissions,
+        isSeller: userProfile.isSeller,
+      };
+    } else {
+      userInfoForToken = {
+        id: userProfile.id,
+        role: userProfile.role,
+        email: userProfile.email,
+        permissions: userProfile.permissions,
+      };
+    }
+
     // Generate a JSON Web Token
     let token: string;
     try {
