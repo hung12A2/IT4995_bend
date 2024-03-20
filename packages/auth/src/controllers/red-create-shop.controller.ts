@@ -16,40 +16,35 @@ import {
   del,
   requestBody,
   response,
-  Request,
 } from '@loopback/rest';
 import {RequestCreateShop} from '../models';
-import {bucket} from '../config/firebaseConfig';
 import {RequestCreateShopRepository} from '../repositories';
-import {Storage} from '@google-cloud/storage';
 
-var multer = require('multer');
-
-const uploader = multer({
-  storage: multer.memoryStorage(),
-});
-
-var cpUpload = uploader.fields([{name: 'image'}, {name: 'video'}]);
-
-export class ReqCreateShopController {
+export class RedCreateShopController {
   constructor(
     @repository(RequestCreateShopRepository)
-    public requestCreateShopRepository: RequestCreateShopRepository,
+    public requestCreateShopRepository : RequestCreateShopRepository,
   ) {}
 
   @post('/request-create-shops')
   @response(200, {
     description: 'RequestCreateShop model instance',
-    content: {
-      'application/json': {schema: getModelSchemaRef(RequestCreateShop)},
-    },
+    content: {'application/json': {schema: getModelSchemaRef(RequestCreateShop)}},
   })
   async create(
-    @requestBody()
-    requestCreateShop: any,
-  ): Promise<any> {
-    const files = requestCreateShop.file;
-    console.log (files)
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(RequestCreateShop, {
+            title: 'NewRequestCreateShop',
+            exclude: ['id'],
+          }),
+        },
+      },
+    })
+    requestCreateShop: Omit<RequestCreateShop, 'id'>,
+  ): Promise<RequestCreateShop> {
+    return this.requestCreateShopRepository.create(requestCreateShop);
   }
 
   @get('/request-create-shops/count')
@@ -81,6 +76,7 @@ export class ReqCreateShopController {
     return this.requestCreateShopRepository.find(filter);
   }
 
+
   @get('/request-create-shops/{id}')
   @response(200, {
     description: 'RequestCreateShop model instance',
@@ -92,8 +88,7 @@ export class ReqCreateShopController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(RequestCreateShop, {exclude: 'where'})
-    filter?: FilterExcludingWhere<RequestCreateShop>,
+    @param.filter(RequestCreateShop, {exclude: 'where'}) filter?: FilterExcludingWhere<RequestCreateShop>
   ): Promise<RequestCreateShop> {
     return this.requestCreateShopRepository.findById(id, filter);
   }
@@ -114,6 +109,17 @@ export class ReqCreateShopController {
     requestCreateShop: RequestCreateShop,
   ): Promise<void> {
     await this.requestCreateShopRepository.updateById(id, requestCreateShop);
+  }
+
+  @put('/request-create-shops/{id}')
+  @response(204, {
+    description: 'RequestCreateShop PUT success',
+  })
+  async replaceById(
+    @param.path.string('id') id: string,
+    @requestBody() requestCreateShop: RequestCreateShop,
+  ): Promise<void> {
+    await this.requestCreateShopRepository.replaceById(id, requestCreateShop);
   }
 
   @del('/request-create-shops/{id}')
