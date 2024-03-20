@@ -1,7 +1,8 @@
 {
   "ids": {
     "User": 2,
-    "Admin": 2
+    "Admin": 2,
+    "RequestCreateShop": 2
   },
   "models": {
     "User": {
@@ -9,6 +10,9 @@
     },
     "Admin": {
       "1": "{\"email\":\"admin\",\"password\":\"admin\",\"role\":\"admin\",\"permissions\":\"all\",\"additionalProp1\":{},\"id\":\"1\"}"
+    },
+    "RequestCreateShop": {
+      "1": "{\"idOfUser\":\"string\",\"status\":\"string\",\"pickUpAddress\":\"string\",\"returnAddress\":\"string\",\"IDcardImg\":{},\"BLicenseImg\":{},\"phoneNumber\":\"string\",\"email\":\"string\",\"name\":\"string\",\"additionalProp1\":{},\"id\":\"1\"}"
     }
   }
 }
