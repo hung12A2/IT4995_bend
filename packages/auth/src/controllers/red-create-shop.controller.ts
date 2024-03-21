@@ -16,35 +16,68 @@ import {
   del,
   requestBody,
   response,
+  Request,
+  RestBindings,
+  Response,
 } from '@loopback/rest';
 import {RequestCreateShop} from '../models';
 import {RequestCreateShopRepository} from '../repositories';
+import {inject} from '@loopback/core';
+import multer from 'multer';
+import {uploadFile} from '../config/firebaseConfig';
+
+// upload
+const storage = multer.memoryStorage();
+const upload = multer({storage});
+
+var cpUpload = upload.fields([{name: 'image'}]);
+// upload img 
 
 export class RedCreateShopController {
   constructor(
     @repository(RequestCreateShopRepository)
-    public requestCreateShopRepository : RequestCreateShopRepository,
+    public requestCreateShopRepository: RequestCreateShopRepository,
   ) {}
 
   @post('/request-create-shops')
   @response(200, {
     description: 'RequestCreateShop model instance',
-    content: {'application/json': {schema: getModelSchemaRef(RequestCreateShop)}},
+    content: {
+      'application/json': {schema: getModelSchemaRef(RequestCreateShop)},
+    },
   })
   async create(
     @requestBody({
+      description: 'multipart/form-data value.',
+      required: true,
       content: {
-        'application/json': {
-          schema: getModelSchemaRef(RequestCreateShop, {
-            title: 'NewRequestCreateShop',
-            exclude: ['id'],
-          }),
+        'multipart/form-data': {
+          // Skip body parsing
+          'x-parser': 'stream',
+          schema: {type: 'object'},
         },
       },
     })
-    requestCreateShop: Omit<RequestCreateShop, 'id'>,
-  ): Promise<RequestCreateShop> {
-    return this.requestCreateShopRepository.create(requestCreateShop);
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<any> {
+    const data: any = await new Promise<object>((resolve, reject) => {
+      cpUpload(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          const files = request.files;
+          resolve({
+            files: files,
+            body: request.body,
+          });
+        }
+      });
+    });
+
+    const data2 = await uploadFile(data.files.image[0]);
+
+    return data2;
+    //return this.requestCreateShopRepository.create(requestCreateShop);
   }
 
   @get('/request-create-shops/count')
@@ -76,7 +109,6 @@ export class RedCreateShopController {
     return this.requestCreateShopRepository.find(filter);
   }
 
-
   @get('/request-create-shops/{id}')
   @response(200, {
     description: 'RequestCreateShop model instance',
@@ -88,7 +120,8 @@ export class RedCreateShopController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(RequestCreateShop, {exclude: 'where'}) filter?: FilterExcludingWhere<RequestCreateShop>
+    @param.filter(RequestCreateShop, {exclude: 'where'})
+    filter?: FilterExcludingWhere<RequestCreateShop>,
   ): Promise<RequestCreateShop> {
     return this.requestCreateShopRepository.findById(id, filter);
   }
