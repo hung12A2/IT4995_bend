@@ -20,11 +20,14 @@ import {
   RestBindings,
   Response,
 } from '@loopback/rest';
-import {RequestCreateShop} from '../models';
-import {RequestCreateShopRepository} from '../repositories';
+import {RequestCreateShop, Store} from '../models';
+import {RequestCreateShopRepository, StoreRepository} from '../repositories';
 import {inject} from '@loopback/core';
 import multer from 'multer';
 import {uploadFile} from '../config/firebaseConfig';
+import {UserRepository} from '@loopback/authentication-jwt';
+import {SecurityBindings, UserProfile, securityId} from '@loopback/security';
+import {authenticate} from '@loopback/authentication';
 
 // upload
 const storage = multer.memoryStorage();
@@ -37,8 +40,13 @@ export class RedCreateShopController {
   constructor(
     @repository(RequestCreateShopRepository)
     public requestCreateShopRepository: RequestCreateShopRepository,
+    @repository(StoreRepository)
+    public storeRepository: StoreRepository,
+    @repository(UserRepository)
+    public userRepository: UserRepository,
   ) {}
 
+  @authenticate('jwt')
   @post('/request-create-shops')
   @response(200, {
     description: 'RequestCreateShop model instance',
@@ -47,6 +55,8 @@ export class RedCreateShopController {
     },
   })
   async create(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     @requestBody({
       description: 'multipart/form-data value.',
       required: true,
@@ -61,6 +71,24 @@ export class RedCreateShopController {
     request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<any> {
+    const idOfUser = currentUserProfile.id;
+    const requestCreate = await this.requestCreateShopRepository.find({
+      where: {idOfUser: idOfUser},
+    });
+    const Store = await this.storeRepository.find({
+      where: {idOfUser: idOfUser},
+    });
+
+    if (requestCreate.length > 0 && requestCreate[0].status == 'pending') {
+      return response
+        .status(200)
+        .send({messsage: 'Dang xu ly yeu cau tao shop '});
+    }
+
+    if (Store.length > 0) {
+      return response.status(200).send({messsage: 'khong the tao 2 shop'});
+    }
+
     const data: any = await new Promise<object>((resolve, reject) => {
       cpUpload(request, response, (err: unknown) => {
         if (err) reject(err);
@@ -105,7 +133,7 @@ export class RedCreateShopController {
     );
 
     const requestCreateShopData: RequestCreateShop = Object.assign({
-      idOfUser: '1',
+      idOfUser: idOfUser,
       status: 'pending',
       pickUpAddress,
       returnAddress,
@@ -117,6 +145,69 @@ export class RedCreateShopController {
     });
 
     return this.requestCreateShopRepository.create(requestCreateShopData);
+  }
+
+  @post('/request-create-shops/accepted/{id}')
+  @response(200, {
+    description: 'RequestCreateShop model instance',
+    content: {
+      'application/json': {schema: getModelSchemaRef(RequestCreateShop)},
+    },
+  })
+  async acceptRequestCreateShop(
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+    @param.path.string('id') idOfRequest: string,
+  ): Promise<any> {
+    const requestCreatShopData =
+      await this.requestCreateShopRepository.findById(idOfRequest);
+    const {
+      idOfUser,
+      pickUpAddress,
+      returnAddress,
+      IDcardImg,
+      BLicenseImg,
+      phoneNumber,
+      email,
+      name,
+    } = requestCreatShopData;
+
+    const storeData: Store = Object.assign({
+      idOfUser,
+      coverImage: {filename: '', url: ''},
+      avartar: {filename: '', url: ''},
+      description: 'no desc',
+      permissions: 'all permissions',
+      numberOfProducts: 0,
+      avgRating: 0,
+      IDcardImg,
+      BLicenseImg,
+      pickUpAddress,
+      returnAddress,
+      phoneNumber,
+      email,
+      name,
+    });
+    await this.requestCreateShopRepository.updateById(idOfRequest, {
+      status: 'aceepted',
+    });
+    await this.userRepository.updateById(idOfUser, {isSeller: true});
+    return this.storeRepository.create(storeData);
+  }
+
+  @post('/request-create-shops/reject/{id}')
+  @response(200, {
+    description: 'RequestCreateShop model instance',
+    content: {
+      'application/json': {schema: getModelSchemaRef(RequestCreateShop)},
+    },
+  })
+  async rejectRequestCreateShop(
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+    @param.path.string('id') idOfRequest: string,
+  ): Promise<any> {
+    await this.requestCreateShopRepository.updateById(idOfRequest, {
+      status: 'rejected',
+    });
   }
 
   @get('/request-create-shops/count')

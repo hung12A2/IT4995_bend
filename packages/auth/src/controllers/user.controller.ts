@@ -255,7 +255,7 @@ export class UserManagementController {
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
   ): Promise<any> {
-    return this.userRepository.findById(currentUserProfile[securityId]);
+    return currentUserProfile;
   }
 
   @authenticate ('jwt')
@@ -277,6 +277,6 @@ export class UserManagementController {
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
   ): Promise<any> {
-    return this.adminrepository.findById(currentUserProfile[securityId]);
+    return currentUserProfile ;
   }
 }
