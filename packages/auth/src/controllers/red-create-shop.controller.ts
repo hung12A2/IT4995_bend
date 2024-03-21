@@ -30,8 +30,8 @@ import {uploadFile} from '../config/firebaseConfig';
 const storage = multer.memoryStorage();
 const upload = multer({storage});
 
-var cpUpload = upload.fields([{name: 'image'}]);
-// upload img 
+var cpUpload = upload.fields([{name: 'IDcardImg'}, {name: 'BLicenseImg'}]);
+// upload img
 
 export class RedCreateShopController {
   constructor(
@@ -65,19 +65,58 @@ export class RedCreateShopController {
       cpUpload(request, response, (err: unknown) => {
         if (err) reject(err);
         else {
-          const files = request.files;
           resolve({
-            files: files,
+            files: request.files,
             body: request.body,
           });
         }
       });
     });
 
-    const data2 = await uploadFile(data.files.image[0]);
+    const {pickUpAddress, returnAddress, phoneNumber, email, name} = data.body;
 
-    return data2;
-    //return this.requestCreateShopRepository.create(requestCreateShop);
+    const filesIDcardImg: any[] = data.files.IDcardImg;
+
+    const IDcardImg = await Promise.all(
+      filesIDcardImg.map(async file => {
+        const data: any = await uploadFile(file);
+
+        const IDcardImg = Object.assign({
+          filename: data.filename,
+          url: data.url,
+        });
+
+        return IDcardImg;
+      }),
+    );
+
+    const filesBLicenseImg: any[] = data.files.BLicenseImg;
+    const BLicenseImg = await Promise.all(
+      filesBLicenseImg.map(async file => {
+        const data: any = await uploadFile(file);
+
+        const IDcardImg = {
+          filename: data.filename,
+          url: data.url,
+        };
+
+        return IDcardImg;
+      }),
+    );
+
+    const requestCreateShopData: RequestCreateShop = Object.assign({
+      idOfUser: '1',
+      status: 'pending',
+      pickUpAddress,
+      returnAddress,
+      phoneNumber,
+      email,
+      name,
+      IDcardImg: IDcardImg,
+      BLicenseImg: BLicenseImg,
+    });
+
+    return this.requestCreateShopRepository.create(requestCreateShopData);
   }
 
   @get('/request-create-shops/count')
@@ -131,28 +170,86 @@ export class RedCreateShopController {
     description: 'RequestCreateShop PATCH success',
   })
   async updateById(
-    @param.path.string('id') id: string,
     @requestBody({
+      description: 'multipart/form-data value.',
+      required: true,
       content: {
-        'application/json': {
-          schema: getModelSchemaRef(RequestCreateShop, {partial: true}),
+        'multipart/form-data': {
+          // Skip body parsing
+          'x-parser': 'stream',
+          schema: {type: 'object'},
         },
       },
     })
-    requestCreateShop: RequestCreateShop,
-  ): Promise<void> {
-    await this.requestCreateShopRepository.updateById(id, requestCreateShop);
-  }
-
-  @put('/request-create-shops/{id}')
-  @response(204, {
-    description: 'RequestCreateShop PUT success',
-  })
-  async replaceById(
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
     @param.path.string('id') id: string,
-    @requestBody() requestCreateShop: RequestCreateShop,
-  ): Promise<void> {
-    await this.requestCreateShopRepository.replaceById(id, requestCreateShop);
+  ): Promise<any> {
+    const data: any = await new Promise<object>((resolve, reject) => {
+      cpUpload(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          resolve({
+            files: request.files,
+            body: request.body,
+          });
+        }
+      });
+    });
+
+    const {pickUpAddress, returnAddress, phoneNumber, email, name} = data.body;
+
+    const filesIDcardImg: any[] = data.files.IDcardImg
+      ? data.files.IDcardImg
+      : [];
+
+    const IDcardImg = await Promise.all(
+      filesIDcardImg.map(async file => {
+        const data: any = await uploadFile(file);
+
+        const IDcardImg = Object.assign({
+          filename: data.filename,
+          url: data.url,
+        });
+
+        return IDcardImg;
+      }),
+    );
+
+    const filesBLicenseImg: any[] = data.files.BLicenseImg
+      ? data.files.BLicenseImg
+      : [];
+    const BLicenseImg = await Promise.all(
+      filesBLicenseImg.map(async file => {
+        const data: any = await uploadFile(file);
+
+        const IDcardImg = {
+          filename: data.filename,
+          url: data.url,
+        };
+
+        return IDcardImg;
+      }),
+    );
+
+    const requestCreateShopData: RequestCreateShop = Object.assign({
+      idOfUser: '1',
+      status: 'pending',
+      pickUpAddress,
+      returnAddress,
+      phoneNumber,
+      email,
+      name,
+      IDcardImg,
+      BLicenseImg,
+    });
+
+    await this.requestCreateShopRepository.updateById(
+      id,
+      requestCreateShopData,
+    );
+
+    return this.requestCreateShopRepository.findById(id);
   }
 
   @del('/request-create-shops/{id}')
