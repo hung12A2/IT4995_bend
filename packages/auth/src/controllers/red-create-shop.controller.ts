@@ -26,7 +26,7 @@ import {inject} from '@loopback/core';
 import multer from 'multer';
 import {uploadFile} from '../config/firebaseConfig';
 import {UserRepository} from '@loopback/authentication-jwt';
-import {SecurityBindings, UserProfile, securityId} from '@loopback/security';
+import {SecurityBindings, UserProfile} from '@loopback/security';
 import {authenticate} from '@loopback/authentication';
 
 // upload

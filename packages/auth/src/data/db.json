@@ -3,7 +3,8 @@
     "User": 2,
     "Admin": 2,
     "RequestCreateShop": 4,
-    "Store": 2
+    "Store": 2,
+    "Employee": 3
   },
   "models": {
     "User": {
@@ -19,6 +20,10 @@
     },
     "Store": {
       "1": "{\"idOfUser\":\"1\",\"coverImage\":{\"filename\":\"\",\"url\":\"\"},\"avartar\":{\"filename\":\"\",\"url\":\"\"},\"description\":\"no desc\",\"permissions\":\"all permissions\",\"numberOfProducts\":0,\"avgRating\":0,\"IDcardImg\":[{\"filename\":\"2024-03-21T02:10:42.852ZScreenshot from 2024-03-18 11-16-13.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-03-21T02:10:42.852ZScreenshot%20from%202024-03-18%2011-16-13.png?alt=media\"},{\"filename\":\"2024-03-21T02:10:42.856ZScreenshot from 2024-03-16 22-20-01.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-03-21T02:10:42.856ZScreenshot%20from%202024-03-16%2022-20-01.png?alt=media\"}],\"BLicenseImg\":[{\"filename\":\"2024-03-21T02:10:44.857ZScreenshot from 2024-03-18 13-57-55.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-03-21T02:10:44.857ZScreenshot%20from%202024-03-18%2013-57-55.png?alt=media\"}],\"pickUpAddress\":\"hello\",\"returnAddress\":\"helloheo update\",\"name\":\"myshop\",\"phoneNumber\":\"0915047678\",\"email\":\"hung@gmail.com\",\"id\":\"1\"}"
+    },
+    "Employee": {
+      "1": "{\"idOfShop\":\"2\",\"username\":\"string\",\"password\":\"string\",\"name\":\"string\",\"permissions\":\"string\",\"status\":\"string\",\"role\":\"string\",\"id\":\"1\"}",
+      "2": "{\"idOfShop\":\"1\",\"username\":\"helloEmployee\",\"password\":\"helloEmployee\",\"name\":\"shop_1\",\"permissions\":\"string\",\"status\":\"active\",\"role\":\"employee\",\"id\":\"2\"}"
     }
   }
 }
