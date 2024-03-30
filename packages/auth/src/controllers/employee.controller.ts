@@ -34,6 +34,7 @@ export class EmployeeController {
     public storeRepository: StoreRepository,
   ) {}
 
+  // for storeOwner
   @authenticate('jwt')
   @post('/employees')
   @response(200, {
@@ -63,25 +64,26 @@ export class EmployeeController {
       await this.storeRepository.find({where: {idOfUser: idOfUser}})
     )[0].id;
 
+    const numberOfEmployee = await this.employeeRepository.count({
+      idOfShop: idOfShop,
+    });
+    if (numberOfEmployee.count > 2) {
+      return response
+        .status(200)
+        .send({message: 'khong the tao them nhan vien'});
+    }
+
     if (idOfShop) {
-      employee.idOfShop = idOfShop 
+      employee.idOfShop = idOfShop;
     } else {
-      return response.status(200).send({message: 'khong ton tai shop'})
+      return response.status(200).send({message: 'khong ton tai shop'});
     }
 
     return this.employeeRepository.create(employee);
   }
 
-  @get('/employees/count')
-  @response(200, {
-    description: 'Employee model count',
-    content: {'application/json': {schema: CountSchema}},
-  })
 
-  async count(@param.where(Employee) where?: Where<Employee>): Promise<Count> {
-    return this.employeeRepository.count(where);
-  }
-
+  // for admin
   @get('/employees')
   @response(200, {
     description: 'Array of Employee model instances',
@@ -100,25 +102,7 @@ export class EmployeeController {
     return this.employeeRepository.find(filter);
   }
 
-  @patch('/employees')
-  @response(200, {
-    description: 'Employee PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Employee, {partial: true}),
-        },
-      },
-    })
-    employee: Employee,
-    @param.where(Employee) where?: Where<Employee>,
-  ): Promise<Count> {
-    return this.employeeRepository.updateAll(employee, where);
-  }
-
+  // for storeOwner
   @get('/employees/{id}')
   @response(200, {
     description: 'Employee model instance',
@@ -136,6 +120,28 @@ export class EmployeeController {
     return this.employeeRepository.findById(id, filter);
   }
 
+  // for storeOwner
+  @patch('/employees/inActive/{id}')
+  @response(204, {
+    description: 'Employee PATCH success',
+  })
+  async inActiveById(
+    @param.path.string('id') id: string,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Employee, {partial: true}),
+        },
+      },
+    })
+    employee: Employee,
+  ): Promise<void> {
+    await this.employeeRepository.updateById(id, {status: 'inActive'});
+  }
+
+  // for storeOwner update permission
+  // update info of employee
+  // change Password
   @patch('/employees/{id}')
   @response(204, {
     description: 'Employee PATCH success',
@@ -154,22 +160,15 @@ export class EmployeeController {
     await this.employeeRepository.updateById(id, employee);
   }
 
-  @put('/employees/{id}')
-  @response(204, {
-    description: 'Employee PUT success',
-  })
-  async replaceById(
-    @param.path.string('id') id: string,
-    @requestBody() employee: Employee,
-  ): Promise<void> {
-    await this.employeeRepository.replaceById(id, employee);
-  }
-
-  @del('/employees/{id}')
+  @patch('/employees/banned/{id}')
   @response(204, {
     description: 'Employee DELETE success',
   })
-  async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.employeeRepository.deleteById(id);
+  async bannedById(@param.path.string('id') id: string): Promise<void> {
+    await this.employeeRepository.updateById(id, {status: 'banned'});
   }
+
+  
+  // upload avatar for employee
+  
 }

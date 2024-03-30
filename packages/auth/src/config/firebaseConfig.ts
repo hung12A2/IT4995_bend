@@ -33,7 +33,10 @@ function uploadFile(file: any) {
   });
 }
 
+async function deleteRemoteFile(filename: string) {
+  await bucket.file(filename).delete();
+}
 // Cloud storage
 const bucket: any = admin.storage().bucket();
 
-export { bucket, uploadFile};
+export { bucket, uploadFile , deleteRemoteFile };

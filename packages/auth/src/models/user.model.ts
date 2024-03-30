@@ -57,6 +57,18 @@ export class User extends Entity {
   })
   isSeller: boolean;
 
+  @property({
+    type: 'object',
+    required: false,
+  })
+  coverImage: object;
+
+  @property({
+    type: 'object',
+    required: false,
+  })
+  avatar: object;
+
 
   constructor(data?: Partial<User>) {
     super(data);

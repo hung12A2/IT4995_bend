@@ -33,6 +33,18 @@ export class Admin extends Entity {
   })
   permissions: string;
 
+  @property({
+    type: 'object',
+    required: false,
+  })
+  coverImage: object;
+
+  @property({
+    type: 'object',
+    required: false,
+  })
+  avatar: object;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

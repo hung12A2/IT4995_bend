@@ -49,6 +49,18 @@ export class Employee extends Entity {
   })
   role?: string;
 
+  @property({
+    type: 'object',
+    required: false,
+  })
+  coverImage: object;
+
+  @property({
+    type: 'object',
+    required: false,
+  })
+  avatar: object;
+
 
   constructor(data?: Partial<Employee>) {
     super(data);

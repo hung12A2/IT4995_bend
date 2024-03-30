@@ -55,7 +55,7 @@ export class JWTService implements TokenService {
             id: decodedToken.id,
             role: decodedToken.role,
             permissions: decodedToken.permissions,
-          }
+          },
         );
       }
     } catch (error) {

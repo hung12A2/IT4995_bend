@@ -23,41 +23,10 @@ import {StoreRepository} from '../repositories';
 export class StoreController {
   constructor(
     @repository(StoreRepository)
-    public storeRepository : StoreRepository,
+    public storeRepository: StoreRepository,
   ) {}
 
-  @post('/stores')
-  @response(200, {
-    description: 'Store model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Store)}},
-  })
-  async create(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Store, {
-            title: 'NewStore',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
-    store: Omit<Store, 'id'>,
-  ): Promise<Store> {
-    return this.storeRepository.create(store);
-  }
-
-  @get('/stores/count')
-  @response(200, {
-    description: 'Store model count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async count(
-    @param.where(Store) where?: Where<Store>,
-  ): Promise<Count> {
-    return this.storeRepository.count(where);
-  }
-
+  // for admin + user 
   @get('/stores')
   @response(200, {
     description: 'Array of Store model instances',
@@ -70,31 +39,13 @@ export class StoreController {
       },
     },
   })
-  async find(
-    @param.filter(Store) filter?: Filter<Store>,
-  ): Promise<Store[]> {
-    return this.storeRepository.find(filter);
+  async find(@param.filter(Store) filter?: Filter<Store>): Promise<Store[]> {
+    return await this.storeRepository.find(filter);
   }
 
-  @patch('/stores')
-  @response(200, {
-    description: 'Store PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Store, {partial: true}),
-        },
-      },
-    })
-    store: Store,
-    @param.where(Store) where?: Where<Store>,
-  ): Promise<Count> {
-    return this.storeRepository.updateAll(store, where);
-  }
-
+  // for admin + store owner
+  // tim day du thong tin shop cua minh
+  // tim thong tin shop nguoi khac bang filter
   @get('/stores/{id}')
   @response(200, {
     description: 'Store model instance',
@@ -106,11 +57,14 @@ export class StoreController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(Store, {exclude: 'where'}) filter?: FilterExcludingWhere<Store>
+    @param.filter(Store, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Store>,
   ): Promise<Store> {
     return this.storeRepository.findById(id, filter);
   }
 
+  // for store owner update store info
+  // for admin update permission of store
   @patch('/stores/{id}')
   @response(204, {
     description: 'Store PATCH success',
@@ -129,22 +83,23 @@ export class StoreController {
     await this.storeRepository.updateById(id, store);
   }
 
-  @put('/stores/{id}')
-  @response(204, {
-    description: 'Store PUT success',
-  })
-  async replaceById(
-    @param.path.string('id') id: string,
-    @requestBody() store: Store,
-  ): Promise<void> {
-    await this.storeRepository.replaceById(id, store);
-  }
+  
 
-  @del('/stores/{id}')
+  // for store owner
+  @patch('/stores/stopWorking/{id}')
   @response(204, {
-    description: 'Store DELETE success',
+    description: 'Store stopWorking success',
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.storeRepository.deleteById(id);
+    await this.storeRepository.updateById(id, {status: 'stopWorking'});
+  }
+
+  // for admin
+  @patch('/stores/banned/{id}')
+  @response(204, {
+    description: 'Store Banned success',
+  })
+  async BanedById(@param.path.string('id') id: string): Promise<void> {
+    await this.storeRepository.updateById(id, {status: 'banned'});
   }
 }

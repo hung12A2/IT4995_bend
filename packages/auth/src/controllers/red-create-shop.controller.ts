@@ -348,6 +348,6 @@ export class RedCreateShopController {
     description: 'RequestCreateShop DELETE success',
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.requestCreateShopRepository.deleteById(id);
+    await this.requestCreateShopRepository.updateById(id, {status: 'deleted'});
   }
 }

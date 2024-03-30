@@ -17,15 +17,15 @@ export class Store extends Entity {
 
   @property({
     type: 'object',
-    required: true,
+    required: false,
   })
   coverImage: object;
 
   @property({
     type: 'object',
-    required: true,
+    required: false,
   })
-  avartar: object;
+  avatar: object;
 
   @property({
     type: 'string',
