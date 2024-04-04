@@ -32,6 +32,8 @@ export class EmployeeController {
     public employeeRepository: EmployeeRepository,
     @repository(StoreRepository)
     public storeRepository: StoreRepository,
+    @inject(RestBindings.Http.RESPONSE)
+    private response: Response,
   ) {}
 
   // for storeOwner
@@ -98,8 +100,10 @@ export class EmployeeController {
   })
   async find(
     @param.filter(Employee) filter?: Filter<Employee>,
-  ): Promise<Employee[]> {
-    return this.employeeRepository.find(filter);
+  ): Promise<any> {
+    const employee = await this.employeeRepository.find(filter);
+    this.response.header('Access-Control-Expose-Headers', 'Content-Range')
+    return this.response.header('Content-Range', `Employees 0-20/20`).send(employee);
   }
 
   // for storeOwner

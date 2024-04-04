@@ -174,7 +174,6 @@ export class UserManagementController {
     return this.userRepository.findById(idOfUser);
   }
 
-
   @authenticate('jwt')
   @post('/changeCoverImage')
   @response(200, {
@@ -203,7 +202,8 @@ export class UserManagementController {
     const idOfUser = currentUserProfile.id;
     const role = currentUserProfile.role;
 
-    const oldCoverImage = (await this.userRepository.findById(idOfUser)).coverImage;
+    const oldCoverImage = (await this.userRepository.findById(idOfUser))
+      .coverImage;
 
     deleteRemoteFile(oldCoverImage.filename);
 
@@ -280,8 +280,6 @@ export class UserManagementController {
     });
 
     const coverImage = data.files.coverImage;
-
-   
 
     if (coverImage.length > 1) {
       return response.status(400).send('Chỉ được upload 1 bia');
@@ -498,7 +496,7 @@ export class UserManagementController {
 
   @authenticate('jwt')
   // @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
-  @get('/customer/whoAmI', {
+  @get('whoAmI', {
     responses: {
       '200': {
         description: 'Return current user',
@@ -512,32 +510,14 @@ export class UserManagementController {
       },
     },
   })
-  async whoAmICustomer(
-    @inject(SecurityBindings.USER)
-    currentUserProfile: UserProfile,
-  ): Promise<any> {
-    return currentUserProfile;
-  }
-
-  @authenticate('jwt')
-  @get('/admin/whoAmI', {
-    responses: {
-      '200': {
-        description: 'Return current admin',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'ADMIN',
-            },
-          },
-        },
-      },
-    },
-  })
   async whoAmI(
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
   ): Promise<any> {
-    return currentUserProfile;
+    if (currentUserProfile.role == 'admin') {
+      return this.adminrepository.findById(currentUserProfile[securityId]);
+    } else if (currentUserProfile.role == 'customer') {
+      return this.userRepository.findById(currentUserProfile[securityId]);
+    }
   }
 }
