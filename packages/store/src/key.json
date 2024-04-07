@@ -1,0 +1,14 @@
+{
+    "type": "service_account",
+    "project_id": "clone-facebook-3caa4",
+    "private_key_id": "df99639d505d11aae23b8c4b66482aec20dfcba8",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCq2Jwl3g0mrEPJ\n/jG9N3vzn6hNCK5xDu6LcxHSLzVP0GtznqpNyZ8KFgKUfypiYHssVJyQnIm0z8Mr\nDvnTGkKcvMEyFzYEJ7Cm4IsKKEt7C/Upvom3TMgdG0bPdyE17MgBWnzcSas3kU9k\nAkTRvLrTW1yGh6czrdvayDGmKX1IxlOEjuToBdehsjeRBV42XLtcvwpHsQXayoNp\naPfzDaTXQoz4Evl/FHfMjK/H7cmquvL+5Mm7mP+d4h7VMCSgm0x/bgqxMQ+sfGYd\nQNRczhDID7NhvI8qZ0zPlv7f/ypgvTfhiXS7v0LR8Pc3LzxfogGUXBxelIwQoCWp\n3BTU77MDAgMBAAECggEAUV46+DoKj2mqG5EKRXEggsZ+lLnWwxf2esoCKdW8EVhV\nZMqjl8q4CUi0T99E43fKEjH2I1W6rDfrXx2R1H4ETbwEU4QEgPQaSVBWSC8qy97F\nE+2gj4FtKZetIPA/C/zKwQJEx3H6rstxQVNnTXESlclEhvoioxVhyZBhPR8zgS3U\nI/QkPpuo2vHB/pLiCwfXyNUmpG5GWLDUt5Bd98MvN1Zmh2EfqNC5D+HUyY3Xgpo6\nUn+X22Eu0wDv9f2ei4MIXKXivQ2GrG9FnoSFbk45zQPrqf4oMvcABFavpsdlPeU1\nIaVSFhjAtGf88JKDUTAq3rkb+zsDOnL7ueaxOKJKeQKBgQDhUeetGAR2fyv5vKFs\n7C8qON8T3Fucp1hPB/WwmuXp8EFrM8dIn0+TqXRVDg90HF7dslXaFKTqNbm/ZDcw\na9U8s3e4mmRt74nUj6Z5rpVTnQbuoaTmOy7FI24lWwdEDIMFEKdrjQsCGZFj6X/T\nsRzNNEJj40zhLUEIzMBzNqW7ZQKBgQDCG+IH5nIwrrHd7rojMI6JjEqW0LtoxDzX\nR6FxFwpicVAhwqh+MjvyvUesO0MAYK+/3TRUNJJy43CIIW1yVtSlN9ZWygVdgiRH\nWIUz0oAol5YP4w7K0qtFpVzfiznTLPZJweDZTCQw/wiaBBy0sH4zKZV4cJfaFdGK\npQE6oHMyRwKBgQCHvAeMxsMpf0LGl1PHgiCHlusL09t8a3NPaMQhN675VrqSEgcj\nQJV3psVl16qHj++2LhB556XRUbwsB/sXOF6kyph8pMWLVJn7au4mr31VeWsLpmTo\nLQ7nw4g/CK8/1ym2i2nP6I+RHEXxomBW7oMjOzAjbHKL0+8xleb5gRol4QKBgDEc\nJtrC1h81A7FXxeZDUbzBLtnrY48FHzOEXvci0jDH5HM2MbUD9qDafLi5oaEF1VFg\noO2xA2Bn5L+8XVlxWImYj/UTVborxAv8/G55Eo2ylHfehY6RMF4FkXLJYc7o8EMG\n92Fi30E6NS3qXmzkvnkpSzTWn8TAgmxmhOIVWC/fAoGBAKyx5yknB0nswPQHEB32\nJDlAERx57ar3ZmX3tyyfLm8+ZBARDH16JDrp9cSJVxwbw8ADWtDwE0BraEnBsEVf\niNrJ65GOsW5gTLxDZX9bLiNBIkiw5B+ezqEhu9ne+EiWtbW5lHGfqSo4avD8gCyy\n4z5CtgTKDFu8uleLTyb5uBzB\n-----END PRIVATE KEY-----\n",
+    "client_email": "clone-facebook-3caa4@appspot.gserviceaccount.com",
+    "client_id": "117581732761798080381",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/clone-facebook-3caa4%40appspot.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+  }
+  

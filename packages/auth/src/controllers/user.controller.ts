@@ -75,6 +75,7 @@ export class UserManagementController {
     request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<any> {
+    //
     const idOfUser = currentUserProfile.id;
     const role = currentUserProfile.role;
 

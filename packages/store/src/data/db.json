@@ -1,0 +1,24 @@
+{
+  "ids": {
+    "Category": 4,
+    "Product": 2,
+    "Cart": 2,
+    "LocationUser": 3,
+    "LocationShop": 2
+  },
+  "models": {
+    "Category": {
+      "1": "{\"cateName\":\"def\",\"description\":\"abc\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-04T14:53:57.703ZScreenshot%20from%202024-03-18%2013-57-55.png?alt=media\"},\"status\":\"active\",\"id\":\"1\"}",
+      "2": "{\"cateName\":\"do gia dung\",\"description\":\"san pham cho moi gia dinh\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-04T14:54:46.710ZScreenshot%20from%202024-03-18%2013-57-55.png?alt=media\"},\"status\":\"active\",\"id\":\"2\"}",
+      "3": "{\"cateName\":\"do gia dung\",\"description\":\"san pham cho moi gia dinh\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-04T15:12:58.303ZPostcard.png?alt=media\",\"filename\":\"2024-04-04T15:12:58.303ZPostcard.png\"},\"status\":\"inActive\",\"id\":\"3\"}"
+    },
+    "Product": {
+      "1": "{\"name\":\"quat dien\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"idOfCategory\":\"1\",\"idOfShop\":\"3\",\"productDescription\":\"quat dien trung quoc\",\"productDetails\":\"Cong suat 220V \\nRat mat\",\"price\":1000000,\"countInStock\":99,\"isBestSeller\":true,\"cateName\":\"def\",\"status\":\"inActive\",\"weight\":1,\"dimension\":\"10|10|10\",\"rating\":0,\"id\":\"1\"}"
+    },
+    "Cart": {
+      "1": "{\"idOfUser\":\"1\",\"id\":\"1\"}"
+    },
+    "LocationUser": {},
+    "LocationShop": {}
+  }
+}
