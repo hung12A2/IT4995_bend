@@ -1,10 +1,13 @@
 {
   "ids": {
     "Category": 4,
-    "Product": 2,
+    "Product": 4,
     "Cart": 2,
     "LocationUser": 3,
-    "LocationShop": 2
+    "LocationShop": 2,
+    "ProductsInCart": 4,
+    "Order": 4,
+    "ProductsInOrder": 4
   },
   "models": {
     "Category": {
@@ -13,12 +16,27 @@
       "3": "{\"cateName\":\"do gia dung\",\"description\":\"san pham cho moi gia dinh\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-04T15:12:58.303ZPostcard.png?alt=media\",\"filename\":\"2024-04-04T15:12:58.303ZPostcard.png\"},\"status\":\"inActive\",\"id\":\"3\"}"
     },
     "Product": {
-      "1": "{\"name\":\"quat dien\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"idOfCategory\":\"1\",\"idOfShop\":\"3\",\"productDescription\":\"quat dien trung quoc\",\"productDetails\":\"Cong suat 220V \\nRat mat\",\"price\":1000000,\"countInStock\":99,\"isBestSeller\":true,\"cateName\":\"def\",\"status\":\"inActive\",\"weight\":1,\"dimension\":\"10|10|10\",\"rating\":0,\"id\":\"1\"}"
+      "1": "{\"name\":\"quat dien\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"idOfCategory\":\"1\",\"idOfShop\":\"3\",\"productDescription\":\"quat dien trung quoc\",\"productDetails\":\"Cong suat 220V \\nRat mat\",\"price\":1000000,\"countInStock\":99,\"isBestSeller\":true,\"cateName\":\"def\",\"status\":\"inActive\",\"weight\":1,\"dimension\":\"10|10|10\",\"rating\":0,\"id\":\"1\"}",
+      "2": "{\"name\":\"quạt điện\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-07T13:23:26.330Zdog.jpg?alt=media\",\"filename\":\"2024-04-07T13:23:26.330Zdog.jpg\"},\"idOfCategory\":\"1\",\"idOfShop\":\"3\",\"productDescription\":\"Quạt điện cho ngày nóng\",\"productDetails\":\"Công suất 220 V \\nDòng điện I  =10 A \\nThích hợp dùng trong đi dã ngoại \",\"price\":99000,\"countInStock\":13,\"isBestSeller\":true,\"cateName\":\"def\",\"status\":\"active\",\"weight\":1.3,\"dimension\":\"10|10|20\",\"rating\":0,\"id\":\"2\"}",
+      "3": "{\"name\":\"quạt mặt trời\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-07T13:24:52.205ZSum.jpg?alt=media\",\"filename\":\"2024-04-07T13:24:52.205ZSum.jpg\"},\"idOfCategory\":\"1\",\"idOfShop\":\"3\",\"productDescription\":\"Quạt điện cho ngày nóng\",\"productDetails\":\"Công suất 220 V \\nDòng điện I  =10 A \\nThích hợp dùng trong đi dã ngoại\\nThích hợp ngày nóng mất điện \",\"price\":126000,\"countInStock\":20,\"isBestSeller\":true,\"cateName\":\"def\",\"status\":\"active\",\"weight\":1.3,\"dimension\":\"10|10|20\",\"rating\":0,\"id\":\"3\"}"
     },
     "Cart": {
       "1": "{\"idOfUser\":\"1\",\"id\":\"1\"}"
     },
     "LocationUser": {},
-    "LocationShop": {}
+    "LocationShop": {},
+    "ProductsInCart": {
+      "1": "{\"idOfUser\":\"1\",\"idOfProduct\":\"1\",\"quantity\":2,\"id\":\"1\"}",
+      "2": "{\"idOfUser\":\"1\",\"idOfProduct\":\"2\",\"quantity\":4,\"id\":\"2\"}",
+      "3": "{\"idOfUser\":\"1\",\"idOfProduct\":\"3\",\"quantity\":3,\"id\":\"3\"}"
+    },
+    "Order": {
+      "3": "{\"idOfShop\":\"3\",\"idOfUser\":\"1\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915057678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"clientOrderCode\":\"2974\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":11,\"dimension\":\"10|10|160\",\"insuranceValue\":2774000,\"serviceTypeId\":5,\"serviceId\":100039,\"paymentTypeId\":2,\"requiredNote\":\"CHOTHUHANG\",\"status\":\"accepted\",\"note\":\"không có note\",\"pickShift\":null,\"id\":\"3\"}"
+    },
+    "ProductsInOrder": {
+      "1": "{\"idOfOrder\":\"3\",\"idOfProduct\":\"1\",\"quantity\":\"2\",\"id\":\"1\"}",
+      "2": "{\"idOfOrder\":\"3\",\"idOfProduct\":\"2\",\"quantity\":\"4\",\"id\":\"2\"}",
+      "3": "{\"idOfOrder\":\"3\",\"idOfProduct\":\"3\",\"quantity\":\"3\",\"id\":\"3\"}"
+    }
   }
 }

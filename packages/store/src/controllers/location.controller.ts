@@ -90,13 +90,13 @@ export class LocationController {
     try {
       const response = await axios.post(
         'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district',
-
+        dataRaw,
         {
           headers: {
             'Content-Type': 'application/json',
             Token: '33108a16-e157-11ee-8bfa-8a2dda8ec551',
           },
-          data: dataRaw,
+          
         },
       );
       if (response.status == 200) {
@@ -157,7 +157,7 @@ export class LocationController {
         const data = response.data.data;
         return data.map((item: any) => {
           return {
-            wardId: item.WardCode,
+            wardCode: item.WardCode,
             wardName: item.WardName,
           };
         });

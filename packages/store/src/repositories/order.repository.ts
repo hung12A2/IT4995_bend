@@ -1,16 +1,16 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
 import {StoreDataSource} from '../datasources';
-import {Cart, CartRelations} from '../models';
+import {Order, OrderRelations} from '../models';
 
-export class CartRepository extends DefaultCrudRepository<
-  Cart,
-  typeof Cart.prototype.id,
-  CartRelations
+export class OrderRepository extends DefaultCrudRepository<
+  Order,
+  typeof Order.prototype.id,
+  OrderRelations
 > {
   constructor(
     @inject('datasources.store') dataSource: StoreDataSource,
   ) {
-    super(Cart, dataSource);
+    super(Order, dataSource);
   }
 }

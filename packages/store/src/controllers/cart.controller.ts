@@ -1,93 +1,100 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
   repository,
-  Where,
 } from '@loopback/repository';
 import {
   post,
   param,
   get,
   getModelSchemaRef,
-  patch,
-  put,
-  del,
   requestBody,
   response,
+
 } from '@loopback/rest';
-import {Cart} from '../models';
-import {CartRepository} from '../repositories';
+import {ProductsInCart} from '../models';
+import {
+  ProductRepository,
+  ProductsInCartRepository,
+} from '../repositories';
+import {inject} from '@loopback/core';
 
 export class CartController {
   constructor(
-    @repository(CartRepository)
-    public cartRepository: CartRepository,
+    @repository(ProductsInCartRepository)
+    public productsInCartRepository: ProductsInCart,
+    @repository(ProductRepository)
+    public productRepository: ProductRepository,
   ) {}
 
-  @post('/carts/user/{idOfUser}')
+  @get('/carts/user/{idOfUser}')
+  @response(200, {
+    description: 'Array of Cart model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(ProductsInCart, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async find(@param.path.string('idOfUser') idOfUser: string): Promise<any> {
+    const productsInCart = await this.productsInCartRepository.find({
+      where: {idOfUser},
+    });
+
+    const productsInCartList = await Promise.all(
+      productsInCart.map(async (productInCart: any) => {
+        const idProduct = productInCart.idOfProduct;
+        const product: any = await this.productRepository.findById(idProduct);
+        const {name, price, image} = product;
+        return {
+          name,
+          price,
+          image,
+          quantity: productInCart.quantity,
+        };
+      }),
+    );
+
+    return productsInCartList;
+  }
+
+  @post('/carts/user/{idOfUser}/product/{idOfProduct}')
   @response(200, {
     description: 'Cart model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Cart)}},
+    content: {'application/json': {schema: getModelSchemaRef(ProductsInCart)}},
   })
-  async create(
+  async addProductToCart(
     @param.path.string('idOfUser') idOfUser: string,
+    @param.path.string('idOfProduct') idOfProduct: string,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(ProductsInCart, {partial: true}),
+        },
+      },
+    })
+    productsInCart: ProductsInCart,
   ): Promise<any> {
-    const checkCart: any = await this.cartRepository.find({where: {idOfUser}});
-    if (checkCart.length > 0) {
-      return {
-        message: 'Cart already exists',
-      };
-    }
-
-    const newCart = new Cart({
+    const {quantity} = productsInCart;
+    const oldProductInCart: any = this.productsInCartRepository.find({
+      idOfProduct,
       idOfUser,
     });
-    return this.cartRepository.create(newCart);
-  }
-
-  @patch('/carts/{id}')
-  @response(204, {
-    description: 'Cart PATCH success',
-  })
-  async updateById(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Cart, {partial: true}),
-        },
-      },
-    })
-    cart: Cart,
-  ): Promise<void> {
-    await this.cartRepository.updateById(id, cart);
-  }
-
-  @patch('/carts/reset/{idOfUser}')
-  @response(204, {
-    description: 'Cart PATCH success',
-  })
-  async resetById(
-    @param.path.string('id') idOfUser: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Cart, {partial: true}),
-        },
-      },
-    })
-    cart: Cart,
-  ): Promise<any> {
-    // reset cart
-  }
-
-  @del('/carts/{id}')
-  @response(204, {
-    description: 'Cart DELETE success',
-  })
-  async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.cartRepository.deleteById(id);
+    if (oldProductInCart.length > 0) {
+      await this.productsInCartRepository.updateById(
+        {idOfProduct, idOfUser},
+        {quantity},
+      );
+    } else {
+      await this.productsInCartRepository.create({
+        quantity,
+        idOfProduct,
+        idOfUser,
+      });
+    }
+    return {
+      message: 'Product added to cart',
+    };
   }
 }
