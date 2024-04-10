@@ -6,8 +6,11 @@
     "LocationUser": 3,
     "LocationShop": 2,
     "ProductsInCart": 4,
-    "Order": 8,
-    "ProductsInOrder": 15
+    "Order": 10,
+    "ProductsInOrder": 21,
+    "Wallet": 3,
+    "BoughtProduct": 4,
+    "ReturnOrder": 2
   },
   "models": {
     "Category": {
@@ -31,19 +34,28 @@
       "3": "{\"idOfUser\":\"1\",\"idOfProduct\":\"3\",\"quantity\":3,\"id\":\"3\"}"
     },
     "Order": {
-      "5": "{\"idOfShop\":\"3\",\"idOfUser\":\"1\",\"fromName\":\"Hun22221\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915017678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"clientOrderCode\":\"2857\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":11,\"dimension\":\"10|10|160\",\"insuranceValue\":2774000,\"serviceTypeId\":5,\"serviceId\":100039,\"paymentTypeId\":2,\"requiredNote\":\"CHOTHUHANG\",\"status\":\"rejected\",\"note\":\"không có note\",\"pickShift\":null,\"createdAt\":\"2024-04-09T06:48:19.909Z\",\"updatedAt\":\"2024-04-09T06:49:06.916Z\",\"id\":\"5\"}",
-      "6": "{\"idOfShop\":\"3\",\"idOfUser\":\"1\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"09157678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"clientOrderCode\":\"0248\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":8,\"dimension\":\"10|10|110\",\"insuranceValue\":1576000,\"serviceTypeId\":5,\"serviceId\":100039,\"paymentTypeId\":2,\"requiredNote\":\"CHOTHUHANG\",\"status\":\"pending\",\"note\":\"không có note\",\"pickShift\":null,\"createdAt\":\"2024-04-09T13:41:08.919Z\",\"updatedAt\":\"2024-04-09T13:41:08.919Z\",\"id\":\"6\"}",
-      "7": "{\"idOfShop\":\"3\",\"idOfUser\":\"1\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"09157678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"clientOrderCode\":\"6209\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|50\",\"insuranceValue\":1198000,\"serviceTypeId\":5,\"serviceId\":100039,\"paymentTypeId\":2,\"requiredNote\":\"CHOTHUHANG\",\"status\":\"pending\",\"note\":\"không có note\",\"pickShift\":null,\"createdAt\":\"2024-04-09T13:41:41.036Z\",\"updatedAt\":\"2024-04-09T13:41:41.036Z\",\"id\":\"7\"}"
+      "8": "{\"idOfShop\":\"3\",\"idOfUser\":\"1\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915087678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"clientOrderCode\":\"GHN6923\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|50\",\"insuranceValue\":1225000,\"serviceTypeId\":5,\"serviceId\":100039,\"paymentTypeId\":2,\"requiredNote\":\"CHOTHUHANG\",\"status\":\"received\",\"totalFee\":37917,\"note\":\"không có note\",\"pickShift\":null,\"createdAt\":\"2024-04-10T15:43:07.747Z\",\"updatedAt\":\"2024-04-10T16:27:37.420Z\",\"id\":\"8\"}",
+      "9": "{\"idOfShop\":\"3\",\"idOfUser\":\"1\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915057678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"clientOrderCode\":\"GHN8658\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":7,\"dimension\":\"10|10|90\",\"insuranceValue\":3351000,\"serviceTypeId\":5,\"serviceId\":100039,\"paymentTypeId\":2,\"requiredNote\":\"CHOTHUHANG\",\"status\":\"returned\",\"totalFee\":37917,\"note\":\"không có note\",\"pickShift\":null,\"createdAt\":\"2024-04-10T15:43:55.010Z\",\"updatedAt\":\"2024-04-10T18:27:06.178Z\",\"id\":\"9\"}"
     },
     "ProductsInOrder": {
-      "7": "{\"idOfOrder\":\"5\",\"idOfProduct\":\"1\",\"quantity\":\"2\",\"id\":\"7\"}",
-      "8": "{\"idOfOrder\":\"5\",\"idOfProduct\":\"2\",\"quantity\":\"4\",\"id\":\"8\"}",
-      "9": "{\"idOfOrder\":\"5\",\"idOfProduct\":\"3\",\"quantity\":\"3\",\"id\":\"9\"}",
-      "10": "{\"idOfOrder\":\"6\",\"idOfProduct\":\"1\",\"quantity\":\"1\",\"id\":\"10\"}",
-      "11": "{\"idOfOrder\":\"6\",\"idOfProduct\":\"2\",\"quantity\":\"2\",\"id\":\"11\"}",
-      "12": "{\"idOfOrder\":\"6\",\"idOfProduct\":\"3\",\"quantity\":\"3\",\"id\":\"12\"}",
-      "13": "{\"idOfOrder\":\"7\",\"idOfProduct\":\"1\",\"quantity\":\"1\",\"id\":\"13\"}",
-      "14": "{\"idOfOrder\":\"7\",\"idOfProduct\":\"2\",\"quantity\":\"2\",\"id\":\"14\"}"
+      "15": "{\"idOfOrder\":\"8\",\"idOfProduct\":\"1\",\"quantity\":\"1\",\"id\":\"15\"}",
+      "16": "{\"idOfOrder\":\"8\",\"idOfProduct\":\"2\",\"quantity\":\"1\",\"id\":\"16\"}",
+      "17": "{\"idOfOrder\":\"8\",\"idOfProduct\":\"3\",\"quantity\":\"1\",\"id\":\"17\"}",
+      "18": "{\"idOfOrder\":\"9\",\"idOfProduct\":\"1\",\"quantity\":\"3\",\"id\":\"18\"}",
+      "19": "{\"idOfOrder\":\"9\",\"idOfProduct\":\"2\",\"quantity\":\"1\",\"id\":\"19\"}",
+      "20": "{\"idOfOrder\":\"9\",\"idOfProduct\":\"3\",\"quantity\":\"2\",\"id\":\"20\"}"
+    },
+    "Wallet": {
+      "1": "{\"idOfUser\":\"1\",\"amountMoney\":10000000000,\"id\":\"1\"}",
+      "2": "{\"idOfUser\":\"3\",\"amountMoney\":55083,\"id\":\"2\"}"
+    },
+    "BoughtProduct": {
+      "1": "{\"idOfProduct\":\"1\",\"idOfUser\":\"1\",\"quantity\":1,\"createAt\":\"2024-04-10T16:27:37.436Z\",\"id\":\"1\"}",
+      "2": "{\"idOfProduct\":\"2\",\"idOfUser\":\"1\",\"quantity\":1,\"createAt\":\"2024-04-10T16:27:37.436Z\",\"id\":\"2\"}",
+      "3": "{\"idOfProduct\":\"3\",\"idOfUser\":\"1\",\"quantity\":1,\"createAt\":\"2024-04-10T16:27:37.436Z\",\"id\":\"3\"}"
+    },
+    "ReturnOrder": {
+      "1": "{\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"idOfOrder\":\"9\",\"reason\":\"hàng kém chất lượng\",\"images\":[{\"filename\":\"2024-04-10T18:27:06.223ZSum.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-10T18:27:06.223ZSum.jpg?alt=media\"},{\"filename\":\"2024-04-10T18:27:06.226Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-10T18:27:06.226Zdog.jpg?alt=media\"}],\"id\":\"1\"}"
     }
   }
 }

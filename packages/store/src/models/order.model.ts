@@ -161,6 +161,20 @@ export class Order extends Entity {
   status: string;
 
   @property({
+    type: 'number',
+    required: false,
+    default: 0,
+  })
+  totalFee: number;
+
+  @property({
+    type: 'number',
+    required: false,
+    default: 0,
+  })
+  priceOfAll: number;
+
+  @property({
     type: 'string',
     default: 'no note',
   })
@@ -184,6 +198,8 @@ export class Order extends Entity {
     required: true,
   })
   updatedAt: Date;
+
+
 
   // Define well-known properties here
 

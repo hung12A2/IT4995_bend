@@ -16,15 +16,30 @@ import {
   del,
   requestBody,
   response,
+  RestBindings,
+  Request,
+  Response,
 } from '@loopback/rest';
-import {Order} from '../models';
+import {Order, ReturnOrder} from '../models';
 import {
+  BoughtProductRepository,
   OrderRepository,
   ProductRepository,
   ProductsInCartRepository,
   ProductsInOrderRepository,
+  ReturnOrderRepository,
+  WalletRepository,
 } from '../repositories';
 import axios from 'axios';
+
+import {inject} from '@loopback/core';
+import {uploadFile, deleteRemoteFile} from '../config/firebaseConfig';
+import multer from 'multer';
+
+const storage = multer.memoryStorage();
+const upload = multer({storage});
+
+var cpUpload = upload.fields([{name: 'images'}]);
 
 // import cron from 'node-cron';
 
@@ -40,6 +55,10 @@ import axios from 'axios';
 
 export class OrderController {
   constructor(
+    @inject(RestBindings.Http.RESPONSE)
+    private response: Response,
+    @inject(RestBindings.Http.REQUEST)
+    private request: Request,
     @repository(OrderRepository)
     public orderRepository: OrderRepository,
     @repository(ProductsInCartRepository)
@@ -48,8 +67,13 @@ export class OrderController {
     public productRepository: ProductRepository,
     @repository(ProductsInOrderRepository)
     public productsInOrderRepository: ProductsInOrderRepository,
+    @repository(WalletRepository)
+    public walletRepository: WalletRepository,
+    @repository(BoughtProductRepository)
+    public boughtProductRepository: BoughtProductRepository,
+    @repository(ReturnOrderRepository)
+    public returnOrderRepository: ReturnOrderRepository,
   ) {
-    console.log ("hello controller")
     //this.scheduleOrderCheck();
   }
 
@@ -103,9 +127,9 @@ export class OrderController {
     }
   }
 
-  @post('/orders/accepted/{idOfShop}/order-id/{id}')
+  @post('/orders/prepared/{idOfShop}/order-id/{id}')
   @response(200, {description: 'Order model instance'})
-  async accepted(
+  async prepared(
     @param.path.string('idOfShop') idOfShop: string,
     @param.path.string('id') id: string,
   ): Promise<any> {
@@ -214,7 +238,8 @@ export class OrderController {
         );
 
         await this.orderRepository.updateById(id, {
-          status: 'accepted',
+          totalFee: response.data.data.total_fee,
+          status: 'prepared',
           updatedAt: new Date(),
         });
 
@@ -241,12 +266,227 @@ export class OrderController {
     @param.path.string('id') id: string,
   ): Promise<any> {
     try {
-      const order = await this.orderRepository.find({where: {id, idOfShop}});
+      const order: any = await this.orderRepository.find({
+        where: {id, idOfShop},
+      });
+      const idOfUser = order[0].idOfUser;
       if (order.length == 1) {
         await this.orderRepository.updateById(id, {
           status: 'rejected',
           updatedAt: new Date(),
         });
+
+        if (order[0].type == 'payOnline') {
+          const oldWallet: any = await this.walletRepository.findOne({
+            where: {idOfUser},
+          });
+          await this.walletRepository.updateAll(
+            {amountMoney: oldWallet?.amountMoney + order[0].priceOfAll},
+            {idOfUser},
+          );
+        }
+        return {
+          message: 'Success',
+        };
+      } else {
+        return {
+          message: 'Error not found order',
+        };
+      }
+    } catch (error) {
+      return {
+        message: `error ${error}`,
+      };
+    }
+  }
+
+  @post('/orders/accepted/{idOfShop}/order-id/{id}')
+  @response(200, {
+    description: 'Order model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Order)}},
+  })
+  async accepted(
+    @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('id') id: string,
+  ): Promise<any> {
+    try {
+      const order = await this.orderRepository.find({where: {id, idOfShop}});
+      if (order.length == 1) {
+        await this.orderRepository.updateById(id, {
+          status: 'accepted',
+          updatedAt: new Date(),
+        });
+        return {
+          message: 'Success',
+        };
+      } else {
+        return {
+          message: 'Error not found order',
+        };
+      }
+    } catch (error) {
+      return {
+        message: `error ${error}`,
+      };
+    }
+  }
+
+  @post('/orders/received/{idOfShop}/order-id/{id}')
+  @response(200, {
+    description: 'Order model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Order)}},
+  })
+  async received(
+    @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('id') id: string,
+    @requestBody({
+      description: 'Order model instance',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              idOfOwnerShop: {type: 'string'},
+            },
+          },
+        },
+      },
+    })
+    data: any,
+  ): Promise<any> {
+    const {idOfOwnerShop} = data;
+
+    try {
+      const order: any = await this.orderRepository.findOne({
+        where: {id, idOfShop},
+      });
+      if (order) {
+        await this.orderRepository.updateById(id, {
+          status: 'received',
+          updatedAt: new Date(),
+        });
+        const oldWallet = await this.walletRepository.findOne({
+          where: {idOfUser: idOfOwnerShop},
+        });
+
+        await this.walletRepository.updateAll(
+          {
+            amountMoney:
+              oldWallet?.amountMoney + order.codAmount - order.totalFee,
+          },
+          {idOfUser: idOfOwnerShop},
+        );
+
+        const idOfBuyer = order.idOfUser;
+        const listProductsInOrder = await this.productsInOrderRepository.find({
+          where: {idOfOrder: id},
+        });
+
+        await Promise.all(
+          listProductsInOrder.map(async (productInOrder: any) => {
+            const idOfProduct = productInOrder.idOfProduct;
+            const quantity = productInOrder.quantity;
+            const idOfUser = idOfBuyer;
+            const createAt = new Date();
+            this.boughtProductRepository.create({
+              idOfProduct,
+              idOfUser,
+              createAt,
+              quantity,
+            });
+          }),
+        );
+
+        return {
+          message: 'Success',
+        };
+      } else {
+        return {
+          message: 'Error not found order',
+        };
+      }
+    } catch (error) {
+      return {
+        message: `error ${error}`,
+      };
+    }
+  }
+
+  @post('/orders/returned/{idOfShop}/order-id/{id}')
+  @response(200, {
+    description: 'Order model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Order)}},
+  })
+  async returned(
+    @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('id') id: string,
+    @requestBody({
+      description: 'multipart/form-data value.',
+      required: true,
+      content: {
+        'multipart/form-data': {
+          // Skip body parsing
+          'x-parser': 'stream',
+          schema: {type: 'object'},
+        },
+      },
+    })
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<any> {
+    try {
+      const order: any = await this.orderRepository.find({
+        where: {id, idOfShop},
+      });
+      const idOfUser = order[0].idOfUser;
+      if (order.length == 1) {
+        await this.orderRepository.updateById(id, {
+          status: 'returned',
+          updatedAt: new Date(),
+        });
+
+        if (order[0].type == 'payOnline') {
+          const oldWallet: any = await this.walletRepository.findOne({
+            where: {idOfUser},
+          });
+          await this.walletRepository.updateAll(
+            {amountMoney: oldWallet?.amountMoney + order[0].priceOfAll},
+            {idOfUser},
+          );
+        }
+
+        const data: any = await new Promise<object>((resolve, reject) => {
+          cpUpload(request, response, (err: unknown) => {
+            if (err) reject(err);
+            else {
+              resolve({
+                files: request.files,
+                body: request.body,
+              });
+            }
+          });
+        });
+
+        const {reason} = data.body;
+        const images = data.files.images;
+        const imagesData = await Promise.all(
+          images.map(async (image: any) => {
+            const imageData: any = await uploadFile(image);
+            return {
+              filename: imageData.filename,
+              url: imageData.url,
+            };
+          }),
+        );
+
+        this.returnOrderRepository.create({
+          idOfOrder: id,
+          idOfUser,
+          idOfShop,
+          reason,
+          images: imagesData,
+        });
+
         return {
           message: 'Success',
         };
@@ -278,6 +518,17 @@ export class OrderController {
           status: 'canceled',
           updatedAt: new Date(),
         });
+
+        if (order[0].type == 'payOnline') {
+          const oldWallet: any = await this.walletRepository.findOne({
+            where: {idOfUser},
+          });
+          await this.walletRepository.updateAll(
+            {amountMoney: oldWallet?.amountMoney + order[0].priceOfAll},
+            {idOfUser},
+          );
+        }
+
         return {
           message: 'Success',
         };
@@ -303,8 +554,7 @@ export class OrderController {
     @param.path.string('idOfShop') idOfShop: string,
     @requestBody({
       content: {
-        'application/json': {
-        },
+        'application/json': {},
       },
     })
     order: any,
@@ -325,10 +575,11 @@ export class OrderController {
       serviceId,
       serviceTypeId,
       content,
-      codAmount,
+      priceOfAll,
+      type,
       note,
       requiredNote,
-      items
+      items,
     } = order;
 
     let weightBox = 0;
@@ -336,7 +587,6 @@ export class OrderController {
     let widthBox = 0;
     let heightBox = 0;
     let insuranceValue = 0;
-
 
     await Promise.all(
       items.map(async (item: any) => {
@@ -379,9 +629,11 @@ export class OrderController {
     heightBox = Math.round(heightBox);
 
     const dimension = `${lengthBox}|${widthBox}|${heightBox}`;
-    const clientOrderCode = Math.floor(Math.random() * 10000)
-      .toString()
-      .padStart(4, '0');
+    const clientOrderCode =
+      'GHN' +
+      Math.floor(Math.random() * 10000)
+        .toString()
+        .padStart(4, '0');
 
     const NewOrder: any = {
       fromName,
@@ -400,7 +652,7 @@ export class OrderController {
       serviceTypeId,
       paymentTypeId: 2,
       content,
-      codAmount,
+      codAmount: type == 'cod' ? priceOfAll : 0,
       note,
       requiredNote,
       idOfShop,
@@ -412,9 +664,28 @@ export class OrderController {
       status: 'pending',
       createdAt: new Date(),
       updatedAt: new Date(),
+      priceOfAll,
+      type,
     };
 
     const dataOrder = await this.orderRepository.create(NewOrder);
+    const oldWallet: any = await this.walletRepository.findOne({
+      where: {idOfUser},
+    });
+
+    if (type == 'payOnline') {
+      if (oldWallet?.amountMoney < priceOfAll) {
+        return this.response.status(400).send({
+          message: 'Not enough money in wallet',
+        });
+      } else {
+        await this.walletRepository.updateAll(
+          {amountMoney: oldWallet?.amountMoney - priceOfAll},
+          {idOfUser},
+        );
+      }
+    }
+
     const idOrder = dataOrder.id;
     await Promise.all(
       await items.map(async (item: any) => {

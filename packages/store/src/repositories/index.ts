@@ -5,3 +5,6 @@ export * from './location-user.repository';
 export * from './products-in-cart.repository';
 export * from './order.repository';
 export * from './products-in-order.repository';
+export * from './wallet.repository';
+export * from './bought-product.repository';
+export * from './return-order.repository';
