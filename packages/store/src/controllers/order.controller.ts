@@ -26,6 +26,8 @@ import {
 } from '../repositories';
 import axios from 'axios';
 
+// import cron from 'node-cron';
+
 // Phu Tho 229
 // Huyen Thanh Thuy 2237
 // Xa Doan Ha 151204
@@ -46,7 +48,32 @@ export class OrderController {
     public productRepository: ProductRepository,
     @repository(ProductsInOrderRepository)
     public productsInOrderRepository: ProductsInOrderRepository,
-  ) {}
+  ) {
+    console.log ("hello controller")
+    //this.scheduleOrderCheck();
+  }
+
+  // private scheduleOrderCheck() {
+  //   cron.schedule('*/2 * * * *', () => {
+  //     this.checkAndUpdateOrders();
+  //   });
+  // }
+
+  // private async checkAndUpdateOrders() {
+  //   console.log ('hello')
+  //   const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+  //   const pendingOrders = await this.orderRepository.find({
+  //     where: {
+  //       and: [{status: 'pending'}, {createdAt: {lt: twoMinutesAgo}}],
+  //     },
+  //   });
+
+  //   for (const order of pendingOrders) {
+  //     order.status = 'rejected';
+  //     await this.orderRepository.updateById(order.id, order);
+  //     console.log(`Order ${order.id} has been rejected`);
+  //   }
+  // }
 
   @post('/orders/orderInfor/{idOfUser}/order-id/{id}')
   @response(200, {description: 'Order model instance'})
@@ -186,7 +213,10 @@ export class OrderController {
           },
         );
 
-        await this.orderRepository.updateById(id, {status: 'accepted'});
+        await this.orderRepository.updateById(id, {
+          status: 'accepted',
+          updatedAt: new Date(),
+        });
 
         return response.data;
       } else {
@@ -213,7 +243,10 @@ export class OrderController {
     try {
       const order = await this.orderRepository.find({where: {id, idOfShop}});
       if (order.length == 1) {
-        await this.orderRepository.updateById(id, {status: 'rejected'});
+        await this.orderRepository.updateById(id, {
+          status: 'rejected',
+          updatedAt: new Date(),
+        });
         return {
           message: 'Success',
         };
@@ -241,7 +274,10 @@ export class OrderController {
     try {
       const order = await this.orderRepository.find({where: {id, idOfUser}});
       if (order.length == 1) {
-        await this.orderRepository.updateById(id, {status: 'canceled'});
+        await this.orderRepository.updateById(id, {
+          status: 'canceled',
+          updatedAt: new Date(),
+        });
         return {
           message: 'Success',
         };
@@ -268,11 +304,10 @@ export class OrderController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Order, {partial: true}),
         },
       },
     })
-    order: Omit<Order, 'id'>,
+    order: any,
   ): Promise<any> {
     const {
       fromName,
@@ -293,6 +328,7 @@ export class OrderController {
       codAmount,
       note,
       requiredNote,
+      items
     } = order;
 
     let weightBox = 0;
@@ -301,22 +337,19 @@ export class OrderController {
     let heightBox = 0;
     let insuranceValue = 0;
 
-    const productsInCart = await this.productsInCartRepository.find({
-      where: {idOfUser},
-    });
 
     await Promise.all(
-      productsInCart.map(async (productInCart: any) => {
-        const idProduct = productInCart.idOfProduct;
+      items.map(async (item: any) => {
+        const idProduct = item.idOfProduct;
         const product: any = await this.productRepository.findById(idProduct);
         const {name, price, image, dimension, weight} = product;
         const dimensionList = dimension.split('|');
-        weightBox += weight * productInCart.quantity;
+        weightBox += weight * item.quantity;
         const length = +dimensionList[0];
         const width = +dimensionList[1];
         const height = +dimensionList[2];
 
-        insuranceValue += price * productInCart.quantity;
+        insuranceValue += price * item.quantity;
 
         if (length > lengthBox) {
           lengthBox = length;
@@ -326,13 +359,13 @@ export class OrderController {
           widthBox = width;
         }
 
-        heightBox += height * productInCart.quantity;
+        heightBox += height * item.quantity;
 
         return {
           name,
           price,
           image,
-          quantity: productInCart.quantity,
+          quantity: item.quantity,
           weight,
           length,
           width,
@@ -350,7 +383,7 @@ export class OrderController {
       .toString()
       .padStart(4, '0');
 
-    const NewOrder = {
+    const NewOrder: any = {
       fromName,
       toName,
       fromPhone,
@@ -377,20 +410,24 @@ export class OrderController {
       insuranceValue,
       clientOrderCode,
       status: 'pending',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     const dataOrder = await this.orderRepository.create(NewOrder);
     const idOrder = dataOrder.id;
     await Promise.all(
-      await productsInCart.map(async (productInCart: any) => {
-        const idProduct = productInCart.idOfProduct;
+      await items.map(async (item: any) => {
+        const idProduct = item.idOfProduct;
         await this.productsInOrderRepository.create({
           idOfOrder: idOrder,
           idOfProduct: idProduct,
-          quantity: productInCart.quantity,
+          quantity: item.quantity,
         });
       }),
     );
+
+    return dataOrder;
   }
 
   @post('/orders/service')

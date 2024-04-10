@@ -173,6 +173,18 @@ export class Order extends Entity {
   })
   pickShift?: number[];
 
+  @property({
+    type: 'date',
+    required: true,
+  })
+  createdAt: Date;
+
+  @property({
+    type: 'date',
+    required: true,
+  })
+  updatedAt: Date;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

@@ -1,6 +1,6 @@
 {
   "ids": {
-    "User": 2,
+    "User": 3,
     "Admin": 2,
     "RequestCreateShop": 4,
     "Store": 2,
@@ -8,7 +8,8 @@
   },
   "models": {
     "User": {
-      "1": "{\"email\":\"string\",\"password\":\"string\",\"phoneNumber\":\"string\",\"gender\":\"string\",\"fullName\":\"string\",\"role\":\"customer\",\"permissions\":\"string\",\"id\":\"1\",\"isSeller\":\"true\",\"avatar\":{\"filename\":\"2024-03-30T07:20:12.149ZPostcard.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-03-30T07:20:12.149ZPostcard.png?alt=media\"},\"coverImage\":{\"filename\":\"2024-03-30T07:24:51.560ZPostcard.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-03-30T07:24:51.560ZPostcard.png?alt=media\"}}"
+      "1": "{\"email\":\"string\",\"password\":\"string\",\"phoneNumber\":\"string\",\"gender\":\"string\",\"fullName\":\"string\",\"role\":\"customer\",\"permissions\":\"string\",\"id\":\"1\",\"isSeller\":\"true\",\"avatar\":{\"filename\":\"2024-03-30T07:20:12.149ZPostcard.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-03-30T07:20:12.149ZPostcard.png?alt=media\"},\"coverImage\":{\"filename\":\"2024-03-30T07:24:51.560ZPostcard.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-03-30T07:24:51.560ZPostcard.png?alt=media\"}}",
+      "2": "{\"email\":\"hung131119782002@gmail.com\",\"password\":\"1234567\",\"phoneNumber\":\"string\",\"gender\":\"string\",\"fullName\":\"string\",\"role\":\"customer\",\"permissions\":\"string\",\"isSeller\":\"false\",\"coverImage\":{},\"avatar\":{},\"resetToken\":null,\"id\":\"2\"}"
     },
     "Admin": {
       "1": "{\"email\":\"admin\",\"password\":\"admin\",\"role\":\"admin\",\"permissions\":\"all\",\"additionalProp1\":{},\"id\":\"1\"}"

@@ -69,6 +69,12 @@ export class User extends Entity {
   })
   avatar: object;
 
+  @property({
+    type: 'string',
+    required: false,
+  })
+  resetToken: string;
+
 
   constructor(data?: Partial<User>) {
     super(data);

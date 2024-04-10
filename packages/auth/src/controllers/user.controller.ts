@@ -8,7 +8,7 @@ import {
   UserRepository,
 } from '@loopback/authentication-jwt';
 import {inject} from '@loopback/core';
-import {repository} from '@loopback/repository';
+import {property, repository} from '@loopback/repository';
 import {
   Request,
   Response,
@@ -27,6 +27,12 @@ import {AdminRepository} from '../repositories';
 import {AdminManagmentService} from '../services/adminManagement.service';
 import multer from 'multer';
 import {deleteRemoteFile, uploadFile} from '../config/firebaseConfig';
+import nodemailer from 'nodemailer';
+import {promisify} from 'util';
+
+const jwt = require('jsonwebtoken');
+const signAsync = promisify(jwt.sign);
+const verifyAsync = promisify(jwt.verify);
 
 const storage = multer.memoryStorage();
 const upload = multer({storage});
@@ -493,6 +499,169 @@ export class UserManagementController {
     const token = await this.jwtService.generateToken(adminProfile);
 
     return {token};
+  }
+
+  @post('/forgotPassword', {
+    responses: {
+      '200': {
+        description: 'send mail to reset password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async forgotPassword(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              email: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req: any,
+  ): Promise<any> {
+    const {email} = req;
+
+    const user = await this.userRepository.findOne({where: {email}});
+
+    if (!user) {
+      return {
+        message: 'Email không tồn tại',
+      };
+    }
+
+    const userInfor = {
+      id: user.id,
+      email: user.email,
+    };
+
+    const resetToken = await signAsync(userInfor, 'hello', {
+      expiresIn: 60 * 1000 * 2,
+    });
+
+    this.userRepository.updateById(user.id, {resetToken});
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'hung1311197820022@gmail.com',
+        pass: 'mvza fmtv fbsc gsig',
+      },
+    });
+
+    const mailOptions = {
+      from: 'hung1311197820022@gmail.com',
+      to: email,
+      subject: 'Sending Email using Node.js',
+      text: 'Token: ' + resetToken,
+    };
+
+    const data = await transporter.sendMail(mailOptions);
+    return {
+      message: 'Email sent',
+    };
+  }
+
+  @post('/resetPassword', {
+    responses: {
+      '200': {
+        description: 'Change Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async resetPassword(
+    @requestBody()
+    {token, newPassword}: {token: string; newPassword: string},
+  ): Promise<any> {
+    let decoded;
+
+    try {
+      decoded = await verifyAsync(token, 'hello');
+      console.log(decoded);
+      if (!decoded.id)
+        return this.response.status(400).send({message: 'Invalid token'});
+    } catch (error) {
+      throw new Error('Invalid or expired token');
+    }
+
+    const user = await this.userRepository.findById(decoded.id);
+
+    if (!user || user.resetToken !== token) {
+      throw new Error('Invalid or expired token');
+    }
+
+    user.password = newPassword;
+    user.resetToken = null;
+
+    await this.userRepository.updateById(user.id, user);
+
+    return {message: 'Password has been changed'};
+  }
+
+  @post('/changePassword', {
+    responses: {
+      '200': {
+        description: 'Change Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async changePassword(
+    @requestBody()
+    {
+      id,
+      oldPassword,
+      newPassword,
+    }: {
+      id: string;
+      oldPassword: string;
+      newPassword: string;
+    },
+  ): Promise<any> {
+    const user = await this.userRepository.findById(id);
+
+    if (!user) {
+      return this.response.status(400).send({message: 'User not found'});
+    }
+
+    const isPasswordMatch = user.password === oldPassword;
+
+    if (!isPasswordMatch) {
+      return this.response
+        .status(400)
+        .send({message: 'Old password is incorrect'});
+    }
+
+    user.password = newPassword;
+
+    await this.userRepository.updateById(user.id, user);
+
+    return {message: 'Password has been changed'};
   }
 
   @authenticate('jwt')
