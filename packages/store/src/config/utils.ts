@@ -13,3 +13,25 @@ export const sortObject = (obj: Record<string, any>) => {
   }
   return sorted;
 };
+
+  // private scheduleOrderCheck() {
+  //   cron.schedule('*/2 * * * *', () => {
+  //     this.checkAndUpdateOrders();
+  //   });
+  // }
+
+  // private async checkAndUpdateOrders() {
+  //   console.log ('hello')
+  //   const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+  //   const pendingOrders = await this.orderRepository.find({
+  //     where: {
+  //       and: [{status: 'pending'}, {createdAt: {lt: twoMinutesAgo}}],
+  //     },
+  //   });
+
+  //   for (const order of pendingOrders) {
+  //     order.status = 'rejected';
+  //     await this.orderRepository.updateById(order.id, order);
+  //     console.log(`Order ${order.id} has been rejected`);
+  //   }
+  // }

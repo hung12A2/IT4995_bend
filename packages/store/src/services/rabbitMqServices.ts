@@ -2,36 +2,49 @@ import * as amqp from 'amqplib/callback_api';
 
 export class RabbitMQService {
   private static instance: RabbitMQService;
-  private channel: amqp.Channel;
+  public channel: amqp.Channel;
 
-  private constructor() {
-    amqp.connect('amqp://guest:guest@localhost', (error0, connection) => {
-      if (error0) {
-        throw error0;
-      }
-      connection.createChannel((error1, channel) => {
-        if (error1) {
-          throw error1;
+  private constructor() {}
+
+  public async init(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      amqp.connect('amqp://localhost', (error0, connection) => {
+        if (error0) {
+          reject(error0);
         }
 
-        this.channel = channel;
+        connection.createChannel((error1, channel) => {
+          if (error1) {
+            reject(error1);
+          }
+
+          this.channel = channel;
+          resolve();
+        });
       });
     });
   }
 
-  public static getInstance(): RabbitMQService {
+  public static async getInstance(): Promise<RabbitMQService> {
     if (!RabbitMQService.instance) {
       RabbitMQService.instance = new RabbitMQService();
+      await RabbitMQService.instance.init();
     }
 
     return RabbitMQService.instance;
   }
 
-  public sendMessageToTopicExchange(exchange: string, routingKey: string, msg: string): void {
+  public setupTopicExchange(exchange: string): void {
     this.channel.assertExchange(exchange, 'topic', {
-      durable: false,      
+      durable: false,
     });
+  }
 
+  public sendMessageToTopicExchange(
+    exchange: string,
+    routingKey: string,
+    msg: string,
+  ): void {
     this.channel.publish(exchange, routingKey, Buffer.from(msg));
 
     console.log(` [x] Sent ${routingKey}:${msg}`);

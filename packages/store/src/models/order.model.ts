@@ -199,6 +199,12 @@ export class Order extends Entity {
   })
   updatedAt: Date;
 
+  @property({
+    type: 'object',
+    required: true,
+  })
+  image: object;
+
 
 
   // Define well-known properties here

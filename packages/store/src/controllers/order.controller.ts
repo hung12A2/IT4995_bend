@@ -35,6 +35,7 @@ import axios from 'axios';
 import {inject} from '@loopback/core';
 import {uploadFile, deleteRemoteFile} from '../config/firebaseConfig';
 import multer from 'multer';
+import {RabbitMQService} from '../services/rabbitMqServices';
 
 const storage = multer.memoryStorage();
 const upload = multer({storage});
@@ -73,31 +74,9 @@ export class OrderController {
     public boughtProductRepository: BoughtProductRepository,
     @repository(ReturnOrderRepository)
     public returnOrderRepository: ReturnOrderRepository,
-  ) {
-    //this.scheduleOrderCheck();
-  }
+  ) {}
 
-  // private scheduleOrderCheck() {
-  //   cron.schedule('*/2 * * * *', () => {
-  //     this.checkAndUpdateOrders();
-  //   });
-  // }
-
-  // private async checkAndUpdateOrders() {
-  //   console.log ('hello')
-  //   const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
-  //   const pendingOrders = await this.orderRepository.find({
-  //     where: {
-  //       and: [{status: 'pending'}, {createdAt: {lt: twoMinutesAgo}}],
-  //     },
-  //   });
-
-  //   for (const order of pendingOrders) {
-  //     order.status = 'rejected';
-  //     await this.orderRepository.updateById(order.id, order);
-  //     console.log(`Order ${order.id} has been rejected`);
-  //   }
-  // }
+  newRabbitMQService = RabbitMQService.getInstance();
 
   @post('/orders/orderInfor/{idOfUser}/order-id/{id}')
   @response(200, {description: 'Order model instance'})
@@ -390,7 +369,7 @@ export class OrderController {
             const createAt = new Date();
             this.boughtProductRepository.create({
               idOfProduct,
-              idOfOrder:id,
+              idOfOrder: id,
               idOfUser,
               createAt,
               quantity,
@@ -588,12 +567,16 @@ export class OrderController {
     let widthBox = 0;
     let heightBox = 0;
     let insuranceValue = 0;
+    let imageOrder = {};
 
     await Promise.all(
-      items.map(async (item: any) => {
+      items.map(async (item: any, index: number) => {
         const idProduct = item.idOfProduct;
         const product: any = await this.productRepository.findById(idProduct);
         const {name, price, image, dimension, weight} = product;
+        if (index == 0) {
+          imageOrder = image;
+        }
         const dimensionList = dimension.split('|');
         weightBox += weight * item.quantity;
         const length = +dimensionList[0];
@@ -667,6 +650,7 @@ export class OrderController {
       updatedAt: new Date(),
       priceOfAll,
       type,
+      image: imageOrder,
     };
 
     const dataOrder = await this.orderRepository.create(NewOrder);

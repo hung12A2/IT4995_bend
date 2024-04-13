@@ -10,6 +10,7 @@ import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
 import {RabbitMQService} from './services/rabbitMQService';
+import {NotificationRepository} from './repositories/notification.repository';
 
 export {ApplicationConfig};
 
@@ -20,6 +21,8 @@ export class NotificaitonApllication extends BootMixin(
     super(options);
 
     RabbitMQService.getInstance();
+
+    this.startRabbit();
 
     // Set up the custom sequence
     this.sequence(MySequence);
@@ -43,5 +46,18 @@ export class NotificaitonApllication extends BootMixin(
         nested: true,
       },
     };
+  }
+
+  public async startRabbit() {
+    const newRabbitMQService = RabbitMQService.getInstance();
+    newRabbitMQService.consumeFromTopicExchange('order', 'add', async msg => {
+      const data = JSON.parse(msg.content.toString());
+      if (!data.isViewed) {
+        data.isViewed = false;
+      }
+      const notificationRepository =await this.getRepository(NotificationRepository);
+      const data2 = await notificationRepository.create(data);
+      console.log (data2)
+    });
   }
 }

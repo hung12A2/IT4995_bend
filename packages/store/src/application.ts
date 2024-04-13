@@ -9,8 +9,8 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
-import { RabbitMQService } from './services/rabbitMqServices';
-
+import {RabbitMQService} from './services/rabbitMqServices';
+import axios from 'axios';
 export {ApplicationConfig};
 
 export class StoreApplication extends BootMixin(
@@ -19,7 +19,7 @@ export class StoreApplication extends BootMixin(
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
-    const newRabbitMQService = RabbitMQService.getInstance();
+    this.setupRabbitMQ();
 
     // Set up the custom sequence
     this.sequence(MySequence);
@@ -43,5 +43,10 @@ export class StoreApplication extends BootMixin(
         nested: true,
       },
     };
+  }
+
+  public async setupRabbitMQ() {
+    const newRabbit = await RabbitMQService.getInstance()
+    newRabbit.setupTopicExchange('order');
   }
 }

@@ -41,7 +41,7 @@ export class RabbitMQService {
     console.log(` [x] Sent ${routingKey}:${msg}`);
   }
 
-  public consumeFromTopicExchange(exchange: string, routingKey: string, callback: (msg: amqp.Message) => void): void {
+  public consumeFromTopicExchange(exchange: string, routingKey: string, callback: (msg: amqp.Message) => Promise<any>): void {
     this.connectionPromise.then(() => {
       this.channel.assertExchange(exchange, 'topic', {
         durable: false,

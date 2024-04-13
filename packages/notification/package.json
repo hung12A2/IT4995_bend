@@ -51,12 +51,13 @@
   "dependencies": {
     "@loopback/boot": "^7.0.0",
     "@loopback/core": "^6.0.0",
-    "@loopback/repository": "^7.0.0",
+    "@loopback/repository": "^7.0.1",
     "@loopback/rest": "^14.0.0",
     "@loopback/rest-explorer": "^7.0.0",
     "@loopback/service-proxy": "^7.0.0",
     "@types/amqplib": "^0.10.5",
     "amqplib": "^0.10.4",
+    "loopback-connector-postgresql": "^7.0.2",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
