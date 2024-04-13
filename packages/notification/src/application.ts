@@ -9,17 +9,17 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
-import { RabbitMQService } from './services/rabbitMqServices';
+import {RabbitMQService} from './services/rabbitMQService';
 
 export {ApplicationConfig};
 
-export class StoreApplication extends BootMixin(
+export class NotificaitonApllication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
-    const newRabbitMQService = RabbitMQService.getInstance();
+    RabbitMQService.getInstance();
 
     // Set up the custom sequence
     this.sequence(MySequence);

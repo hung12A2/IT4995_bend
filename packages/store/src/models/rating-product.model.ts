@@ -1,13 +1,19 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model({settings: {strict: false}})
-export class BoughtProduct extends Entity {
+export class RatingProduct extends Entity {
   @property({
     type: 'string',
     id: true,
     generated: true,
   })
   id?: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  idOfOrder: string;
 
   @property({
     type: 'string',
@@ -22,22 +28,22 @@ export class BoughtProduct extends Entity {
   idOfUser: string;
 
   @property({
-    type: 'string',
-    required: true,
-  })
-  idOfOrder: string;
-
-  @property({
     type: 'number',
     required: true,
   })
-  quantity: number;
+  rating: number;
 
   @property({
-    type: 'date',
+    type: 'boolean',
     required: true,
   })
-  createAt: Date;
+  isDeleted: boolean;
+
+  @property({
+    type: 'string',
+    default: '',
+  })
+  comment?: string;
 
   // Define well-known properties here
 
@@ -45,13 +51,13 @@ export class BoughtProduct extends Entity {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
-  constructor(data?: Partial<BoughtProduct>) {
+  constructor(data?: Partial<RatingProduct>) {
     super(data);
   }
 }
 
-export interface BoughtProductRelations {
+export interface RatingProductRelations {
   // describe navigational properties here
 }
 
-export type BoughtProductWithRelations = BoughtProduct & BoughtProductRelations;
+export type RatingProductWithRelations = RatingProduct & RatingProductRelations;

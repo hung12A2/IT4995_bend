@@ -8,3 +8,4 @@ export * from './products-in-order.model';
 export * from './wallet.model';
 export * from './bought-product.model';
 export * from './return-order.model';
+export * from './rating-product.model';

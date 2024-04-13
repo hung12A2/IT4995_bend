@@ -8,3 +8,4 @@ export * from './products-in-order.repository';
 export * from './wallet.repository';
 export * from './bought-product.repository';
 export * from './return-order.repository';
+export * from './rating-product.repository';

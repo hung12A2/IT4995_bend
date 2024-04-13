@@ -10,7 +10,8 @@
     "ProductsInOrder": 21,
     "Wallet": 3,
     "BoughtProduct": 4,
-    "ReturnOrder": 2
+    "ReturnOrder": 2,
+    "RatingProduct": 4
   },
   "models": {
     "Category": {
@@ -19,7 +20,7 @@
       "3": "{\"cateName\":\"do gia dung\",\"description\":\"san pham cho moi gia dinh\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-04T15:12:58.303ZPostcard.png?alt=media\",\"filename\":\"2024-04-04T15:12:58.303ZPostcard.png\"},\"status\":\"inActive\",\"id\":\"3\"}"
     },
     "Product": {
-      "1": "{\"name\":\"quat dien\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"idOfCategory\":\"1\",\"idOfShop\":\"3\",\"productDescription\":\"quat dien trung quoc\",\"productDetails\":\"Cong suat 220V \\nRat mat\",\"price\":1000000,\"countInStock\":99,\"isBestSeller\":true,\"cateName\":\"def\",\"status\":\"inActive\",\"weight\":1,\"dimension\":\"10|10|10\",\"rating\":0,\"id\":\"1\"}",
+      "1": "{\"name\":\"quat dien\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"idOfCategory\":\"1\",\"idOfShop\":\"3\",\"productDescription\":\"quat dien trung quoc\",\"productDetails\":\"Cong suat 220V \\nRat mat\",\"price\":1000000,\"countInStock\":99,\"isBestSeller\":true,\"cateName\":\"def\",\"status\":\"inActive\",\"weight\":1,\"dimension\":\"10|10|10\",\"rating\":1,\"id\":\"1\"}",
       "2": "{\"name\":\"quạt điện\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-07T13:23:26.330Zdog.jpg?alt=media\",\"filename\":\"2024-04-07T13:23:26.330Zdog.jpg\"},\"idOfCategory\":\"1\",\"idOfShop\":\"3\",\"productDescription\":\"Quạt điện cho ngày nóng\",\"productDetails\":\"Công suất 220 V \\nDòng điện I  =10 A \\nThích hợp dùng trong đi dã ngoại \",\"price\":99000,\"countInStock\":13,\"isBestSeller\":true,\"cateName\":\"def\",\"status\":\"active\",\"weight\":1.3,\"dimension\":\"10|10|20\",\"rating\":0,\"id\":\"2\"}",
       "3": "{\"name\":\"quạt mặt trời\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-07T13:24:52.205ZSum.jpg?alt=media\",\"filename\":\"2024-04-07T13:24:52.205ZSum.jpg\"},\"idOfCategory\":\"1\",\"idOfShop\":\"3\",\"productDescription\":\"Quạt điện cho ngày nóng\",\"productDetails\":\"Công suất 220 V \\nDòng điện I  =10 A \\nThích hợp dùng trong đi dã ngoại\\nThích hợp ngày nóng mất điện \",\"price\":126000,\"countInStock\":20,\"isBestSeller\":true,\"cateName\":\"def\",\"status\":\"active\",\"weight\":1.3,\"dimension\":\"10|10|20\",\"rating\":0,\"id\":\"3\"}"
     },
@@ -50,12 +51,16 @@
       "2": "{\"idOfUser\":\"3\",\"amountMoney\":55083,\"id\":\"2\"}"
     },
     "BoughtProduct": {
-      "1": "{\"idOfProduct\":\"1\",\"idOfUser\":\"1\",\"quantity\":1,\"createAt\":\"2024-04-10T16:27:37.436Z\",\"id\":\"1\"}",
-      "2": "{\"idOfProduct\":\"2\",\"idOfUser\":\"1\",\"quantity\":1,\"createAt\":\"2024-04-10T16:27:37.436Z\",\"id\":\"2\"}",
-      "3": "{\"idOfProduct\":\"3\",\"idOfUser\":\"1\",\"quantity\":1,\"createAt\":\"2024-04-10T16:27:37.436Z\",\"id\":\"3\"}"
+      "1": "{\"idOfProduct\":\"1\",\"idOfUser\":\"1\",\"idOfOrder\":\"9\",\"quantity\":1,\"createAt\":\"2024-04-10T16:27:37.436Z\",\"id\":\"1\"}",
+      "2": "{\"idOfProduct\":\"2\",\"idOfUser\":\"1\",\"idOfOrder\":\"9\",\"quantity\":1,\"createAt\":\"2024-04-10T16:27:37.436Z\",\"id\":\"2\"}",
+      "3": "{\"idOfProduct\":\"3\",\"idOfUser\":\"1\",\"idOfOrder\":\"9\",\"quantity\":1,\"createAt\":\"2024-04-10T16:27:37.436Z\",\"id\":\"3\"}"
     },
     "ReturnOrder": {
       "1": "{\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"idOfOrder\":\"9\",\"reason\":\"hàng kém chất lượng\",\"images\":[{\"filename\":\"2024-04-10T18:27:06.223ZSum.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-10T18:27:06.223ZSum.jpg?alt=media\"},{\"filename\":\"2024-04-10T18:27:06.226Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-10T18:27:06.226Zdog.jpg?alt=media\"}],\"id\":\"1\"}"
+    },
+    "RatingProduct": {
+      "2": "{\"idOfOrder\":\"9\",\"idOfProduct\":\"1\",\"idOfUser\":\"1\",\"rating\":1,\"isDeleted\":false,\"comment\":\"Ăn mới bị đau bụng đi ỉa\",\"id\":\"2\"}",
+      "3": "{\"idOfOrder\":\"9\",\"idOfProduct\":\"1\",\"idOfUser\":\"1\",\"rating\":1,\"isDeleted\":false,\"comment\":\"Ăn mới bị đau bụng đi ỉa\",\"id\":\"3\"}"
     }
   }
 }

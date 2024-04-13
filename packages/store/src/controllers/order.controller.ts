@@ -390,6 +390,7 @@ export class OrderController {
             const createAt = new Date();
             this.boughtProductRepository.create({
               idOfProduct,
+              idOfOrder:id,
               idOfUser,
               createAt,
               quantity,
