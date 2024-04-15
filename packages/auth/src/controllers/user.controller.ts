@@ -306,7 +306,7 @@ export class UserManagementController {
     return this.userRepository.findById(idOfUser);
   }
 
-  @post('/users/customer', {
+  @post('/register/customer', {
     responses: {
       '200': {
         description: 'User',
@@ -326,7 +326,7 @@ export class UserManagementController {
         'application/json': {
           schema: getModelSchemaRef(User, {
             title: 'NewUser',
-            exclude: ['id', 'role', 'isSeller'],
+            exclude: ['id', 'role'],
           }),
         },
       },
@@ -335,7 +335,7 @@ export class UserManagementController {
   ): Promise<any> {
     // All new users have the "customer" role by default
     newUserRequest.role = 'customer';
-    newUserRequest.isSeller = false;
+    newUserRequest.status = 'active';
 
     try {
       if (
@@ -354,7 +354,7 @@ export class UserManagementController {
     }
   }
 
-  @post('/users/admin', {
+  @post('/register/admin', {
     responses: {
       '200': {
         description: 'User',
@@ -379,14 +379,15 @@ export class UserManagementController {
         },
       },
     })
-    newUserRequest: Omit<User, 'id'>,
+    newUserRequest: Omit<Admin, 'id'>,
   ): Promise<any> {
     // All new users have the "customer" role by default
     newUserRequest.role = 'admin';
     newUserRequest.permissions = 'all';
+    newUserRequest.status = 'active';
 
     try {
-      const list = await this.userRepository.find({
+      const list = await this.adminrepository.find({
         where: {email: newUserRequest.email},
       });
       if (list.length > 0) {
@@ -399,7 +400,7 @@ export class UserManagementController {
     }
   }
 
-  @post('/users/login', {
+  @post('/login/Customer', {
     responses: {
       '200': {
         description: 'Token',
@@ -450,7 +451,7 @@ export class UserManagementController {
     return {token};
   }
 
-  @post('/admin/login', {
+  @post('/login/Admin', {
     responses: {
       '200': {
         description: 'Token',
@@ -501,7 +502,7 @@ export class UserManagementController {
     return {token};
   }
 
-  @post('/forgotPassword', {
+  @post('/forgotPassword/Customer', {
     responses: {
       '200': {
         description: 'send mail to reset password',
@@ -574,7 +575,7 @@ export class UserManagementController {
     };
   }
 
-  @post('/resetPassword', {
+  @post('/resetPassword/Customer', {
     responses: {
       '200': {
         description: 'Change Password',
@@ -589,7 +590,24 @@ export class UserManagementController {
     },
   })
   async resetPassword(
-    @requestBody()
+    @requestBody({
+      description: 'Change Password',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              token: {
+                type: 'string',
+              },
+              newPassword: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
     {token, newPassword}: {token: string; newPassword: string},
   ): Promise<any> {
     let decoded;
@@ -617,7 +635,8 @@ export class UserManagementController {
     return {message: 'Password has been changed'};
   }
 
-  @post('/changePassword', {
+  @authenticate('jwt')
+  @post('/changePassword/customer', {
     responses: {
       '200': {
         description: 'Change Password',
@@ -632,17 +651,33 @@ export class UserManagementController {
     },
   })
   async changePassword(
-    @requestBody()
-    {
-      id,
-      oldPassword,
-      newPassword,
-    }: {
-      id: string;
+    @inject(SecurityBindings.USER)
+    currenUserProfile: UserProfile,
+    @requestBody({
+      description: 'Change Password',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              oldPassword: {
+                type: 'string',
+              },
+              newPassword: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req:  {
       oldPassword: string;
       newPassword: string;
     },
   ): Promise<any> {
+    const {oldPassword, newPassword} = req;
+    const id = currenUserProfile.id;
     const user = await this.userRepository.findById(id);
 
     if (!user) {
@@ -685,9 +720,21 @@ export class UserManagementController {
     currentUserProfile: UserProfile,
   ): Promise<any> {
     if (currentUserProfile.role == 'admin') {
-      return this.adminrepository.findById(currentUserProfile[securityId]);
+      const data = this.adminrepository.findById(
+        currentUserProfile[securityId],
+      );
+      return {
+        ...data,
+        password: null,
+      };
     } else if (currentUserProfile.role == 'customer') {
-      return this.userRepository.findById(currentUserProfile[securityId]);
+      const data = await this.userRepository.findById(
+        currentUserProfile[securityId],
+      );
+      return {
+        ...data,
+        password: null,
+      };
     }
   }
 }

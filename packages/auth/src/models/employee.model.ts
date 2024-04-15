@@ -41,8 +41,9 @@ export class Employee extends Entity {
 
   @property({
     type: 'string',
+    required: true,
   })
-  status?: string;
+  status: string;
 
   @property({
     type: 'string',

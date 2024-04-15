@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model({settings: {strict: false}})
-export class LocationShop extends Entity {
+export class Area extends Entity {
   @property({
     type: 'string',
     id: true,
@@ -13,7 +13,7 @@ export class LocationShop extends Entity {
     type: 'string',
     required: true,
   })
-  idOfShop: string;
+  name: string;
 
   @property({
     type: 'string',
@@ -40,29 +40,28 @@ export class LocationShop extends Entity {
   districtId: string;
 
   @property({
-    type: 'string',
+    type: 'date',
     required: true,
   })
-  wardName: string;
+  createdAt: string;
+
+  @property({
+    type: 'date',
+    required: true,
+  })
+  updatedAt: string;
 
   @property({
     type: 'string',
     required: true,
   })
-  wardId: string;
-
+  createdBy: string;
 
   @property({
     type: 'string',
     required: true,
   })
-  type: string;
-
-  @property({
-    type: 'boolean',
-    required: true,
-  })
-  isDefault: boolean;
+  updatedBy: string;
 
   // Define well-known properties here
 
@@ -70,13 +69,13 @@ export class LocationShop extends Entity {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
-  constructor(data?: Partial<LocationShop>) {
+  constructor(data?: Partial<Area>) {
     super(data);
   }
 }
 
-export interface LocationShopRelations {
+export interface AreaRelations {
   // describe navigational properties here
 }
 
-export type LocationShopWithRelations = LocationShop & LocationShopRelations;
+export type AreaWithRelations = Area & AreaRelations;

@@ -11,6 +11,13 @@ export class User extends Entity {
 
   @property({
     type: 'string',
+    required: false,
+  })
+  idOfShop?: string;
+
+
+  @property({
+    type: 'string',
     required: true,
   })
   email: string;
@@ -49,13 +56,7 @@ export class User extends Entity {
     type: 'string',
     required: true,
   })
-  permissions: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  isSeller: boolean;
+  status: string;
 
   @property({
     type: 'object',
@@ -74,6 +75,18 @@ export class User extends Entity {
     required: false,
   })
   resetToken: string;
+
+  @property({
+    type: 'Date',
+    required: false,
+  })
+  createdAt: Date;
+
+  @property({
+    type: 'Date',
+    required: false,
+  })
+  updatedAt: Date;
 
 
   constructor(data?: Partial<User>) {

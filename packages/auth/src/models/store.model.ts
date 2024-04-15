@@ -37,19 +37,7 @@ export class Store extends Entity {
     type: 'string',
     required: true,
   })
-  permissions: string;
-
-  @property({
-    type: 'number',
-    required: true,
-  })
-  numberOfProducts: number;
-
-  @property({
-    type: 'number',
-    required: true,
-  })
-  avgRating: number;
+  status: string;
 
   @property({
     type: 'object',
@@ -73,7 +61,79 @@ export class Store extends Entity {
     type: 'string',
     required: true,
   })
+  pickUpProvinceName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpProvinceId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpDistrictName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpDistrictId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpWardName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpWardId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
   returnAddress: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnProvinceName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnProvinceId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnDistrictName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnDistrictId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnWardName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnWardId: string;
 
   @property({
     type: 'string',
@@ -92,6 +152,12 @@ export class Store extends Entity {
     required: true,
   })
   email: string;
+
+  @property({
+    type: 'Date',
+    required: false,
+  })
+  createdAt: Date;
 
   // Define well-known properties here
 

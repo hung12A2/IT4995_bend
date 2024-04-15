@@ -48,6 +48,7 @@ export class AdminManagmentService implements UserService<Admin, Credentials> {
         id: admin.id,
         role: admin.role,
         permissions: admin.permissions,
+        status: admin.status,
       };
     } else
       return {
@@ -56,6 +57,7 @@ export class AdminManagmentService implements UserService<Admin, Credentials> {
         id: admin.id,
         role: admin.role,
         permissions: admin.permissions,
+        status: admin.status,
       };
   }
 }

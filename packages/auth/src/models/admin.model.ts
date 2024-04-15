@@ -34,6 +34,12 @@ export class Admin extends Entity {
   permissions: string;
 
   @property({
+    type: 'string',
+    required: true,
+  })
+  status: string;
+
+  @property({
     type: 'object',
     required: false,
   })

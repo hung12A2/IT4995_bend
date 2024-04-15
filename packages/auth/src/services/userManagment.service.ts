@@ -40,27 +40,6 @@ export class UserManagementService implements UserService<User, Credentials> {
     return foundUser;
   }
 
-  public async verifyCredentialAdmin(credentials: Credentials): Promise<Admin> {
-    const {email, password} = credentials;
-    const invalidCredentialsError = 'Invalid email or password.';
-
-    if (!email) {
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-    }
-    const foundUser = await this.adminRepository.findOne({
-      where: {email},
-    });
-
-    if (foundUser?.password !== password)
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-
-    if (!foundUser) {
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-    }
-
-    return foundUser;
-  }
-
   convertToUserProfile(user: User): UserProfile {
     // since first name and lastName are optional, no error is thrown if not provided
     if (user.id) {
@@ -72,8 +51,7 @@ export class UserManagementService implements UserService<User, Credentials> {
         email: user.email,
         id: user.id,
         role: user.role,
-        isSeller: user.isSeller,
-        permissions: user.permissions,
+        status: user.status,
       };
     } else
       return {
@@ -84,27 +62,7 @@ export class UserManagementService implements UserService<User, Credentials> {
         phonenumber: user.phoneNumber,
         id: user.id,
         role: user.role,
-        isSeller: user.isSeller,
-        permissions: user.permissions,
-      };
-  }
-
-  public converToAdminProfile(admin: Admin): UserProfile {
-    if (admin.id) {
-      return {
-        [securityId]: admin.id,
-        email: admin.email,
-        id: admin.id,
-        role: admin.role,
-        permissions: admin.permissions,
-      };
-    } else
-      return {
-        [securityId]: '',
-        email: admin.email,
-        id: admin.id,
-        role: admin.role,
-        permissions: admin.permissions,
+        status: user.status,
       };
   }
 }

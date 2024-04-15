@@ -206,7 +206,6 @@ export class Order extends Entity {
   image: object;
 
 
-
   // Define well-known properties here
 
   // Indexer property to allow additional data

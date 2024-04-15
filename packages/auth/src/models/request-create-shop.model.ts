@@ -31,19 +31,93 @@ export class RequestCreateShop extends Entity {
     type: 'string',
     required: true,
   })
+  pickUpProvinceName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpProvinceId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpDistrictName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpDistrictId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpWardName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpWardId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
   returnAddress: string;
 
   @property({
-    type: 'object',
+    type: 'string',
     required: true,
   })
-  IDcardImg: object;
+  returnProvinceName: string;
 
   @property({
-    type: 'object',
+    type: 'string',
     required: true,
   })
-  BLicenseImg: object;
+  returnProvinceId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnDistrictName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnDistrictId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnWardName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnWardId: string;
+
+  @property({
+    type: 'array',
+    required: true,
+    itemType: 'object',
+  })
+  IDcardImg: object[];
+
+  @property({
+    type: 'array',
+    required: true,
+    itemType: 'object',
+  })
+  BLicenseImg: object[];
 
   @property({
     type: 'string',
@@ -63,6 +137,24 @@ export class RequestCreateShop extends Entity {
   })
   name: string;
 
+  @property({
+    type: 'Date',
+    required: false,
+  })
+  createdAt: Date;
+
+  @property({
+    type: 'Date',
+    required: false,
+  })
+  updatedAt: Date;
+
+  @property({
+    type: 'string',
+    required: false,
+  })
+  updatedBy: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
@@ -78,4 +170,5 @@ export interface RequestCreateShopRelations {
   // describe navigational properties here
 }
 
-export type RequestCreateShopWithRelations = RequestCreateShop & RequestCreateShopRelations;
+export type RequestCreateShopWithRelations = RequestCreateShop &
+  RequestCreateShopRelations;

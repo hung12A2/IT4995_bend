@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin';
 // Initialize firebase admin SDK
 
 admin.initializeApp({
-  credential: admin.credential.cert('/home/hungnguyen/Tài liệu/Doan/doan/packages/auth/src/key.json'),
+  credential: admin.credential.cert('/home/hungnguyen/Tài liệu/Doan/IT4995_bend/packages/auth/src/key.json'),
   storageBucket: 'clone-facebook-3caa4.appspot.com'
 });
 
