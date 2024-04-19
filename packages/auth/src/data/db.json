@@ -3,7 +3,9 @@
     "User": 2,
     "Admin": 2,
     "RequestCreateShop": 2,
-    "Store": 2
+    "Store": 2,
+    "Area": 2,
+    "Kiot": 5
   },
   "models": {
     "User": {
@@ -17,6 +19,12 @@
     },
     "Store": {
       "1": "{\"idOfUser\":\"1\",\"coverImage\":{\"filename\":\"\",\"url\":\"\"},\"description\":\"no desc\",\"status\":\"active\",\"IDcardImg\":[{\"filename\":\"2024-04-15T09:27:09.897ZSum.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-15T09:27:09.897ZSum.jpg?alt=media\"},{\"filename\":\"2024-04-15T09:27:09.898Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-15T09:27:09.898Zdog.jpg?alt=media\"}],\"BLicenseImg\":[{\"filename\":\"2024-04-15T09:27:10.771ZScreenshot from 2024-03-27 19-15-20.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-15T09:27:10.771ZScreenshot%20from%202024-03-27%2019-15-20.png?alt=media\"},{\"filename\":\"2024-04-15T09:27:10.772ZScreenshot from 2024-03-16 22-20-01.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-15T09:27:10.772ZScreenshot%20from%202024-03-16%2022-20-01.png?alt=media\"}],\"pickUpAddress\":\"Khu phố thị trấn Thanh Thủy\",\"pickUpProvinceName\":\"Phú Thọ \",\"pickUpProvinceId\":\" 229\",\"pickUpDistrictName\":\"Huyện Thanh Thủy \",\"pickUpDistrictId\":\" 2237\",\"pickUpWardName\":\"Xã Đoan Hạ \",\"pickUpWardId\":\" 151204\",\"returnAddress\":\"khu phố thị trấn Thanh Thủy\",\"returnProvinceName\":\"Phú Thọ \",\"returnProvinceId\":\" 229\",\"returnDistrictName\":\"Huyện Thanh Thủy \",\"returnDistrictId\":\" 2237\",\"returnWardName\":\"Xã Đoan Hạ \",\"returnWardId\":\" 151204\",\"name\":\"sốp vui vẻ úp đết lần 2\",\"phoneNumber\":\"0915047678\",\"email\":\"hung@gmail.com\",\"avartar\":{\"filename\":\"\",\"url\":\"\"},\"id\":\"1\"}"
+    },
+    "Area": {
+      "1": "{\"name\":\"Huyện Thanh Thủy - Phú Thọ\",\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện Thanh Thủy\",\"districtId\":\"2257\",\"createdAt\":\"2024-04-18T17:00:00.000Z\",\"updatedAt\":\"2024-04-18T17:00:00.000Z\",\"createdBy\":\"admin\",\"updatedBy\":\"admin\",\"id\":\"1\"}"
+    },
+    "Kiot": {
+      "4": "{\"idOfUser\":\"1\",\"coverImage\":{\"filename\":\"\",\"url\":\"\"},\"idOfArea\":\"1\",\"description\":\"Địa chỉ Thanh Thủy Phú THọ, chuyên bán hải sản chất lượng\",\"status\":\"active\",\"IDcardImg\":[{\"filename\":\"2024-04-15T09:27:09.897ZSum.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-15T09:27:09.897ZSum.jpg?alt=media\"},{\"filename\":\"2024-04-15T09:27:09.898Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-15T09:27:09.898Zdog.jpg?alt=media\"}],\"BLicenseImg\":[{\"filename\":\"2024-04-15T09:27:10.771ZScreenshot from 2024-03-27 19-15-20.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-15T09:27:10.771ZScreenshot%20from%202024-03-27%2019-15-20.png?alt=media\"},{\"filename\":\"2024-04-15T09:27:10.772ZScreenshot from 2024-03-16 22-20-01.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-15T09:27:10.772ZScreenshot%20from%202024-03-16%2022-20-01.png?alt=media\"}],\"pickUpAddress\":\"Gần cầu đảo ngọc\",\"pickUpProvinceName\":\"Phú Thọ\",\"pickUpProvinceId\":\"229\",\"pickUpDistrictName\":\"Huyện Thanh Thủy\",\"pickUpDistrictId\":\"2237\",\"pickUpWardName\":\"Xã Đoan Hạ\",\"pickUpWardId\":\"151204\",\"returnAddress\":\"Gần cầu đảo ngọc\",\"returnProvinceName\":\"Phú Thọ\",\"returnProvinceId\":\"229\",\"returnDistrictName\":\"Huyện Thanh Thủy\",\"returnDistrictId\":\"2237\",\"returnWardName\":\"Xã Đoan Hạ\",\"returnWardId\":\"151204\",\"name\":\"shop vui vẻ\",\"phoneNumber\":\"0915047678\",\"email\":\"hung131119782002@gmail.com\",\"createdAt\":\"2024-04-19T05:14:03.712Z\",\"updatedAt\":\"2024-04-19T05:14:03.712Z\",\"createdBy\":\"shopOwner1\",\"updatedBy\":\"shopOwner1\",\"idOfShop\":\"1\",\"id\":\"4\"}"
     }
   }
 }

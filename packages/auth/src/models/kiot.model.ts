@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model({settings: {strict: false}})
-export class Product extends Entity {
+export class Kiot extends Entity {
   @property({
     type: 'string',
     id: true,
@@ -13,79 +13,29 @@ export class Product extends Entity {
     type: 'string',
     required: true,
   })
-  name: string;
+  idOfUser: string;
 
   @property({
     type: 'object',
-    required: true,
   })
-  image: object;
+  coverImage?: object;
+
+  @property({
+    type: 'object',
+  })
+  avatar?: object;
 
   @property({
     type: 'string',
     required: true,
   })
-  idOfCategory: string;
+  idOfArea: string;
 
   @property({
     type: 'string',
     required: true,
   })
-  idOfShop: string;
-
-  @property({
-    type: 'string',
-    required: false,
-  })
-  idOfKiot: string;
-
-  @property({
-    type: 'boolean',
-    required: true,
-  })
-  isOnlineProduct: boolean;
-
-  @property({
-    type: 'boolean',
-    required: true,
-  })
-  isKiotProduct: boolean;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  productDescription: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  productDetails: string;
-
-  @property({
-    type: 'number',
-    required: true,
-  })
-  price: number;
-
-  @property({
-    type: 'number',
-    required: true,
-  })
-  countInStock: number;
-
-  @property({
-    type: 'boolean',
-    required: true,
-  })
-  isBestSeller: boolean;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  cateName: string;
+  description: string;
 
   @property({
     type: 'string',
@@ -94,22 +44,118 @@ export class Product extends Entity {
   status: string;
 
   @property({
-    type: 'number',
+    type: 'object',
     required: true,
   })
-  weight: number;
+  IDcardImg: object;
+
+  @property({
+    type: 'object',
+    required: true,
+  })
+  BLicenseImg: object;
 
   @property({
     type: 'string',
     required: true,
   })
-  dimension: string;
+  pickUpAddress: string;
 
   @property({
-    type: 'number',
+    type: 'string',
     required: true,
   })
-  rating: number;
+  pickUpProvinceName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpProvinceId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpDistrictName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpDistrictId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpWardName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  pickUpWardId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnAddress: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnProvinceName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnProvinceId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnDistrictName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnDistrictId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnWardName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  returnWardId: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  name: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  phoneNumber: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  email: string;
 
   @property({
     type: 'date',
@@ -117,6 +163,11 @@ export class Product extends Entity {
   })
   createdAt: string;
 
+  @property({
+    type: 'date',
+    required: true,
+  })
+  updatedAt: string;
 
   @property({
     type: 'string',
@@ -126,15 +177,9 @@ export class Product extends Entity {
 
   @property({
     type: 'string',
-    required: false,
-  })
-  updatedBy: string;
-
-  @property({
-    type: 'date',
     required: true,
   })
-  updatedAt: string;
+  updatedBy: string;
 
   // Define well-known properties here
 
@@ -142,13 +187,13 @@ export class Product extends Entity {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
-  constructor(data?: Partial<Product>) {
+  constructor(data?: Partial<Kiot>) {
     super(data);
   }
 }
 
-export interface ProductRelations {
+export interface KiotRelations {
   // describe navigational properties here
 }
 
-export type ProductWithRelations = Product & ProductRelations;
+export type KiotWithRelations = Kiot & KiotRelations;

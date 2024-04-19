@@ -17,6 +17,12 @@ export class Employee extends Entity {
 
   @property({
     type: 'string',
+    required: false,
+  })
+  idOfKiot?: string;
+
+  @property({
+    type: 'string',
     required: true,
   })
   username: string;

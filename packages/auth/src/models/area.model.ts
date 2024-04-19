@@ -19,6 +19,12 @@ export class Area extends Entity {
     type: 'string',
     required: true,
   })
+  idOfShop: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
   provinceName: string;
 
   @property({

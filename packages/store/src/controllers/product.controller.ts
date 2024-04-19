@@ -74,6 +74,9 @@ export class ProductController {
       });
     });
     const {
+      idOfKiot,
+      isOnlineProduct,
+      isKiotProduct,
       name,
       productDescription,
       price,
@@ -93,27 +96,68 @@ export class ProductController {
     const cateName = category.cateName;
 
     const imageData: any = await uploadFile(data.files.image[0]);
-    const product = new Product({
-      name,
-      image: {
-        url: imageData.url,
-        filename: imageData.filename,
-      },
-      idOfCategory,
-      idOfShop,
-      productDescription,
-      productDetails,
-      price,
-      countInStock,
-      isBestSeller,
-      cateName,
-      status: 'active',
-      weight,
-      dimension,
-      rating: 0,
-    });
+    if (!isKiotProduct) {
+      const time = new Date().toISOString();
 
-    return this.productRepository.create(product);
+      const product = new Product({
+        name,
+        image: {
+          url: imageData.url,
+          filename: imageData.filename,
+        },
+        idOfCategory,
+        idOfShop,
+        productDescription,
+        productDetails,
+        price,
+        countInStock,
+        isBestSeller,
+        cateName,
+        status: 'active',
+        weight,
+        dimension,
+        rating: 0,
+        isOnlineProduct,
+        isKiotProduct,
+        createdAt: time,
+        updatedAt: time,
+        createdBy: `shop-${idOfShop}`,
+        updatedBy: `shop-${idOfShop}`,
+      });
+
+      const data = await this.productRepository.create(product);
+      return data;
+    } else {
+      const time = new Date().toISOString();
+      const product = new Product({
+        name,
+        image: {
+          url: imageData.url,
+          filename: imageData.filename,
+        },
+        idOfCategory,
+        idOfShop,
+        isOnlineProduct,
+        isKiotProduct,
+        idOfKiot,
+        productDescription,
+        productDetails,
+        price,
+        countInStock,
+        isBestSeller,
+        cateName,
+        status: 'active',
+        weight,
+        dimension,
+        rating: 0,
+        createdAt: time,
+        updatedAt: time,
+        createdBy: `shop-${idOfShop}`,
+        updatedBy: `shop-${idOfShop}`,
+      });
+      const data = await this.productRepository.create(product);
+      return data;
+    }
   }
 
   @get('/products/count')
@@ -202,49 +246,80 @@ export class ProductController {
       isBestSeller,
       weight,
       dimension,
-      status
+      status,
+      isKiotProduct,
+      isOnlineProduct,
+      idOfKiot,
     } = data.body;
 
     const category = await this.categoryRepository.findById(idOfCategory);
-    const oldImage: any = (await this.productRepository.findById(id)).image
+    const oldImage: any = (await this.productRepository.findById(id)).image;
 
-  
     if (!category) {
       return response.status(400).send('Category not found');
     }
 
     const cateName = category.cateName;
 
-    const imageData: any = await uploadFile(data.files.image[0]);
-    const product = new Product({
-      name,
-      image: {
-        url: imageData.url,
-        filename: imageData.filename,
-      },
-      idOfCategory,
-      idOfShop,
-      productDescription,
-      productDetails,
-      price,
-      countInStock,
-      isBestSeller,
-      cateName,
-      status,
-      weight,
-      dimension,
-    });
+    if (data.files == null) {
+      const imageData: any = await uploadFile(data.files.image[0]);
+      const time = new Date().toISOString();
+      const product = new Product({
+        name,
+        image: {
+          url: imageData.url,
+          filename: imageData.filename,
+        },
+        idOfCategory,
+        idOfShop,
+        isKiotProduct,
+        isOnlineProduct,
+        idOfKiot: isKiotProduct ? idOfKiot : null,
+        productDescription,
+        productDetails,
+        price,
+        countInStock,
+        isBestSeller,
+        cateName,
+        status,
+        weight,
+        dimension,
+        updatedAt: time,
+        updatedBy: `shop-${idOfShop}`,
+      });
 
-    const updateData = await this.productRepository.updateById(id, product);
+      await this.productRepository.updateById(id, product);
 
-    if (oldImage ) {
-      await deleteRemoteFile(oldImage.filename);
+      if (oldImage) {
+        await deleteRemoteFile(oldImage.filename);
+      }
+    } else {
+      const time = new Date().toISOString();
+      const product = new Product({
+        name,
+        idOfCategory,
+        idOfShop,
+        isKiotProduct,
+        isOnlineProduct,
+        idOfKiot: isKiotProduct ? idOfKiot : null,
+        productDescription,
+        productDetails,
+        price,
+        countInStock,
+        isBestSeller,
+        cateName,
+        status,
+        weight,
+        dimension,
+        updatedAt: time,
+        updatedBy: `shop-${idOfShop}`,
+      });
+
+      await this.productRepository.updateById(id, product);
     }
 
-    return this.productRepository.findById(id); 
-
+    return this.productRepository.findById(id);
   }
-
 
   @del('/products/{id}')
   @response(204, {

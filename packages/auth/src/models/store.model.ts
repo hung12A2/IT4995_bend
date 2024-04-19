@@ -14,6 +14,7 @@ export class Store extends Entity {
     required: true,
   })
   idOfUser: string;
+  
 
   @property({
     type: 'object',

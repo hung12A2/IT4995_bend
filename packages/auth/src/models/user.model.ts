@@ -15,6 +15,12 @@ export class User extends Entity {
   })
   idOfShop?: string;
 
+  @property({
+    type: 'string',
+    required: false,
+  })
+  idOfKiot?: string;
+
 
   @property({
     type: 'string',
