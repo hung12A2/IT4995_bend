@@ -11,6 +11,7 @@ import path from 'path';
 import {MySequence} from './sequence';
 import {RabbitMQService} from './services/rabbitMQService';
 import {NotificationRepository} from './repositories/notification.repository';
+import { NotificationForShopRepository, TransactionRepository, TransactionShopRepository } from './repositories';
 
 export {ApplicationConfig};
 
@@ -50,12 +51,30 @@ export class NotificaitonApllication extends BootMixin(
 
   public async startRabbit() {
     const newRabbitMQService = RabbitMQService.getInstance();
-    newRabbitMQService.consumeFromTopicExchange('order', 'add', async msg => {
+    newRabbitMQService.consumeFromTopicExchange('notification', 'create', async msg => {
       const data = JSON.parse(msg.content.toString());
-      if (!data.isViewed) {
-        data.isViewed = false;
-      }
       const notificationRepository =await this.getRepository(NotificationRepository);
+      const data2 = await notificationRepository.create(data);
+      console.log (data2)
+    });
+
+    newRabbitMQService.consumeFromTopicExchange('notificationForShop', 'create', async msg => {
+      const data = JSON.parse(msg.content.toString());
+      const notificationRepository =await this.getRepository(NotificationForShopRepository);
+      const data2 = await notificationRepository.create(data);
+      console.log (data2)
+    });
+
+    newRabbitMQService.consumeFromTopicExchange('transaction', 'create', async msg => {
+      const data = JSON.parse(msg.content.toString());
+      const notificationRepository =await this.getRepository(TransactionRepository);
+      const data2 = await notificationRepository.create(data);
+      console.log (data2)
+    });
+
+    newRabbitMQService.consumeFromTopicExchange('transactionForShop', 'create', async msg => {
+      const data = JSON.parse(msg.content.toString());
+      const notificationRepository =await this.getRepository(TransactionShopRepository);
       const data2 = await notificationRepository.create(data);
       console.log (data2)
     });

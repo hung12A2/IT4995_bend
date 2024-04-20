@@ -19,6 +19,7 @@ import {
   RestBindings,
   Request,
   Response,
+  parseJson,
 } from '@loopback/rest';
 import {Order} from '../models';
 import {
@@ -87,7 +88,7 @@ export class OrderKiotController {
 
   newRabbitMQService = RabbitMQService.getInstance();
 
-  @post('/orders/orderInfor/{idOfUser}/order-id/{id}')
+  @post('/ordersKiot/orderInfor/{idOfUser}/order-id/{id}')
   @response(200, {description: 'Order model instance'})
   async orderInfor(
     @param.path.string('idOfUser') idOfUser: string,
@@ -99,7 +100,54 @@ export class OrderKiotController {
     return order;
   }
 
-  @post('/orders/inTransit/{idOfShop}/order-id/{id}')
+  @post('/ordersKiot/deliverd/{idOfShop}/order-id/{id}')
+  @response(200, {
+    description: 'Order model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Order)}},
+  })
+  async deliverd(
+    @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('id') id: string,
+  ): Promise<any> {
+    try {
+      const order: any = await this.orderKiotRepository.find({
+        where: {id, idOfShop},
+      });
+      if (order.length == 1) {
+        await this.orderKiotRepository.updateById(id, {
+          status: 'deliverd',
+          updatedAt: new Date().toISOString(),
+        });
+
+        const dataNoti = JSON.stringify({
+          idOfUser: order[0].idOfUser,
+          content: `Don hang ${id} da den noi`,
+          image: order[0].image,
+          createdAt: new Date().toISOString(),
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notification',
+          'create',
+          dataNoti,
+        );
+
+        return {
+          message: 'Success',
+        };
+      } else {
+        return {
+          message: 'Error not found order',
+        };
+      }
+    } catch (error) {
+      return {
+        message: `error ${error}`,
+      };
+    }
+  }
+
+  @post('/ordersKiot/inTransit/{idOfShop}/order-id/{id}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
@@ -117,6 +165,20 @@ export class OrderKiotController {
           status: 'inTransit',
           updatedAt: new Date().toISOString(),
         });
+
+        const dataNoti = JSON.stringify({
+          idOfUser: order[0].idOfUser,
+          content: `Don hang ${id} dang tren duong van chuyen`,
+          image: order[0].image,
+          createdAt: new Date().toISOString(),
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notification',
+          'create',
+          dataNoti,
+        );
+
         return {
           message: 'Success',
         };
@@ -132,7 +194,7 @@ export class OrderKiotController {
     }
   }
 
-  @post('/orders/prepared/{idOfShop}/order-id/{id}')
+  @post('/ordersKiot/prepared/{idOfShop}/order-id/{id}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
@@ -150,6 +212,20 @@ export class OrderKiotController {
           status: 'prepared',
           updatedAt: new Date().toISOString(),
         });
+
+        const dataNoti = JSON.stringify({
+          idOfUser: order[0].idOfUser,
+          content: `Don hang ${id} da duoc chuan bi`,
+          image: order[0].image,
+          createdAt: new Date().toISOString(),
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notification',
+          'create',
+          dataNoti,
+        );
+
         return {
           message: 'Success',
         };
@@ -165,7 +241,7 @@ export class OrderKiotController {
     }
   }
 
-  @post('/orders/rejected/{idOfShop}/order-id/{id}')
+  @post('/ordersKiot/rejected/{idOfShop}/order-id/{id}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
@@ -193,7 +269,48 @@ export class OrderKiotController {
             {amountMoney: oldWallet?.amountMoney + order[0].priceOfAll},
             {idOfUser},
           );
+
+          const dataNoti = JSON.stringify({
+            idOfUser,
+            content: `Don hang ${id} da bi huy, nhan lai ${order[0].priceOfAll}`,
+            image: order[0].image,
+            createdAt: new Date().toISOString(),
+          });
+
+          (await this.newRabbitMQService).sendMessageToTopicExchange(
+            'notification',
+            'create',
+            dataNoti,
+          );
+
+          const dataTransaction = JSON.stringify({
+            idOfUser,
+            amountOfMoney: order[0].priceOfAll,
+            type: 'receive',
+            createdAt: new Date().toISOString(),
+            image: order[0].image,
+            idOfOrder: order[0].idOrder,
+          });
+
+          (await this.newRabbitMQService).sendMessageToTopicExchange(
+            'transaction',
+            'create',
+            dataTransaction,
+          );
         }
+
+        const dataNoti = JSON.stringify({
+          idOfUser,
+          content: `Don hang ${id} da bi huy, nhan lai ${order[0].priceOfAll}`,
+          image: order[0].image,
+          createdAt: new Date().toISOString(),
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notification',
+          'create',
+          dataNoti,
+        );
         return {
           message: 'Success',
         };
@@ -209,7 +326,7 @@ export class OrderKiotController {
     }
   }
 
-  @post('/orders/accepted/{idOfShop}/order-id/{id}')
+  @post('/ordersKiot/accepted/{idOfShop}/order-id/{id}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
@@ -227,6 +344,20 @@ export class OrderKiotController {
           status: 'accepted',
           updatedAt: new Date().toISOString(),
         });
+
+        const dataNoti = JSON.stringify({
+          idOfUser: order[0].idOfUser,
+          content: `Don hang ${id} da duoc chap nhan`,
+          image: order[0].image,
+          createdAt: new Date().toISOString(),
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notification',
+          'create',
+          dataNoti,
+        );
+
         return {
           message: 'Success',
         };
@@ -242,7 +373,7 @@ export class OrderKiotController {
     }
   }
 
-  @post('/orders/received/{idOfUser}/order-id/{id}')
+  @post('/ordersKiot/received/{idOfUser}/order-id/{id}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
@@ -270,6 +401,34 @@ export class OrderKiotController {
               oldWallet?.amountMoney + order.codAmount - order.totalFee,
           },
           {idOfShop: order.idOfShop},
+        );
+
+        const dataNoti = JSON.stringify({
+          idOfShop: order.idOfShop,
+          content: `Don hang ${id} da duoc nhan, nhan duoc ${order.codAmount}`,
+          image: order.image,
+          createdAt: new Date().toISOString(),
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notificationForShop',
+          'create',
+          dataNoti,
+        );
+
+        const dataTransaction = JSON.stringify({
+          idOfShop: order.idOfShop,
+          amountOfMoney: order.codAmount,
+          type: 'receive',
+          createdAt: new Date().toISOString(),
+          image: order.image,
+          idOfOrder: order.id,
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'transactionForShop',
+          'create',
+          dataTransaction,
         );
 
         const idOfBuyer = order.idOfUser;
@@ -309,13 +468,13 @@ export class OrderKiotController {
     }
   }
 
-  @post('/orders/returned/{idOfShop}/order-id/{id}')
+  @post('/ordersKiot/returned/{idOfUser}/order-id/{id}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
   })
   async returned(
-    @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('idOfUser') idOfUser: string,
     @param.path.string('id') id: string,
     @requestBody({
       description: 'multipart/form-data value.',
@@ -333,9 +492,9 @@ export class OrderKiotController {
   ): Promise<any> {
     try {
       const order: any = await this.orderKiotRepository.find({
-        where: {id, idOfShop},
+        where: {id, idOfUser},
       });
-      const idOfUser = order[0].idOfUser;
+      const idOfShop = order[0].idOfShop;
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'returned',
@@ -350,7 +509,47 @@ export class OrderKiotController {
             {amountMoney: oldWallet?.amountMoney + order[0].priceOfAll},
             {idOfUser},
           );
+
+          const dataNoti = JSON.stringify({
+            idOfUser,
+            content: `Don hang ${id} da bi hoan tra, nhan lai ${order[0].priceOfAll}`,
+            image: order[0].image,
+            createdAt: new Date().toISOString(),
+          });
+
+          (await this.newRabbitMQService).sendMessageToTopicExchange(
+            'notification',
+            'create',
+            dataNoti,
+          );
+
+          const dataTransaction = JSON.stringify({
+            idOfUser,
+            amountOfMoney: order[0].priceOfAll,
+            type: 'receive',
+            createdAt: new Date().toISOString(),
+            image: order[0].image,
+            idOfOrder: order[0].idOrder,
+          });
+
+          (await this.newRabbitMQService).sendMessageToTopicExchange(
+            'transaction',
+            'create',
+            dataTransaction,
+          );
         }
+        const dataNoti = JSON.stringify({
+          idOfShop,
+          content: `Don hang ${id} da bi hoan tra`,
+          image: order[0].image,
+          createdAt: new Date().toISOString(),
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notificationForShop',
+          'create',
+          dataNoti,
+        );
 
         const data: any = await new Promise<object>((resolve, reject) => {
           cpUpload(request, response, (err: unknown) => {
@@ -427,7 +626,48 @@ export class OrderKiotController {
             {amountMoney: oldWallet?.amountMoney + order[0].priceOfAll},
             {idOfUser},
           );
+
+          const dataNoti = JSON.stringify({
+            idOfUser: order[0].idOfUser,
+            content: `Don hang hoa toc ${id} da bi huy, nhan lai ${order[0].priceOfAll}`,
+            image: order[0].image,
+            createdAt: new Date().toISOString(),
+          });
+
+          (await this.newRabbitMQService).sendMessageToTopicExchange(
+            'notification',
+            'create',
+            dataNoti,
+          );
+
+          const dataTransaction = JSON.stringify({
+            idOfUser,
+            amountOfMoney: order[0].priceOfAll,
+            type: 'receive',
+            createdAt: new Date().toISOString(),
+            image: order[0].image,
+            idOfOrder: order[0].idOrder,
+          });
+
+          (await this.newRabbitMQService).sendMessageToTopicExchange(
+            'transaction',
+            'create',
+            dataTransaction,
+          );
         }
+
+        const dataNoti = JSON.stringify({
+          idOfShop: order[0].idOfShop,
+          content: `Don hang hoa toc ${id} da bi huy`,
+          image: order[0].image,
+          createdAt: new Date().toISOString(),
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notificationForShop',
+          'create',
+          dataNoti,
+        );
 
         return {
           message: 'Success',
@@ -597,6 +837,35 @@ export class OrderKiotController {
         });
       }),
     );
+    const dataNoti = JSON.stringify({
+      idOfShop,
+      content: `Đơn hàng ${idOrder} đã được tạo thành công voi gia tien ${priceOfAll}`,
+      image: imageOrder,
+      createdAt: new Date().toISOString(),
+    });
+
+    (await this.newRabbitMQService).sendMessageToTopicExchange(
+      'notificationForShop',
+      'create',
+      dataNoti,
+    );
+
+    if (paymentMethod == 'payOnline') {
+      const dataTransaction = JSON.stringify({
+        idOfUser,
+        amountOfMoney: priceOfAll,
+        type: 'send',
+        createdAt: new Date().toISOString(),
+        image: imageOrder,
+        idOfOrder: idOrder,
+      });
+
+      (await this.newRabbitMQService).sendMessageToTopicExchange(
+        'transaction',
+        'create',
+        dataTransaction,
+      );
+    }
 
     return dataOrder;
   }

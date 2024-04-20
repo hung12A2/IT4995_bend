@@ -47,19 +47,6 @@ export class NotificationController {
     return this.notificationRepository.create(notification);
   }
 
-  @get('/notifications/start')
-  @response(200, {
-    description: 'Notification model instance',
-    content: {
-      'application/json': {
-        schema: getModelSchemaRef(Notification),
-      },
-    },
-  })
-  async start(): Promise<void> {
-    console.log(`notification start`);
-  }
-
   @get('/notifications')
   @response(200, {
     description: 'Array of Notification model instances',

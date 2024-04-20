@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model({settings: {strict: false}})
-export class Notification extends Entity {
+export class Transaction extends Entity {
   @property({
     type: 'string',
     id: true,
@@ -16,10 +16,23 @@ export class Notification extends Entity {
   idOfUser: string;
 
   @property({
+    type: 'number',
+    required: true,
+  })
+  amountOfMoney: number;
+
+  @property({
     type: 'string',
     required: true,
   })
-  content: string;
+  type: string;
+
+
+  @property({
+    type: 'date',
+    required: true,
+  })
+  createdAt: string;
 
   @property({
     type: 'object',
@@ -28,18 +41,12 @@ export class Notification extends Entity {
   image: object;
 
   @property({
-    type: 'boolean',
-    required: false,
-    default: false,
-  })
-  isViewed: boolean;
-
-  @property({
-    type: 'date',
+    type: 'string',
     required: true,
   })
-  createdAt: string;
+  idOfOrder: string;
 
+  
 
   // Define well-known properties here
 
@@ -47,13 +54,13 @@ export class Notification extends Entity {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
-  constructor(data?: Partial<Notification>) {
+  constructor(data?: Partial<Transaction>) {
     super(data);
   }
 }
 
-export interface NotificationRelations {
+export interface TransactionRelations {
   // describe navigational properties here
 }
 
-export type NotificationWithRelations = Notification & NotificationRelations;
+export type TransactionWithRelations = Transaction & TransactionRelations;

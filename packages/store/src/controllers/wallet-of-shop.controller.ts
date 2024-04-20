@@ -22,12 +22,15 @@ import {
 import {WalletOfShop} from '../models';
 import {WalletOfShopRepository} from '../repositories';
 import {inject} from '@loopback/core';
+import { RabbitMQService } from '../services/rabbitMqServices';
 
 export class WalletOfShopController {
   constructor(
     @repository(WalletOfShopRepository)
     public walletOfShopRepository: WalletOfShopRepository,
   ) {}
+
+  newRabbitMQService = RabbitMQService.getInstance();
 
   @post('/wallet-of-shops/{idOfShop}')
   @response(200, {

@@ -28,6 +28,7 @@ import {
   ProductsInCartRepository,
   ProductsInOrderRepository,
   ReturnOrderRepository,
+  WalletOfShopRepository,
   WalletRepository,
 } from '../repositories';
 import axios from 'axios';
@@ -60,6 +61,8 @@ export class OrderController {
     private response: Response,
     @inject(RestBindings.Http.REQUEST)
     private request: Request,
+    @repository(WalletOfShopRepository)
+    public walletOfShopRepository: WalletOfShopRepository,
     @repository(OrderRepository)
     public orderRepository: OrderRepository,
     @repository(ProductsInCartRepository)
@@ -235,20 +238,20 @@ export class OrderController {
     }
   }
 
-  @post('/orders/rejected/{idOfShop}/order-id/{id}')
+  @post('/orders/rejected/{idOfUser}/order-id/{id}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
   })
   async rejected(
-    @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('idOfUser') idOfUser: string,
     @param.path.string('id') id: string,
   ): Promise<any> {
     try {
       const order: any = await this.orderRepository.find({
-        where: {id, idOfShop},
+        where: {id, idOfUser},
       });
-      const idOfUser = order[0].idOfUser;
+      const idOfShop = order[0].idOfShop;
       if (order.length == 1) {
         await this.orderRepository.updateById(id, {
           status: 'rejected',
@@ -310,13 +313,13 @@ export class OrderController {
     }
   }
 
-  @post('/orders/received/{idOfShop}/order-id/{id}')
+  @post('/orders/received/{idOfUser}/order-id/{id}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
   })
   async received(
-    @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('idOfUser') idOfUser: string,
     @param.path.string('id') id: string,
     @requestBody({
       description: 'Order model instance',
@@ -337,18 +340,18 @@ export class OrderController {
 
     try {
       const order: any = await this.orderRepository.findOne({
-        where: {id, idOfShop},
+        where: {id, idOfUser},
       });
       if (order) {
         await this.orderRepository.updateById(id, {
           status: 'received',
           updatedAt: new Date(),
         });
-        const oldWallet = await this.walletRepository.findOne({
+        const oldWallet = await this.walletOfShopRepository.findOne({
           where: {idOfUser: idOfOwnerShop},
         });
 
-        await this.walletRepository.updateAll(
+        await this.walletOfShopRepository.updateAll(
           {
             amountMoney:
               oldWallet?.amountMoney + order.codAmount - order.totalFee,
@@ -507,7 +510,45 @@ export class OrderController {
             {amountMoney: oldWallet?.amountMoney + order[0].priceOfAll},
             {idOfUser},
           );
+
+          const dataTransaction = JSON.stringify({
+            idOfUser,
+            amountOfMoney: order[0].priceOfAll,
+            type: 'refund',
+            createdAt: new Date().toISOString(),
+            idOfOrder: id,
+          });
+
+          (await this.newRabbitMQService).sendMessageToTopicExchange(
+            'transaction',
+            'create',
+            dataTransaction,
+          );
+
+          const dataNoti = JSON.stringify({
+            idOfUser,
+            content: `Đơn hàng ${id} đã được hủy và tiền đã được hoàn lại vào tài khoản của bạn`,
+            createdAt: new Date().toISOString(),
+          });
+
+          (await this.newRabbitMQService).sendMessageToTopicExchange(
+            'notification',
+            'create',
+            dataNoti,
+          );
         }
+
+        const dataNoti = JSON.stringify({
+          idOfShop: order[0].idOfShop,
+          content: `Đơn hàng ${id} đã bi huy`,
+          createdAt: new Date().toISOString(),
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notificationForShop',
+          'create',
+          dataNoti,
+        );
 
         return {
           message: 'Success',
@@ -683,6 +724,35 @@ export class OrderController {
       }),
     );
 
+    const dataNoti = JSON.stringify({
+      idOfShop,
+      content: `Đơn hàng ${idOrder} đã được tạo thành công voi gia tien ${priceOfAll}`,
+      image: imageOrder,
+      createdAt: new Date().toISOString(),
+    });
+
+    (await this.newRabbitMQService).sendMessageToTopicExchange(
+      'notificationForShop',
+      'create',
+      dataNoti,
+    );
+
+    if (paymentMethod == 'payOnline') {
+      const dataTransaction = JSON.stringify({
+        idOfUser,
+        amountOfMoney: priceOfAll,
+        type: 'send',
+        createdAt: new Date().toISOString(),
+        image: imageOrder,
+        idOfOrder: idOrder,
+      });
+
+      (await this.newRabbitMQService).sendMessageToTopicExchange(
+        'transaction',
+        'create',
+        dataTransaction,
+      );
+    }
     return dataOrder;
   }
 

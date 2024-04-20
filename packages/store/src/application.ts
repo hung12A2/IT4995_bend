@@ -47,6 +47,9 @@ export class StoreApplication extends BootMixin(
 
   public async setupRabbitMQ() {
     const newRabbit = await RabbitMQService.getInstance()
-    newRabbit.setupTopicExchange('order');
+    newRabbit.setupTopicExchange('notification');
+    newRabbit.setupTopicExchange('notificationForShop');
+    newRabbit.setupTopicExchange('transaction');
+    newRabbit.setupTopicExchange('transactionForShop');
   }
 }
