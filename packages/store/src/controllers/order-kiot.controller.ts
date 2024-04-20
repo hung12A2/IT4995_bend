@@ -23,11 +23,14 @@ import {
 import {Order} from '../models';
 import {
   BoughtProductRepository,
+  OrderKiotRepository,
   OrderRepository,
   ProductRepository,
   ProductsInCartRepository,
+  ProductsInOrderKiotRepository,
   ProductsInOrderRepository,
   ReturnOrderRepository,
+  WalletOfShopRepository,
   WalletRepository,
 } from '../repositories';
 import axios from 'axios';
@@ -54,12 +57,14 @@ var cpUpload = upload.fields([{name: 'images'}]);
 // service_id: 100039
 // service_type_id: 5
 
-export class OrderController {
+export class OrderKiotController {
   constructor(
     @inject(RestBindings.Http.RESPONSE)
     private response: Response,
     @inject(RestBindings.Http.REQUEST)
     private request: Request,
+    @repository(OrderKiotRepository)
+    public orderKiotRepository: OrderKiotRepository,
     @repository(OrderRepository)
     public orderRepository: OrderRepository,
     @repository(ProductsInCartRepository)
@@ -68,12 +73,16 @@ export class OrderController {
     public productRepository: ProductRepository,
     @repository(ProductsInOrderRepository)
     public productsInOrderRepository: ProductsInOrderRepository,
+    @repository(ProductsInOrderKiotRepository)
+    public productsInOrderKiotRepository: ProductsInOrderKiotRepository,
     @repository(WalletRepository)
     public walletRepository: WalletRepository,
     @repository(BoughtProductRepository)
     public boughtProductRepository: BoughtProductRepository,
     @repository(ReturnOrderRepository)
     public returnOrderRepository: ReturnOrderRepository,
+    @repository(WalletOfShopRepository)
+    public walletOfShopRepository: WalletOfShopRepository,
   ) {}
 
   newRabbitMQService = RabbitMQService.getInstance();
@@ -84,145 +93,66 @@ export class OrderController {
     @param.path.string('idOfUser') idOfUser: string,
     @param.path.string('id') id: string,
   ): Promise<any> {
-    const order: any = await this.orderRepository.find({where: {id, idOfUser}});
-    if (order.length == 1) {
-      const clientOrderCode = order[0].clientOrderCode;
-      const dataRaw = {
-        client_order_code: clientOrderCode,
+    const order: any = await this.orderKiotRepository.find({
+      where: {id, idOfUser},
+    });
+    return order;
+  }
+
+  @post('/orders/inTransit/{idOfShop}/order-id/{id}')
+  @response(200, {
+    description: 'Order model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Order)}},
+  })
+  async inTransit(
+    @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('id') id: string,
+  ): Promise<any> {
+    try {
+      const order: any = await this.orderKiotRepository.find({
+        where: {id, idOfShop},
+      });
+      if (order.length == 1) {
+        await this.orderKiotRepository.updateById(id, {
+          status: 'inTransit',
+          updatedAt: new Date().toISOString(),
+        });
+        return {
+          message: 'Success',
+        };
+      } else {
+        return {
+          message: 'Error not found order',
+        };
+      }
+    } catch (error) {
+      return {
+        message: `error ${error}`,
       };
-
-      const response = await axios.post(
-        'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail-by-client-code',
-        dataRaw,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Token: '33108a16-e157-11ee-8bfa-8a2dda8ec551',
-          },
-        },
-      );
-
-      return response.data;
     }
   }
 
   @post('/orders/prepared/{idOfShop}/order-id/{id}')
-  @response(200, {description: 'Order model instance'})
+  @response(200, {
+    description: 'Order model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Order)}},
+  })
   async prepared(
     @param.path.string('idOfShop') idOfShop: string,
     @param.path.string('id') id: string,
   ): Promise<any> {
-    const order: any = await this.orderRepository.find({where: {id, idOfShop}});
-    const productsInOrder = await this.productsInOrderRepository.find({
-      where: {idOfOrder: id},
-    });
-
-    const productsInOrderList = await Promise.all(
-      productsInOrder.map(async (productInCart: any) => {
-        const idProduct = productInCart.idOfProduct;
-        const product: any = await this.productRepository.findById(idProduct);
-        const {name, price, image, weight} = product;
-        const dimensionList = product.dimension.split('|');
-        const length = +dimensionList[0];
-        const width = +dimensionList[1];
-        const height = +dimensionList[2];
-        return {
-          name,
-          price,
-          quantity: +productInCart.quantity,
-          weight: Math.round(weight),
-          length,
-          width,
-          height,
-        };
-      }),
-    );
-
     try {
+      const order: any = await this.orderKiotRepository.find({
+        where: {id, idOfShop},
+      });
       if (order.length == 1) {
-        const orderData = order[0];
-        const {
-          fromName,
-          toName,
-          fromPhone,
-          toPhone,
-          fromAddress,
-          toAddress,
-          fromProvince,
-          toProvince,
-          fromDistrict,
-          toDistrict,
-          fromWard,
-          toWard,
-          serviceId,
-          serviceTypeId,
-          paymentTypeId,
-          content,
-          codAmount,
-          note,
-          requiredNote,
-          weight,
-          dimension,
-          insuranceValue,
-          clientOrderCode,
-        } = orderData;
-        const fromProvinceName = fromProvince.split('-')[0].trim();
-        const fromDistrictName = fromDistrict.split('-')[0].trim();
-        const fromWardName = fromWard.split('-')[0].trim();
-        const toProvinceId = toProvince.split('-')[1].trim();
-        const toDistrictId = toDistrict.split('-')[1].trim();
-        const toWardCode = toWard.split('-')[1].trim();
-        const length = +dimension.split('|')[0];
-        const width = +dimension.split('|')[1];
-        const height = +dimension.split('|')[2];
-
-        const dataRaw = {
-          payment_type_id: paymentTypeId,
-          note,
-          required_note: requiredNote,
-          from_name: fromName,
-          from_phone: fromPhone,
-          from_address: fromAddress,
-          from_province_name: fromProvinceName,
-          from_district_name: fromDistrictName,
-          from_ward_name: fromWardName,
-          to_name: toName,
-          to_phone: toPhone,
-          to_address: toAddress,
-          to_district_id: toDistrictId,
-          to_ward_code: toWardCode,
-          cod_amount: codAmount,
-          content,
-          weight,
-          length,
-          width,
-          height,
-          insurance_value: insuranceValue,
-          service_id: serviceId,
-          service_type_id: serviceTypeId,
-          client_order_code: clientOrderCode,
-          items: productsInOrderList,
-        };
-
-        const response = await axios.post(
-          'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create',
-          dataRaw,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Token: '33108a16-e157-11ee-8bfa-8a2dda8ec551',
-              ShopId: '191006',
-            },
-          },
-        );
-
-        await this.orderRepository.updateById(id, {
-          totalFee: response.data.data.total_fee,
+        await this.orderKiotRepository.updateById(id, {
           status: 'prepared',
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString(),
         });
-
-        return response.data;
+        return {
+          message: 'Success',
+        };
       } else {
         return {
           message: 'Error not found order',
@@ -245,14 +175,14 @@ export class OrderController {
     @param.path.string('id') id: string,
   ): Promise<any> {
     try {
-      const order: any = await this.orderRepository.find({
+      const order: any = await this.orderKiotRepository.find({
         where: {id, idOfShop},
       });
       const idOfUser = order[0].idOfUser;
       if (order.length == 1) {
-        await this.orderRepository.updateById(id, {
+        await this.orderKiotRepository.updateById(id, {
           status: 'rejected',
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString(),
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -289,11 +219,13 @@ export class OrderController {
     @param.path.string('id') id: string,
   ): Promise<any> {
     try {
-      const order = await this.orderRepository.find({where: {id, idOfShop}});
+      const order = await this.orderKiotRepository.find({
+        where: {id, idOfShop},
+      });
       if (order.length == 1) {
-        await this.orderRepository.updateById(id, {
+        await this.orderKiotRepository.updateById(id, {
           status: 'accepted',
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString(),
         });
         return {
           message: 'Success',
@@ -310,50 +242,34 @@ export class OrderController {
     }
   }
 
-  @post('/orders/received/{idOfShop}/order-id/{id}')
+  @post('/orders/received/{idOfUser}/order-id/{id}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
   })
   async received(
-    @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('idOfUser') idOfUser: string,
     @param.path.string('id') id: string,
-    @requestBody({
-      description: 'Order model instance',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              idOfOwnerShop: {type: 'string'},
-            },
-          },
-        },
-      },
-    })
-    data: any,
   ): Promise<any> {
-    const {idOfOwnerShop} = data;
-
     try {
-      const order: any = await this.orderRepository.findOne({
-        where: {id, idOfShop},
+      const order: any = await this.orderKiotRepository.findOne({
+        where: {id, idOfUser},
       });
       if (order) {
-        await this.orderRepository.updateById(id, {
+        await this.orderKiotRepository.updateById(id, {
           status: 'received',
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString(),
         });
-        const oldWallet = await this.walletRepository.findOne({
-          where: {idOfUser: idOfOwnerShop},
+        const oldWallet = await this.walletOfShopRepository.findOne({
+          where: {idOfShop: order.idOfShop},
         });
 
-        await this.walletRepository.updateAll(
+        await this.walletOfShopRepository.updateAll(
           {
             amountMoney:
               oldWallet?.amountMoney + order.codAmount - order.totalFee,
           },
-          {idOfUser: idOfOwnerShop},
+          {idOfShop: order.idOfShop},
         );
 
         const idOfBuyer = order.idOfUser;
@@ -373,6 +289,7 @@ export class OrderController {
               idOfUser,
               createAt,
               quantity,
+              isKiot: true,
             });
           }),
         );
@@ -415,14 +332,14 @@ export class OrderController {
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<any> {
     try {
-      const order: any = await this.orderRepository.find({
+      const order: any = await this.orderKiotRepository.find({
         where: {id, idOfShop},
       });
       const idOfUser = order[0].idOfUser;
       if (order.length == 1) {
-        await this.orderRepository.updateById(id, {
+        await this.orderKiotRepository.updateById(id, {
           status: 'returned',
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString(),
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -465,6 +382,7 @@ export class OrderController {
           idOfShop,
           reason,
           images: imagesData,
+          isKiot: true,
         });
 
         return {
@@ -482,7 +400,7 @@ export class OrderController {
     }
   }
 
-  @post('/orders/canceled/{idOfUser}/order-id/{id}')
+  @post('/ordersOfKiot/canceled/{idOfUser}/order-id/{id}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
@@ -492,11 +410,13 @@ export class OrderController {
     @param.path.string('id') id: string,
   ): Promise<any> {
     try {
-      const order = await this.orderRepository.find({where: {id, idOfUser}});
+      const order = await this.orderKiotRepository.find({
+        where: {id, idOfUser},
+      });
       if (order.length == 1) {
-        await this.orderRepository.updateById(id, {
+        await this.orderKiotRepository.updateById(id, {
           status: 'canceled',
-          updatedAt: new Date(),
+          updatedAt: new Date().toISOString(),
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -524,12 +444,13 @@ export class OrderController {
     }
   }
 
-  @post('/orders/create/{idOfUser}/shop/{idOfShop}')
+  @post('/ordersOfKiot/create/{idOfUser}/shop/{idOfShop}/kiot/{idOfKiot}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
   })
   async create(
+    @param.path.string('idOfKiot') idOfKiot: string,
     @param.path.string('idOfUser') idOfUser: string,
     @param.path.string('idOfShop') idOfShop: string,
     @requestBody({
@@ -552,8 +473,6 @@ export class OrderController {
       toDistrict,
       fromWard,
       toWard,
-      serviceId,
-      serviceTypeId,
       content,
       priceOfAll,
       paymentMethod,
@@ -613,11 +532,8 @@ export class OrderController {
     heightBox = Math.round(heightBox);
 
     const dimension = `${lengthBox}|${widthBox}|${heightBox}`;
-    const clientOrderCode =
-      'GHN' +
-      Math.floor(Math.random() * 10000)
-        .toString()
-        .padStart(4, '0');
+
+    const time = new Date().toISOString();
 
     const NewOrder: any = {
       fromName,
@@ -632,28 +548,26 @@ export class OrderController {
       toDistrict,
       fromWard,
       toWard,
-      serviceId,
-      serviceTypeId,
-      paymentTypeId: 2,
       content,
       codAmount: paymentMethod == 'cod' ? priceOfAll : 0,
       note,
       requiredNote,
+      idOfKiot,
       idOfShop,
       idOfUser,
       weight: Math.round(weightBox),
       dimension,
       insuranceValue,
-      clientOrderCode,
       status: 'pending',
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: time,
+      updatedAt: time,
+      createdBy: `user-${idOfUser}`,
+      updatedBy: `user-${idOfUser}`,
       priceOfAll,
       paymentMethod,
       image: imageOrder,
     };
 
-    const dataOrder = await this.orderRepository.create(NewOrder);
     const oldWallet: any = await this.walletRepository.findOne({
       where: {idOfUser},
     });
@@ -670,12 +584,13 @@ export class OrderController {
         );
       }
     }
+    const dataOrder = await this.orderKiotRepository.create(NewOrder);
 
     const idOrder = dataOrder.id;
     await Promise.all(
       await items.map(async (item: any) => {
         const idProduct = item.idOfProduct;
-        await this.productsInOrderRepository.create({
+        await this.productsInOrderKiotRepository.create({
           idOfOrder: idOrder,
           idOfProduct: idProduct,
           quantity: item.quantity,
@@ -684,50 +599,6 @@ export class OrderController {
     );
 
     return dataOrder;
-  }
-
-  @post('/orders/service')
-  @response(200, {
-    description: 'get service from - to district',
-    content: {'application/json': {schema: {}}},
-  })
-  async getService(
-    @requestBody({
-      content: {
-        'application/json': {},
-      },
-    })
-    req: any,
-  ): Promise<any> {
-    const {fromDistrict, toDistrict} = req;
-    const dataRaw = {
-      from_district: +fromDistrict,
-      to_district: +toDistrict,
-      shop_id: 191006,
-    };
-
-    try {
-      const response = await axios.post(
-        'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services',
-        dataRaw,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Token: '33108a16-e157-11ee-8bfa-8a2dda8ec551',
-          },
-        },
-      );
-      if (response.status == 200) {
-        const data = response.data.data;
-        return data;
-      } else {
-        return {
-          message: 'Error when get data from GHN',
-        };
-      }
-    } catch (error) {
-      console.error(`Error: ${error}`);
-    }
   }
 
   //get All for admin
@@ -743,61 +614,7 @@ export class OrderController {
       },
     },
   })
-  async find(@param.filter(Order) filter?: Filter<Order>): Promise<Order[]> {
-    return this.orderRepository.find(filter);
-  }
-
-  //get All for user
-  @get('/orders/{idOfUser}')
-  @response(200, {
-    description: 'Array of Order model instances',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'array',
-          items: getModelSchemaRef(Order, {includeRelations: true}),
-        },
-      },
-    },
-  })
-  async findByUser(
-    @param.path.string('idOfUser') idOfUser: string,
-  ): Promise<Order[]> {
-    return this.orderRepository.find({where: {idOfUser}});
-  }
-
-  @get('/orders/{id}')
-  @response(200, {
-    description: 'Order model instance',
-    content: {
-      'application/json': {
-        schema: getModelSchemaRef(Order, {includeRelations: true}),
-      },
-    },
-  })
-  async findById(
-    @param.path.string('id') id: string,
-    @param.filter(Order, {exclude: 'where'})
-    filter?: FilterExcludingWhere<Order>,
-  ): Promise<Order> {
-    return this.orderRepository.findById(id, filter);
-  }
-
-  @patch('/orders/{id}')
-  @response(204, {
-    description: 'Order PATCH success',
-  })
-  async updateById(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Order, {partial: true}),
-        },
-      },
-    })
-    order: Order,
-  ): Promise<void> {
-    await this.orderRepository.updateById(id, order);
+  async find(@param.filter(Order) filter?: Filter<Order>): Promise<any> {
+    return this.orderKiotRepository.find(filter);
   }
 }

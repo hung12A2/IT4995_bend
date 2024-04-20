@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model({settings: {strict: false}})
-export class RatingProduct extends Entity {
+export class ProductsInOrderKiot extends Entity {
   @property({
     type: 'string',
     id: true,
@@ -22,35 +22,10 @@ export class RatingProduct extends Entity {
   idOfProduct: string;
 
   @property({
-    type: 'string',
-    required: true,
-  })
-  idOfUser: string;
-
-  @property({
     type: 'number',
     required: true,
   })
-  rating: number;
-
-  @property({
-    type: 'boolean',
-    required: true,
-  })
-  isDeleted: boolean;
-
-  @property({
-    type: 'boolean',
-    required: false,
-    default: false,
-  })
-  isKiot: boolean;
-
-  @property({
-    type: 'string',
-    default: '',
-  })
-  comment?: string;
+  quantity: number;
 
   // Define well-known properties here
 
@@ -58,13 +33,13 @@ export class RatingProduct extends Entity {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
-  constructor(data?: Partial<RatingProduct>) {
+  constructor(data?: Partial<ProductsInOrderKiot>) {
     super(data);
   }
 }
 
-export interface RatingProductRelations {
+export interface ProductsInOrderKiotRelations {
   // describe navigational properties here
 }
 
-export type RatingProductWithRelations = RatingProduct & RatingProductRelations;
+export type ProductsInOrderKiotWithRelations = ProductsInOrderKiot & ProductsInOrderKiotRelations;

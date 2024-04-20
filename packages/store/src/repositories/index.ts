@@ -8,3 +8,6 @@ export * from './wallet.repository';
 export * from './bought-product.repository';
 export * from './return-order.repository';
 export * from './rating-product.repository';
+export * from './order-kiot.repository';
+export * from './products-in-order-kiot.repository';
+export * from './wallet-of-shop.repository';

@@ -8,3 +8,6 @@ export * from './wallet.model';
 export * from './bought-product.model';
 export * from './return-order.model';
 export * from './rating-product.model';
+export * from './order-kiot.model';
+export * from './products-in-order-kiot.model';
+export * from './wallet-of-shop.model';

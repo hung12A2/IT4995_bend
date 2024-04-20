@@ -39,6 +39,13 @@ export class BoughtProduct extends Entity {
   })
   createAt: Date;
 
+  @property({
+    type: 'boolean',
+    required: false,
+    default: false,
+  })
+  isKiot: boolean;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

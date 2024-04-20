@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model({settings: {strict: false}})
-export class ProductsInOrder extends Entity {
+export class WalletOfShop extends Entity {
   @property({
     type: 'string',
     id: true,
@@ -13,20 +13,13 @@ export class ProductsInOrder extends Entity {
     type: 'string',
     required: true,
   })
-  idOfOrder: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  idOfProduct: string;
+  idOfShop: string;
 
   @property({
     type: 'number',
-    required: true,
+    default: 0,
   })
-  quantity: number;
-
+  amountOfMoney?: number;
 
   // Define well-known properties here
 
@@ -34,13 +27,13 @@ export class ProductsInOrder extends Entity {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
-  constructor(data?: Partial<ProductsInOrder>) {
+  constructor(data?: Partial<WalletOfShop>) {
     super(data);
   }
 }
 
-export interface ProductsInOrderRelations {
+export interface WalletOfShopRelations {
   // describe navigational properties here
 }
 
-export type ProductsInOrderWithRelations = ProductsInOrder & ProductsInOrderRelations;
+export type WalletOfShopWithRelations = WalletOfShop & WalletOfShopRelations;

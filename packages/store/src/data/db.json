@@ -11,7 +11,9 @@
     "Wallet": 3,
     "BoughtProduct": 4,
     "ReturnOrder": 2,
-    "RatingProduct": 4
+    "RatingProduct": 4,
+    "OrderKiot": 5,
+    "ProductsInOrderKiot": 13
   },
   "models": {
     "Category": {
@@ -48,7 +50,7 @@
       "20": "{\"idOfOrder\":\"9\",\"idOfProduct\":\"3\",\"quantity\":\"2\",\"id\":\"20\"}"
     },
     "Wallet": {
-      "1": "{\"idOfUser\":\"1\",\"amountMoney\":10000000000,\"id\":\"1\"}",
+      "1": "{\"idOfUser\":\"1\",\"amountMoney\":10000093000,\"id\":\"1\"}",
       "2": "{\"idOfUser\":\"3\",\"amountMoney\":55083,\"id\":\"2\"}"
     },
     "BoughtProduct": {
@@ -62,6 +64,26 @@
     "RatingProduct": {
       "2": "{\"idOfOrder\":\"9\",\"idOfProduct\":\"1\",\"idOfUser\":\"1\",\"rating\":1,\"isDeleted\":false,\"comment\":\"Ăn mới bị đau bụng đi ỉa\",\"id\":\"2\"}",
       "3": "{\"idOfOrder\":\"9\",\"idOfProduct\":\"1\",\"idOfUser\":\"1\",\"rating\":1,\"isDeleted\":false,\"comment\":\"Ăn mới bị đau bụng đi ỉa\",\"id\":\"3\"}"
+    },
+    "OrderKiot": {
+      "1": "{\"idOfKiot\":\"3\",\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915047678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|50\",\"insuranceValue\":1225000,\"paymentMethod\":\"cod\",\"requiredNote\":\"CHOTHUHANG\",\"note\":\"không có note\",\"status\":\"pending\",\"totalFee\":0,\"priceOfAll\":93000,\"createdAt\":\"2024-04-19T09:41:32.728Z\",\"updatedAt\":\"2024-04-19T09:41:32.728Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"createdBy\":\"user-1\",\"updatedBy\":\"user-1\",\"id\":\"1\"}",
+      "2": "{\"idOfKiot\":\"3\",\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915047678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|50\",\"insuranceValue\":1225000,\"paymentMethod\":\"cod\",\"requiredNote\":\"CHOTHUHANG\",\"note\":\"không có note\",\"status\":\"pending\",\"totalFee\":0,\"priceOfAll\":93000,\"createdAt\":\"2024-04-19T21:55:23.609Z\",\"updatedAt\":\"2024-04-19T21:55:23.609Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"createdBy\":\"user-1\",\"updatedBy\":\"user-1\",\"id\":\"2\"}",
+      "3": "{\"idOfKiot\":\"3\",\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915047678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|50\",\"insuranceValue\":1225000,\"paymentMethod\":\"cod\",\"requiredNote\":\"CHOTHUHANG\",\"note\":\"không có note\",\"status\":\"pending\",\"totalFee\":0,\"priceOfAll\":93000,\"createdAt\":\"2024-04-19T21:55:44.553Z\",\"updatedAt\":\"2024-04-19T21:55:44.553Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"createdBy\":\"user-1\",\"updatedBy\":\"user-1\",\"id\":\"3\"}",
+      "4": "{\"idOfKiot\":\"3\",\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915047678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"codAmount\":0,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|50\",\"insuranceValue\":1225000,\"paymentMethod\":\"payOnline\",\"requiredNote\":\"CHOTHUHANG\",\"note\":\"không có note\",\"status\":\"inTransit\",\"totalFee\":0,\"priceOfAll\":93000,\"createdAt\":\"2024-04-19T21:57:34.032Z\",\"updatedAt\":\"2024-04-19T21:59:27.734Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"createdBy\":\"user-1\",\"updatedBy\":\"user-1\",\"id\":\"4\"}"
+    },
+    "ProductsInOrderKiot": {
+      "1": "{\"idOfOrder\":\"1\",\"idOfProduct\":\"1\",\"quantity\":1,\"id\":\"1\"}",
+      "2": "{\"idOfOrder\":\"1\",\"idOfProduct\":\"2\",\"quantity\":1,\"id\":\"2\"}",
+      "3": "{\"idOfOrder\":\"1\",\"idOfProduct\":\"3\",\"quantity\":1,\"id\":\"3\"}",
+      "4": "{\"idOfOrder\":\"2\",\"idOfProduct\":\"1\",\"quantity\":1,\"id\":\"4\"}",
+      "5": "{\"idOfOrder\":\"2\",\"idOfProduct\":\"2\",\"quantity\":1,\"id\":\"5\"}",
+      "6": "{\"idOfOrder\":\"2\",\"idOfProduct\":\"3\",\"quantity\":1,\"id\":\"6\"}",
+      "7": "{\"idOfOrder\":\"3\",\"idOfProduct\":\"4\",\"quantity\":1,\"id\":\"7\"}",
+      "8": "{\"idOfOrder\":\"3\",\"idOfProduct\":\"2\",\"quantity\":1,\"id\":\"8\"}",
+      "9": "{\"idOfOrder\":\"3\",\"idOfProduct\":\"3\",\"quantity\":1,\"id\":\"9\"}",
+      "10": "{\"idOfOrder\":\"4\",\"idOfProduct\":\"4\",\"quantity\":1,\"id\":\"10\"}",
+      "11": "{\"idOfOrder\":\"4\",\"idOfProduct\":\"2\",\"quantity\":1,\"id\":\"11\"}",
+      "12": "{\"idOfOrder\":\"4\",\"idOfProduct\":\"3\",\"quantity\":1,\"id\":\"12\"}"
     }
   }
 }

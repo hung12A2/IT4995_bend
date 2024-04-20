@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model({settings: {strict: false}})
-export class Order extends Entity {
+export class OrderKiot extends Entity {
   @property({
     type: 'string',
     id: true,
@@ -13,20 +13,19 @@ export class Order extends Entity {
     type: 'string',
     required: true,
   })
-  idOfShop: string;
-
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  paymentMethod: string;
+  idOfKiot: string;
 
   @property({
     type: 'string',
     required: true,
   })
   idOfUser: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  idOfShop: string;
 
   @property({
     type: 'string',
@@ -100,13 +99,6 @@ export class Order extends Entity {
   })
   toWard: string;
 
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  clientOrderCode: string;
-
   @property({
     type: 'number',
     required: true,
@@ -115,7 +107,7 @@ export class Order extends Entity {
 
   @property({
     type: 'string',
-    default: 'no content',
+    default: '',
   })
   content?: string;
 
@@ -138,28 +130,22 @@ export class Order extends Entity {
   insuranceValue: number;
 
   @property({
-    type: 'number',
+    type: 'string',
     required: true,
   })
-  serviceTypeId: number;
-
-  @property({
-    type: 'number',
-    required: true,
-  })
-  serviceId: number;
-
-  @property({
-    type: 'number',
-    required: true,
-  })
-  paymentTypeId: number;
+  paymentMethod: string;
 
   @property({
     type: 'string',
     required: true,
   })
   requiredNote: string;
+
+  @property({
+    type: 'string',
+    default: '',
+  })
+  note?: string;
 
   @property({
     type: 'string',
@@ -176,35 +162,21 @@ export class Order extends Entity {
 
   @property({
     type: 'number',
-    required: false,
-    default: 0,
+    required: true,
   })
   priceOfAll: number;
 
   @property({
-    type: 'string',
-    default: 'no note',
+    type: 'date',
+    required: true,
   })
-  note?: string;
-
-  @property({
-    type: 'array',
-    itemType: 'number',
-    default: null,
-  })
-  pickShift?: number[];
+  createdAt: string;
 
   @property({
     type: 'date',
     required: true,
   })
-  createdAt: Date;
-
-  @property({
-    type: 'date',
-    required: true,
-  })
-  updatedAt: Date;
+  updatedAt: string;
 
   @property({
     type: 'object',
@@ -212,6 +184,17 @@ export class Order extends Entity {
   })
   image: object;
 
+  @property({
+    type: 'string',
+    required: true,
+  })
+  createdBy: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  updatedBy: string;
 
   // Define well-known properties here
 
@@ -219,13 +202,13 @@ export class Order extends Entity {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
-  constructor(data?: Partial<Order>) {
+  constructor(data?: Partial<OrderKiot>) {
     super(data);
   }
 }
 
-export interface OrderRelations {
+export interface OrderKiotRelations {
   // describe navigational properties here
 }
 
-export type OrderWithRelations = Order & OrderRelations;
+export type OrderKiotWithRelations = OrderKiot & OrderKiotRelations;

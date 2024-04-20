@@ -27,6 +27,13 @@ export class ProductsInCart extends Entity {
   })
   quantity: number;
 
+  @property({
+    type: 'boolean',
+    required: false,
+    default: false,
+  })
+  isKiot: boolean;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

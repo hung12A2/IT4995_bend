@@ -7,3 +7,5 @@ export * from './location.controller';
 export * from './order.controller';
 export * from './wallet.controller';
 export * from './rating-product.controller';
+export * from './order-kiot.controller';
+export * from './wallet-of-shop.controller';
