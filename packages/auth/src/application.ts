@@ -18,6 +18,7 @@ import {AuthorizationComponent} from '@loopback/authorization';
 import {JWTService, UserManagementService} from './services';
 import {UserServiceBindings} from './keys';
 import {AdminManagmentService} from './services/adminManagement.service';
+import { EmployeeManagmentService } from './services/employeeManagment.service';
 
 export {ApplicationConfig};
 
@@ -60,5 +61,6 @@ export class AuthApplication extends BootMixin(
     this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
     this.bind(UserServiceBindings.USER_SERVICE).toClass(UserManagementService);
     this.bind(UserServiceBindings.ADMIN_SERVICE).toClass(AdminManagmentService);
+    this.bind(UserServiceBindings.EMPLOYEE_SERVICE).toClass(EmployeeManagmentService);
   }
 }

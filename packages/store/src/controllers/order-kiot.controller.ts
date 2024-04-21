@@ -289,7 +289,7 @@ export class OrderKiotController {
             type: 'receive',
             createdAt: new Date().toISOString(),
             image: order[0].image,
-            idOfOrder: order[0].idOrder,
+            idOfOrder: order[0].id,
           });
 
           (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -523,13 +523,15 @@ export class OrderKiotController {
             dataNoti,
           );
 
+          console.log (order[0].id)
+
           const dataTransaction = JSON.stringify({
             idOfUser,
             amountOfMoney: order[0].priceOfAll,
             type: 'receive',
             createdAt: new Date().toISOString(),
             image: order[0].image,
-            idOfOrder: order[0].idOrder,
+            idOfOrder: order[0].id,
           });
 
           (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -646,7 +648,7 @@ export class OrderKiotController {
             type: 'receive',
             createdAt: new Date().toISOString(),
             image: order[0].image,
-            idOfOrder: order[0].idOrder,
+            idOfOrder: order[0].id,
           });
 
           (await this.newRabbitMQService).sendMessageToTopicExchange(

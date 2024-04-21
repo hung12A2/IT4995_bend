@@ -31,6 +31,12 @@ export class Employee extends Entity {
     type: 'string',
     required: true,
   })
+  phoneNumber: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
   password: string;
 
   @property({
@@ -60,14 +66,7 @@ export class Employee extends Entity {
     type: 'object',
     required: false,
   })
-  coverImage: object;
-
-  @property({
-    type: 'object',
-    required: false,
-  })
   avatar: object;
-
 
   constructor(data?: Partial<Employee>) {
     super(data);

@@ -3,6 +3,7 @@ import {
   UserService,
   authenticate,
 } from '@loopback/authentication';
+import {authorize} from '@loopback/authorization';
 import {
   TokenServiceBindings,
   UserRepository,
@@ -15,6 +16,7 @@ import {
   RestBindings,
   get,
   getModelSchemaRef,
+  param,
   post,
   requestBody,
   response,
@@ -22,8 +24,8 @@ import {
 import {SecurityBindings, UserProfile, securityId} from '@loopback/security';
 import {UserServiceBindings} from '../keys';
 import {Admin, User} from '../models';
-import {Credentials} from '../types';
-import {AdminRepository} from '../repositories';
+import {Credentials, CredentialsForEmployee} from '../types';
+import {AdminRepository, EmployeeRepository} from '../repositories';
 import {AdminManagmentService} from '../services/adminManagement.service';
 import multer from 'multer';
 import {deleteRemoteFile, uploadFile} from '../config/firebaseConfig';
@@ -50,8 +52,12 @@ export class UserManagementController {
     public userService: UserService<User, any>,
     @repository(AdminRepository)
     public adminrepository: AdminRepository,
+    @repository(EmployeeRepository)
+    public employeeRepository: EmployeeRepository,
     @inject(UserServiceBindings.ADMIN_SERVICE)
     public adminService: AdminManagmentService,
+    @inject(UserServiceBindings.EMPLOYEE_SERVICE)
+    public employeeService: UserService<Admin, any>,
     @inject(RestBindings.Http.RESPONSE)
     private response: Response,
   ) {}
@@ -451,6 +457,57 @@ export class UserManagementController {
     return {token};
   }
 
+  @post('/login/Employee', {
+    responses: {
+      '200': {
+        description: 'Token',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                token: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  async loginEmployee(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              username: {
+                type: 'string',
+              },
+              password: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    credentials: CredentialsForEmployee,
+  ): Promise<{token: string}> {
+    // ensure the user exists, and the password is correct
+    const user = await this.employeeService.verifyCredentials(credentials);
+
+    // convert a User object into a UserProfile object (reduced set of properties)
+    const userProfile = this.employeeService.convertToUserProfile(user);
+
+    // create a JSON Web Token based on the user profile
+    const token = await this.jwtService.generateToken(userProfile);
+
+    return {token};
+  }
+
   @post('/login/Admin', {
     responses: {
       '200': {
@@ -671,7 +728,7 @@ export class UserManagementController {
         },
       },
     })
-    req:  {
+    req: {
       oldPassword: string;
       newPassword: string;
     },
@@ -720,21 +777,28 @@ export class UserManagementController {
     currentUserProfile: UserProfile,
   ): Promise<any> {
     if (currentUserProfile.role == 'admin') {
-      const data = this.adminrepository.findById(
+      const data: any = this.adminrepository.findById(
         currentUserProfile[securityId],
       );
-      return {
-        ...data,
-        password: null,
-      };
+      delete data.password;
+
+      return data;
     } else if (currentUserProfile.role == 'customer') {
       const data = await this.userRepository.findById(
         currentUserProfile[securityId],
       );
-      return {
-        ...data,
-        password: null,
-      };
+      delete data.password;
+
+      return data;
+    } else {
+      const data: any = await this.employeeRepository.findById(
+        currentUserProfile[securityId],
+      );
+
+      delete data.password;
+
+      return data;
     }
   }
+
 }

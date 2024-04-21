@@ -43,13 +43,33 @@ export class Admin extends Entity {
     type: 'object',
     required: false,
   })
-  coverImage: object;
+  avatar: object;
 
   @property({
-    type: 'object',
-    required: false,
+    type: 'date',
+    required: true,
   })
-  avatar: object;
+  createdAt: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  createdBy: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  updatedBy: string;
+
+  @property({
+    type: 'date',
+    required: true,
+  })
+  updatedAt: string;
+
+
 
   // Define well-known properties here
 

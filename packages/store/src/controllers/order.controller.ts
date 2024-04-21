@@ -266,7 +266,46 @@ export class OrderController {
             {amountMoney: oldWallet?.amountMoney + order[0].priceOfAll},
             {idOfUser},
           );
+
+          const dataTransaction = JSON.stringify({
+            idOfUser,
+            amountOfMoney: order[0].priceOfAll,
+            type: 'receive',
+            createdAt: new Date().toISOString(),
+            idOfOrder: id,
+          });
+
+          (await this.newRabbitMQService).sendMessageToTopicExchange(
+            'transaction',
+            'create',
+            dataTransaction,
+          );
+
+          const dataNoti = JSON.stringify({
+            idOfUser,
+            content: `Đơn hàng ${id} đã bi huy va tien da duoc hoan lai vao tai khoan cua ban`,
+            createdAt: new Date().toISOString(),
+          });
+
+          (await this.newRabbitMQService).sendMessageToTopicExchange(
+            'notification',
+            'create',
+            dataNoti,
+          );
         }
+
+        const dataNoti = JSON.stringify({
+          idOfUser,
+          content: `Đơn hàng ${id} đã bi huy`,
+          createdAt: new Date().toISOString(),
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notification',
+          'create',
+          dataNoti,
+        );
+
         return {
           message: 'Success',
         };
@@ -298,6 +337,19 @@ export class OrderController {
           status: 'accepted',
           updatedAt: new Date(),
         });
+
+        const dataNoti = JSON.stringify({
+          idOfUser: order[0].idOfUser,
+          content: `Đơn hàng ${id} đã duoc chap nhan`,
+          createdAt: new Date().toISOString(),
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notification',
+          'create',
+          dataNoti,
+        );
+
         return {
           message: 'Success',
         };
@@ -321,22 +373,7 @@ export class OrderController {
   async received(
     @param.path.string('idOfUser') idOfUser: string,
     @param.path.string('id') id: string,
-    @requestBody({
-      description: 'Order model instance',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              idOfOwnerShop: {type: 'string'},
-            },
-          },
-        },
-      },
-    })
-    data: any,
   ): Promise<any> {
-    const {idOfOwnerShop} = data;
 
     try {
       const order: any = await this.orderRepository.findOne({
@@ -348,7 +385,7 @@ export class OrderController {
           updatedAt: new Date(),
         });
         const oldWallet = await this.walletOfShopRepository.findOne({
-          where: {idOfUser: idOfOwnerShop},
+          where: {idOfShop: order.idOfShop},
         });
 
         await this.walletOfShopRepository.updateAll(
@@ -356,7 +393,33 @@ export class OrderController {
             amountMoney:
               oldWallet?.amountMoney + order.codAmount - order.totalFee,
           },
-          {idOfUser: idOfOwnerShop},
+          {idOfShop: order.idOfShop},
+        );
+
+        const dataTransaction = JSON.stringify({
+          idOfShop: order.idOfShop,
+          amountOfMoney: order.codAmount - order.totalFee,
+          type: 'receive',
+          createdAt: new Date().toISOString(),
+          idOfOrder: id,
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'transactionForShop',
+          'create',
+          dataTransaction,
+        );
+
+        const dataNoti = JSON.stringify({
+          idOfShop: order.idOfShop,
+          content: `Đơn hàng ${id} đã được nhận ${order.codAmount - order.totalFee} đã được chuyển vào tài khoản của bạn`,
+          createdAt: new Date().toISOString(),
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notificationForShop',
+          'create',
+          dataNoti,
         );
 
         const idOfBuyer = order.idOfUser;

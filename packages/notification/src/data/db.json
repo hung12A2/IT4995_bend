@@ -1,35 +1,18 @@
 {
   "ids": {
-    "Notification": 19,
+    "Notification": 2,
     "Transaction": 2,
     "NotificationForShop": 2
   },
   "models": {
     "Notification": {
-      "1": "{\"idOfUser\":\"1\",\"content\":\"tesst notification\",\"image\":{\"url\":\"1234\",\"filename\":\"hello\"},\"isViewed\":false,\"id\":\"1\"}",
-      "2": "{\"idOfUser\":\"1\",\"content\":\"tesst notification\",\"image\":{\"url\":\"1234\",\"filename\":\"hello\"},\"isViewed\":false,\"id\":\"2\"}",
-      "3": "{\"idOfUser\":\"1\",\"content\":\"tesst notification\",\"image\":{\"url\":\"1234\",\"filename\":\"hello\"},\"isViewed\":false,\"id\":\"3\"}",
-      "4": "{\"idOfUser\":\"1\",\"content\":\"tesst notification\",\"image\":{\"url\":\"1234\",\"filename\":\"hello\"},\"isViewed\":false,\"id\":\"4\"}",
-      "5": "{\"idOfUser\":\"1\",\"content\":\"tesst notification\",\"image\":{\"url\":\"1234\",\"filename\":\"hello\"},\"isViewed\":false,\"id\":\"5\"}",
-      "6": "{\"idOfUser\":\"1\",\"content\":\"tesst notification\",\"image\":{\"url\":\"1234\",\"filename\":\"hello\"},\"isViewed\":false,\"id\":\"6\"}",
-      "7": "{\"idOfUser\":\"1\",\"content\":\"tesst notification\",\"image\":{\"url\":\"1234\",\"filename\":\"hello\"},\"isViewed\":false,\"id\":\"7\"}",
-      "8": "{\"idOfUser\":\"1\",\"content\":\"tesst notification\",\"image\":{\"url\":\"1234\",\"filename\":\"hello\"},\"isViewed\":false,\"id\":\"8\"}",
-      "9": "{\"idOfUser\":\"1\",\"content\":\"tesst notification\",\"image\":{\"url\":\"1234\",\"filename\":\"hello\"},\"isViewed\":false,\"id\":\"9\"}",
-      "10": "{\"idOfUser\":\"1\",\"content\":\"tesst notification\",\"image\":{\"url\":\"1234\",\"filename\":\"hello\"},\"isViewed\":false,\"id\":\"10\"}",
-      "11": "{\"idOfUser\":\"1\",\"content\":\"tesst notification\",\"image\":{\"url\":\"1234\",\"filename\":\"hello\"},\"isViewed\":false,\"id\":\"11\"}",
-      "12": "{\"idOfUser\":\"1\",\"content\":\"tesst notification\",\"image\":{\"url\":\"1234\",\"filename\":\"hello\"},\"isViewed\":false,\"id\":\"12\"}",
-      "13": "{\"idOfUser\":\"1\",\"content\":\"Đơn hàng 6 đã được tạo thành công voi gia tien 93000\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"isViewed\":false,\"createdAt\":\"2024-04-20T07:57:42.263Z\",\"id\":\"13\"}",
-      "14": "{\"idOfUser\":\"1\",\"content\":\"Đơn hàng 7 đã được tạo thành công voi gia tien 93000\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"isViewed\":false,\"createdAt\":\"2024-04-20T08:50:28.291Z\",\"id\":\"14\"}",
-      "15": "{\"idOfUser\":\"1\",\"content\":\"Don hang 7 da bi huy\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"isViewed\":false,\"createdAt\":\"2024-04-20T09:32:08.665Z\",\"id\":\"15\"}",
-      "16": "{\"idOfUser\":\"1\",\"content\":\"Don hang 7 da bi huy, nhan lai 93000\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"isViewed\":false,\"createdAt\":\"2024-04-20T09:44:09.189Z\",\"id\":\"16\"}",
-      "17": "{\"idOfUser\":\"1\",\"content\":\"Don hang 7 da duoc chap nhan\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"isViewed\":false,\"createdAt\":\"2024-04-20T09:50:23.692Z\",\"id\":\"17\"}",
-      "18": "{\"idOfUser\":\"1\",\"content\":\"Don hang 7 da den noi\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"isViewed\":false,\"createdAt\":\"2024-04-20T09:50:40.199Z\",\"id\":\"18\"}"
+      "1": "{\"idOfUser\":\"1\",\"content\":\"Don hang 4 da bi hoan tra, nhan lai 93000\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"isViewed\":false,\"createdAt\":\"2024-04-20T12:59:33.606Z\",\"id\":\"1\"}"
     },
     "Transaction": {
-      "1": "{\"idOfUser\":\"1\",\"amountOfMoney\":93000,\"type\":\"send\",\"createdAt\":\"2024-04-20T08:50:28.292Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"idOfOrder\":\"7\",\"id\":\"1\"}"
+      "1": "{\"idOfUser\":\"1\",\"amountOfMoney\":93000,\"type\":\"receive\",\"createdAt\":\"2024-04-20T12:59:33.607Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"idOfOrder\":\"4\",\"id\":\"1\"}"
     },
     "NotificationForShop": {
-      "1": "{\"idOfShop\":\"3\",\"content\":\"Don hang hoa toc 7 da bi huy\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"isViewed\":false,\"createdAt\":\"2024-04-20T09:35:04.631Z\",\"id\":\"1\"}"
+      "1": "{\"idOfShop\":\"3\",\"content\":\"Don hang 4 da bi hoan tra\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"isViewed\":false,\"createdAt\":\"2024-04-20T12:59:33.607Z\",\"id\":\"1\"}"
     }
   }
 }

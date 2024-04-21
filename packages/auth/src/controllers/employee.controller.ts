@@ -20,11 +20,16 @@ import {
   Response,
 } from '@loopback/rest';
 import {Employee} from '../models';
-import {EmployeeRepository, StoreRepository} from '../repositories';
+import {
+  EmployeeRepository,
+  KiotRepository,
+  StoreRepository,
+} from '../repositories';
 import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {SecurityBindings, UserProfile} from '@loopback/security';
 import {Storage} from '@google-cloud/storage';
+import {generateRandomString} from '../utils/genString';
 
 export class EmployeeController {
   constructor(
@@ -32,6 +37,8 @@ export class EmployeeController {
     public employeeRepository: EmployeeRepository,
     @repository(StoreRepository)
     public storeRepository: StoreRepository,
+    @repository(KiotRepository)
+    public kiotRepository: KiotRepository,
     @inject(RestBindings.Http.RESPONSE)
     private response: Response,
   ) {}
@@ -50,20 +57,30 @@ export class EmployeeController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Employee, {
-            title: 'NewEmployee',
-            exclude: ['id', 'role', 'status', 'idOfShop'],
-          }),
+          schema: {
+            type: 'object',
+            properties: {
+              username: {type: 'string'},
+              name: {type: 'string'},
+              permissions: {type: 'string'},
+              phoneNumber: {type: 'string'},
+            },
+          },
         },
       },
     })
-    employee: Omit<Employee, 'id '>,
+    employee: any,
   ): Promise<Employee | Response> {
     employee.role = 'employee';
     employee.status = 'active';
+    employee.password = generateRandomString(10);
     const idOfUser = currentUserProfile.id;
     const idOfShop = (
       await this.storeRepository.find({where: {idOfUser: idOfUser}})
+    )[0].id;
+
+    const idOfKiot = (
+      await this.kiotRepository.find({where: {idOfUser: idOfUser}})
     )[0].id;
 
     const numberOfEmployee = await this.employeeRepository.count({
@@ -77,13 +94,15 @@ export class EmployeeController {
 
     if (idOfShop) {
       employee.idOfShop = idOfShop;
+      if (idOfKiot) {
+        employee.idOfKiot = idOfKiot;
+      }
     } else {
       return response.status(200).send({message: 'khong ton tai shop'});
     }
 
     return this.employeeRepository.create(employee);
   }
-
 
   // for admin
   @get('/employees')
@@ -98,12 +117,12 @@ export class EmployeeController {
       },
     },
   })
-  async find(
-    @param.filter(Employee) filter?: Filter<Employee>,
-  ): Promise<any> {
+  async find(@param.filter(Employee) filter?: Filter<Employee>): Promise<any> {
     const employee = await this.employeeRepository.find(filter);
-    this.response.header('Access-Control-Expose-Headers', 'Content-Range')
-    return this.response.header('Content-Range', `Employees 0-20/20`).send(employee);
+    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
+    return this.response
+      .header('Content-Range', `Employees 0-20/20`)
+      .send(employee);
   }
 
   // for storeOwner
@@ -172,7 +191,5 @@ export class EmployeeController {
     await this.employeeRepository.updateById(id, {status: 'banned'});
   }
 
-  
   // upload avatar for employee
-  
 }

@@ -52,6 +52,8 @@ export class UserManagementService implements UserService<User, Credentials> {
         id: user.id,
         role: user.role,
         status: user.status,
+        idOfShop: user.idOfShop,
+        idOfKiot: user.idOfKiot,
       };
     } else
       return {
@@ -63,6 +65,8 @@ export class UserManagementService implements UserService<User, Credentials> {
         id: user.id,
         role: user.role,
         status: user.status,
+        idOfShop: user.idOfShop,
+        idOfKiot: user.idOfKiot,
       };
   }
 }

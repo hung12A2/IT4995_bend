@@ -18,4 +18,8 @@ export namespace UserServiceBindings {
   export const ADMIN_SERVICE = BindingKey.create<UserService<any,any >> (
     'services.admin.services'
   )
+
+  export const EMPLOYEE_SERVICE = BindingKey.create<UserService<any,any >> (
+    'services.employee.services'
+  )
 }

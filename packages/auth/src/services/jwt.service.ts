@@ -43,7 +43,21 @@ export class JWTService implements TokenService {
             id: decodedToken.id,
             role: decodedToken.role,
             permissions: decodedToken.permissions,
-            isSeller: decodedToken.isSeller,
+            status: decodedToken.status,
+            idOfShop: decodedToken.idOfShop,
+            idOfKiot: decodedToken.idOfKiot,
+          },
+        );
+      } else if (role == 'admin') {
+        userProfile = Object.assign(
+          {[securityId]: '', name: ''},
+          {
+            [securityId]: decodedToken.id,
+            email: decodedToken.email,
+            id: decodedToken.id,
+            role: decodedToken.role,
+            permissions: decodedToken.permissions,
+            status: decodedToken.status,
           },
         );
       } else {
@@ -55,6 +69,9 @@ export class JWTService implements TokenService {
             id: decodedToken.id,
             role: decodedToken.role,
             permissions: decodedToken.permissions,
+            status: decodedToken.status,
+            idOfShop: decodedToken.idOfShop,
+            idOfKiot: decodedToken.idOfKiot,
           },
         );
       }
@@ -83,7 +100,17 @@ export class JWTService implements TokenService {
         id: userProfile.id,
         role: userProfile.role,
         permissions: userProfile.permissions,
-        isSeller: userProfile.isSeller,
+        status: userProfile.status,
+        idOfShop: userProfile.idOfShop,
+        idOfKiot: userProfile.idOfKiot,
+      };
+    } else if (userProfile.role == 'admin') {
+      userInfoForToken = {
+        id: userProfile.id,
+        role: userProfile.role,
+        email: userProfile.email,
+        permissions: userProfile.permissions,
+        status: userProfile.status,
       };
     } else {
       userInfoForToken = {
@@ -91,6 +118,9 @@ export class JWTService implements TokenService {
         role: userProfile.role,
         email: userProfile.email,
         permissions: userProfile.permissions,
+        status: userProfile.status,
+        idOfShop: userProfile.idOfShop,
+        idOfKiot: userProfile.idOfKiot,
       };
     }
 
