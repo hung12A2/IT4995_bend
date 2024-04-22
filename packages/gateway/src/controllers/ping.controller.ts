@@ -6,7 +6,7 @@ import {
   response,
   ResponseObject,
 } from '@loopback/rest';
-import {MerchantService} from '../services/merchantServices';
+
 /**
  * OpenAPI response for ping()
  */
@@ -40,18 +40,16 @@ const PING_RESPONSE: ResponseObject = {
 export class PingController {
   constructor(@inject(RestBindings.Http.REQUEST) private req: Request) {}
 
-  service = new MerchantService({
-    baseURL: 'http://localhost:3000',
-    headers: {
-      'Content-Type': 'application/json; charset=UTF-8',
-      Authorization: `Bearer `,
-    },
-
-  });
-
   // Map to `GET /ping`
   @get('/ping')
   @response(200, PING_RESPONSE)
-  async ping(): Promise<any> {
+  ping(): object {
+    // Reply with a greeting, the current time, the url, and request headers
+    return {
+      greeting: 'Hello from LoopBack',
+      date: new Date(),
+      url: this.req.url,
+      headers: Object.assign({}, this.req.headers),
+    };
   }
 }
