@@ -5,8 +5,8 @@
 
 import {Socket, socketio} from '@loopback/socketio';
 import debugFactory from 'debug';
-
-const debug = debugFactory('loopback:socketio:controller');
+import {ConversationRepository, MessageRepository} from '../repositories';
+import {repository} from '@loopback/repository';
 
 /**
  * A demo controller for socket.io
@@ -20,6 +20,10 @@ const debug = debugFactory('loopback:socketio:controller');
 @socketio('/')
 export class SocketIoController {
   constructor(
+    @repository(ConversationRepository)
+    public conversationRepository: ConversationRepository,
+    @repository(MessageRepository)
+    public messageRepository: MessageRepository,
     @socketio.socket() // Equivalent to `@inject('ws.socket')`
     private socket: Socket,
   ) {}
@@ -31,8 +35,7 @@ export class SocketIoController {
    */
   @socketio.connect()
   connect(socket: Socket) {
-    debug('Client connected: %s', this.socket.id);
-    return socket.join('room 1');
+    console.log(`connect room ${this.socket.id}`);
   }
 
   /**
@@ -40,15 +43,72 @@ export class SocketIoController {
    *
    * @param msg - The message sent by client
    */
-  @socketio.subscribe('subscribe-to-channel')
+  @socketio.subscribe('joinConversation')
   // @socketio.emit('namespace' | 'requestor' | 'broadcast')
-  async registerChannel(msg: string[]) {
-    debug('Subscribe to channel: %s', msg);
-    if (Array.isArray(msg) && msg.length > 0) {
-      for (const item of msg) await this.socket.join(item);
-    } else {
-      throw new Error('Channels data not appropriate');
+  async joinConversation(data: any) {
+    const {idOfUser, idOfShop} = data;
+    const conversationId = `idOfUser-${idOfUser}-idOfShop-${idOfShop}`;
+    this.socket.join(conversationId);
+    const conversation = await this.conversationRepository.findOne({
+      where: {idOfUser, idOfShop},
+    });
+    if (conversation == null) {
+      await this.conversationRepository.create({
+        idOfUser,
+        idOfShop,
+        createdAt: new Date().toISOString(),
+      });
+      console.log('created conversation', conversationId);
     }
+
+    console.log ('joinConversation', conversationId);
+  }
+
+  @socketio.subscribe('add-msg')
+  // @socketio.emit('namespace' | 'requestor' | 'broadcast')
+  async addMsg(data: any) {
+    const {idOfUser, idOfShop, content, imgLink, senderId, targetId} = data;
+    const conversationId = `idOfUser-${idOfUser}-idOfShop-${idOfShop}`;
+    await this.messageRepository.create({
+      idOfShop,
+      idOfUser,
+      senderId,
+      targetId,
+      content,
+      imgLink,
+      createdAt: new Date().toISOString(),
+    });
+
+    await this.conversationRepository.updateAll(
+      {lastMsg: content ? content.substring(0, 20) : ''},
+      {idOfUser, idOfShop},
+    );
+
+    this.socket.nsp.to(conversationId).emit(
+      'server-send-msg',
+      JSON.stringify({
+        senderId,
+        targetId,
+        content,
+        imgLink: imgLink ? imgLink : '',
+      }),
+    );
+  }
+
+  @socketio.subscribe('list-msg')
+  // @socketio.emit('namespace' | 'requestor' | 'broadcast')
+  async listMsg(data: any) {
+    const {idOfUser, idOfShop, limitmsg} = data;
+    const msgData = await this.messageRepository.find({
+      order: ['createdAt DESC'],
+      limit: limitmsg,
+      where: {idOfUser, idOfShop},
+      
+    });
+    console.log('list-msg', msgData);
+    this.socket.nsp
+      .to(`idOfUser-${idOfUser}-idOfShop-${idOfShop}`)
+      .emit('server-list-msg', JSON.stringify(msgData));
   }
 
   /**
@@ -59,7 +119,6 @@ export class SocketIoController {
   @socketio.subscribe('general-message-forward')
   // @socketio.emit('namespace' | 'requestor' | 'broadcast')
   handleChatMessage(msg: unknown) {
-    debug('General forwarded message: %s', msg);
     this.socket.nsp.emit('general-message-forward', msg);
   }
 
@@ -71,7 +130,6 @@ export class SocketIoController {
   @socketio.subscribe('general-message')
   // @socketio.emit('namespace' | 'requestor' | 'broadcast')
   handleGeneralMessage(msg: string) {
-    debug('General Message : %s', msg);
     const parsedMsg: {
       subject: string;
       body: string;
@@ -104,9 +162,7 @@ export class SocketIoController {
    * Register a handler for all events
    */
   @socketio.subscribe(/.+/)
-  logMessage(...args: unknown[]) {
-    debug('Message: %s', args);
-  }
+  logMessage(...args: unknown[]) {}
 
   /**
    * The method is invoked when a client disconnects from the server
@@ -114,6 +170,6 @@ export class SocketIoController {
    */
   @socketio.disconnect()
   disconnect() {
-    debug('Client disconnected: %s', this.socket.id);
+    console.log('disconnect room 1');
   }
 }
