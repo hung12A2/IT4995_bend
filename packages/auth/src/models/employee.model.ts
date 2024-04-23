@@ -25,7 +25,7 @@ export class Employee extends Entity {
     type: 'string',
     required: true,
   })
-  username: string;
+  email: string;
 
   @property({
     type: 'string',

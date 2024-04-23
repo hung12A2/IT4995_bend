@@ -11,6 +11,7 @@ import {
 import {inject} from '@loopback/core';
 import {property, repository} from '@loopback/repository';
 import {
+  HttpErrors,
   Request,
   Response,
   RestBindings,
@@ -801,4 +802,57 @@ export class UserManagementController {
     }
   }
 
+  @post('getInfoByPass/customer', {
+    responses: {
+      '200': {
+        description: 'Return current user',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'USER',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getUserByPassword(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              email: {
+                type: 'string',
+              },
+              password: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req: any,
+  ): Promise<any> {
+    const {email, password} = req;
+    const invalidCredentialsError = 'Invalid email or password.';
+
+    if (!email) {
+      throw new HttpErrors.Unauthorized(invalidCredentialsError);
+    }
+    const foundUser = await this.userRepository.findOne({
+      where: {email},
+    });
+
+    if (foundUser?.password !== password)
+      throw new HttpErrors.Unauthorized(invalidCredentialsError);
+
+    if (!foundUser) {
+      throw new HttpErrors.Unauthorized(invalidCredentialsError);
+    }
+
+    return foundUser;
+  }
 }

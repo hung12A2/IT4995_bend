@@ -505,6 +505,17 @@
     debug "^4.3.4"
     jsonwebtoken "^9.0.2"
 
+"@loopback/authentication-jwt@^0.15.1":
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/@loopback/authentication-jwt/-/authentication-jwt-0.15.1.tgz#cd08755edffaa1c49b318f662609f843ed732cdb"
+  integrity sha512-4kSw2MOkdCIDKjSsFnhZvEApA8c9Cxtv4xVQAeG8kUOvR4BJnwaHlbrO5lT1k70NsgNiCjFZzcz4jLAtk8Iv5g==
+  dependencies:
+    "@loopback/security" "^0.11.1"
+    "@types/bcryptjs" "2.4.6"
+    bcryptjs "^2.4.3"
+    debug "^4.3.4"
+    jsonwebtoken "^9.0.2"
+
 "@loopback/authentication@^11.0.0":
   version "11.0.0"
   resolved "https://registry.yarnpkg.com/@loopback/authentication/-/authentication-11.0.0.tgz#ff83a788dbf85f4588866afa6175982b9c855435"
@@ -516,12 +527,32 @@
     lodash "^4.17.21"
     tslib "^2.6.2"
 
+"@loopback/authentication@^11.0.1":
+  version "11.0.1"
+  resolved "https://registry.yarnpkg.com/@loopback/authentication/-/authentication-11.0.1.tgz#66156412cd21bdf0ad08327d9b9a91a643c18b0d"
+  integrity sha512-jbVFLYmNA/nM3CoAMhtkriaRwm5B2CCL1ZMG67c225m2eWhEuYBvLTxbsRqTvRBrt5zmToOoTOPs9UNJ1y87Ng==
+  dependencies:
+    "@loopback/security" "^0.11.1"
+    "@types/express" "^4.17.21"
+    "@types/lodash" "^4.17.0"
+    lodash "^4.17.21"
+    tslib "^2.6.2"
+
 "@loopback/authorization@^0.15.0":
   version "0.15.0"
   resolved "https://registry.yarnpkg.com/@loopback/authorization/-/authorization-0.15.0.tgz#ac136fba53eee134c46598374278c61b40226b49"
   integrity sha512-iO4Zz0tSksawNVpSHKPFM8I9qBq5To3lgkGGyu1iayLzp2oD5byqumSwDoTBYjmabXQLazUHgd0pbeB23pcFcw==
   dependencies:
     "@loopback/security" "^0.11.0"
+    debug "^4.3.4"
+    tslib "^2.6.2"
+
+"@loopback/authorization@^0.15.1":
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/@loopback/authorization/-/authorization-0.15.1.tgz#de8dab3a82659b6c3a7039d91d618ea2c4b26ef7"
+  integrity sha512-GvST1V9IZZILBtkytzonyx6GB8Vm5A5znkGHsht1mLcszUefo9/+Mz33eqy+LAUJF+BcMQL/VuAKUpsPkxv2dw==
+  dependencies:
+    "@loopback/security" "^0.11.1"
     debug "^4.3.4"
     tslib "^2.6.2"
 
@@ -728,6 +759,14 @@
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@loopback/security/-/security-0.11.0.tgz#04bb97d4d3fe05274123c9d7dd1120a17bc6dfdd"
   integrity sha512-n6/bVTS9IeG+2aT88/T6XWO9337Y8Z4f2WIM2m40/vkgb8Q4QWakLZfl9t286SFx4HHlLznGpm40wel/IsEG5g==
+  dependencies:
+    debug "^4.3.4"
+    tslib "^2.6.2"
+
+"@loopback/security@^0.11.1":
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/@loopback/security/-/security-0.11.1.tgz#8b7d7619b34ea44727372b85d08ff14564cd758a"
+  integrity sha512-cSIQBqyb4W/1Lz/MxfhYBeDcvQP721nB9lAziopIrRbMr/jsDgxFEVqj6/nmHBAHhHttxLN7owzN+HPqxO+CUQ==
   dependencies:
     debug "^4.3.4"
     tslib "^2.6.2"
@@ -995,7 +1034,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/lodash@^4.14.195", "@types/lodash@^4.14.202":
+"@types/lodash@^4.14.195", "@types/lodash@^4.14.202", "@types/lodash@^4.17.0":
   version "4.17.0"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.0.tgz#d774355e41f372d5350a4d0714abb48194a489c3"
   integrity sha512-t7dhREVv6dbNj0q17X12j7yDG4bD/DHYX7o5/DbDxobP0HnGPgpRz2Ej77aL7TZT3DSw13fqUTj8J4mMnqa7WA==
@@ -1456,6 +1495,15 @@ asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
+
+axios@^1.6.8:
+  version "1.6.8"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.8.tgz#66d294951f5d988a00e87a0ffb955316a619ea66"
+  integrity sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
 
 balanced-match@^1.0.0:
   version "1.0.2"
@@ -2426,6 +2474,11 @@ flatted@^3.2.9:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.3.1.tgz#21db470729a6734d4997002f439cb308987f567a"
   integrity sha512-X8cqMLLie7KsNUDSdzeN8FYK9rEt4Dt67OsG/DNGnYTSDBG4uFAJFBnUeiV+zCVAvwFy56IjM9sH51jVaEhNxw==
+
+follow-redirects@^1.15.6:
+  version "1.15.6"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.6.tgz#7f815c0cda4249c74ff09e95ef97c23b5fd0399b"
+  integrity sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==
 
 foreground-child@^2.0.0:
   version "2.0.0"
@@ -4108,6 +4161,11 @@ proxy-addr@~2.0.7:
   dependencies:
     forwarded "0.2.0"
     ipaddr.js "1.9.1"
+
+proxy-from-env@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/proxy-from-env/-/proxy-from-env-1.1.0.tgz#e102f16ca355424865755d2c9e8ea4f24d58c3e2"
+  integrity sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==
 
 pseudomap@^1.0.1:
   version "1.0.2"

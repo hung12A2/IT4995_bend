@@ -8,7 +8,6 @@ import {
   AuthorizationDecision,
   AuthorizationMetadata,
 } from '@loopback/authorization';
-import {UserProfile} from '@loopback/security';
 
 // Instance level authorizer
 // Can be also registered as an authorizer, depends on users' need.
@@ -17,7 +16,7 @@ export async function basicAuthorization(
   metadata: AuthorizationMetadata,
 ): Promise<AuthorizationDecision> {
   // No access if authorization details are missing
-  let currentUser: UserProfile;
+  let currentUser: any;
   if (authorizationCtx.principals.length > 0) {
     currentUser = authorizationCtx.principals[0];
   } else {

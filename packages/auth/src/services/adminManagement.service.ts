@@ -40,7 +40,7 @@ export class AdminManagmentService implements UserService<Admin, Credentials> {
     return foundUser;
   }
 
-  convertToUserProfile(admin: Admin): UserProfile {
+  convertToUserProfile(admin: Admin): any {
     if (admin.id) {
       return {
         [securityId]: admin.id,

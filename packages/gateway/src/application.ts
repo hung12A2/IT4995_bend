@@ -9,6 +9,13 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
+import { AuthenticationComponent } from '@loopback/authentication';
+import { AuthorizationComponent } from '@loopback/authorization';
+import { JWTAuthenticationComponent, TokenServiceBindings } from '@loopback/authentication-jwt';
+import { UserServiceBindings } from './key';
+import { UserManagementService } from './services/userManament.service';
+import { JWTService } from './services/jwt.service';
+
 
 export {ApplicationConfig};
 
@@ -17,6 +24,12 @@ export class GatewayApplication extends BootMixin(
 ) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
+
+    this.component (AuthenticationComponent);
+    this.component (JWTAuthenticationComponent)
+    this.component (AuthorizationComponent)
+
+    this.setUpBinding();
 
     // Set up the custom sequence
     this.sequence(MySequence);
@@ -40,5 +53,11 @@ export class GatewayApplication extends BootMixin(
         nested: true,
       },
     };
+  }
+
+  setUpBinding(): void {
+    this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
+    this.bind(UserServiceBindings.USER_SERVICE).toClass(UserManagementService);
+
   }
 }

@@ -60,7 +60,7 @@ export class EmployeeController {
           schema: {
             type: 'object',
             properties: {
-              username: {type: 'string'},
+              email: {type: 'string'},
               name: {type: 'string'},
               permissions: {type: 'string'},
               phoneNumber: {type: 'string'},

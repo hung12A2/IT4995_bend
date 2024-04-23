@@ -57,6 +57,7 @@ export class AuthApplication extends BootMixin(
     };
   }
 
+
   setUpBinding(): void {
     this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
     this.bind(UserServiceBindings.USER_SERVICE).toClass(UserManagementService);

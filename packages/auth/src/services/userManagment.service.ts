@@ -6,7 +6,7 @@
 import {UserService} from '@loopback/authentication';
 import {repository} from '@loopback/repository';
 import {HttpErrors} from '@loopback/rest';
-import {securityId, UserProfile} from '@loopback/security';
+import {securityId} from '@loopback/security'; 
 import {Admin, User} from '../models';
 import {AdminRepository, UserRepository} from '../repositories';
 import {Credentials} from '../types';
@@ -40,7 +40,7 @@ export class UserManagementService implements UserService<User, Credentials> {
     return foundUser;
   }
 
-  convertToUserProfile(user: User): UserProfile {
+  convertToUserProfile(user: User): any {
     // since first name and lastName are optional, no error is thrown if not provided
     if (user.id) {
       return {

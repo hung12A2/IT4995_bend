@@ -6,27 +6,28 @@
 import {UserService} from '@loopback/authentication';
 import {repository} from '@loopback/repository';
 import {HttpErrors} from '@loopback/rest';
-import {securityId, UserProfile} from '@loopback/security';
+import {securityId} from '@loopback/security';
 import {Employee} from '../models';
 import {EmployeeRepository} from '../repositories';
-import {CredentialsForEmployee} from '../types';
+import {Credentials, CredentialsForEmployee} from '../types';
 
-export class EmployeeManagmentService implements UserService<Employee, CredentialsForEmployee> {
+export class EmployeeManagmentService
+  implements UserService<Employee, Credentials>
+{
   constructor(
-
     @repository(EmployeeRepository)
     public employeeRepository: EmployeeRepository,
   ) {}
 
-  async verifyCredentials(credentials: CredentialsForEmployee): Promise<Employee> {
-    const {username, password} = credentials;
+  async verifyCredentials(credentials: Credentials): Promise<Employee> {
+    const {email, password} = credentials;
     const invalidCredentialsError = 'Invalid email or password.';
 
-    if (!username) {
+    if (!email) {
       throw new HttpErrors.Unauthorized(invalidCredentialsError);
     }
     const foundUser = await this.employeeRepository.findOne({
-      where: {username},
+      where: {email},
     });
 
     if (foundUser?.password !== password)
@@ -39,7 +40,7 @@ export class EmployeeManagmentService implements UserService<Employee, Credentia
     return foundUser;
   }
 
-  convertToUserProfile(employee: Employee): UserProfile {
+  convertToUserProfile(employee: Employee): any {
     if (employee.id) {
       return {
         [securityId]: employee.id,
