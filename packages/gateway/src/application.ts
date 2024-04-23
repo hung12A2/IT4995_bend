@@ -15,6 +15,8 @@ import { JWTAuthenticationComponent, TokenServiceBindings } from '@loopback/auth
 import { UserServiceBindings } from './key';
 import { UserManagementService } from './services/userManament.service';
 import { JWTService } from './services/jwt.service';
+import { EmployeeManagementService } from './services/employeeManagment.service';
+import { AdminManagementService } from './services/adminManagment.service';
 
 
 export {ApplicationConfig};
@@ -58,6 +60,7 @@ export class GatewayApplication extends BootMixin(
   setUpBinding(): void {
     this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
     this.bind(UserServiceBindings.USER_SERVICE).toClass(UserManagementService);
-
+    this.bind(UserServiceBindings.EMPLOYEE_SERVICE).toClass(EmployeeManagementService);
+    this.bind(UserServiceBindings.ADMIN_SERVICE).toClass(AdminManagementService)
   }
 }

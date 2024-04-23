@@ -9,20 +9,20 @@ import {Credentials} from '../types';
 import axios from 'axios';
 import {HttpErrors} from '@loopback/rest';
 
-export class UserManagementService implements UserService<any, any> {
+export class EmployeeManagementService implements UserService<any, any> {
   constructor() {}
 
   async verifyCredentials(credentials: Credentials): Promise<any> {
     const {email, password} = credentials;
     const data = await axios
-      .post(`http://localhost:8080/getInfoByPass/customer`, {
+      .post(`http://localhost:8080/getInfoByPass/employee`, {
         email,
         password,
       })
       .then(res => res.data)
       .catch(e => console.log(e));
 
-    return data;
+    if (data) return data;
   }
 
   convertToUserProfile(user: any): UserProfile {

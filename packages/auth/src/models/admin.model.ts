@@ -53,13 +53,13 @@ export class Admin extends Entity {
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
   createdBy: string;
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
   updatedBy: string;
 

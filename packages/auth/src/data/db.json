@@ -1,7 +1,7 @@
 {
   "ids": {
-    "User": 2,
-    "Admin": 4,
+    "User": 36,
+    "Admin": 6,
     "RequestCreateShop": 2,
     "Store": 2,
     "Area": 2,
@@ -10,12 +10,15 @@
   },
   "models": {
     "User": {
-      "1": "{\"idOfShop\":\"1\",\"email\":\"string\",\"password\":\"string\",\"phoneNumber\":\"string\",\"gender\":\"string\",\"fullName\":\"string\",\"role\":\"customer\",\"status\":\"active\",\"coverImage\":{},\"avatar\":{},\"resetToken\":\"string\",\"createdAt\":\"2024-04-15T09:07:34.640Z\",\"updatedAt\":\"2024-04-15T09:07:34.640Z\",\"id\":\"1\"}"
+      "1": "{\"idOfShop\":\"1\",\"email\":\"string\",\"password\":\"string\",\"phoneNumber\":\"string\",\"gender\":\"string\",\"fullName\":\"string\",\"role\":\"customer\",\"status\":\"active\",\"coverImage\":{},\"avatar\":{},\"resetToken\":\"string\",\"createdAt\":\"2024-04-15T09:07:34.640Z\",\"updatedAt\":\"2024-04-15T09:07:34.640Z\",\"id\":\"1\"}",
+      "35": "{\"email\":\"hung131119782002@gmail.com\",\"password\":\"string\",\"phoneNumber\":\"string\",\"gender\":\"string\",\"fullName\":\"string\",\"role\":\"customer\",\"status\":\"active\",\"createdAt\":\"2024-04-23T20:29:21.187Z\",\"updatedAt\":\"2024-04-23T20:29:21.187Z\",\"id\":\"35\"}"
     },
     "Admin": {
       "1": "{\"email\":\"string\",\"password\":\"string\",\"role\":\"admin\",\"permissions\":\"all\",\"status\":\"active\",\"coverImage\":{},\"avatar\":{},\"additionalProp1\":{},\"id\":\"1\"}",
       "2": "{\"email\":\"string\",\"password\":\"46TJ4kYM0I\",\"role\":\"admin\",\"permissions\":\"string\",\"status\":\"active\",\"createdAt\":\"2024-04-21T13:54:28.960Z\",\"createdBy\":\"admin-1\",\"updatedBy\":\"admin-1\",\"updatedAt\":\"2024-04-21T13:54:28.960Z\",\"id\":\"2\"}",
-      "3": "{\"email\":\"admin2\",\"password\":\"2Warw8DHmi\",\"role\":\"admin\",\"permissions\":\"reqCreateShop-managment\",\"status\":\"active\",\"createdAt\":\"2024-04-21T14:38:18.953Z\",\"createdBy\":\"admin-1\",\"updatedBy\":\"admin-1\",\"updatedAt\":\"2024-04-21T14:38:18.953Z\",\"id\":\"3\"}"
+      "3": "{\"email\":\"admin2\",\"password\":\"2Warw8DHmi\",\"role\":\"admin\",\"permissions\":\"reqCreateShop-managment\",\"status\":\"active\",\"createdAt\":\"2024-04-21T14:38:18.953Z\",\"createdBy\":\"admin-1\",\"updatedBy\":\"admin-1\",\"updatedAt\":\"2024-04-21T14:38:18.953Z\",\"id\":\"3\"}",
+      "4": "{\"email\":\"string2\",\"password\":\"string\",\"role\":\"admin\",\"permissions\":\"all\",\"status\":\"active\",\"createdAt\":\"2024-04-23T20:40:46.278Z\",\"updatedAt\":\"2024-04-23T20:40:46.278Z\",\"id\":\"4\"}",
+      "5": "{\"email\":\"admin3\",\"password\":\"string\",\"role\":\"admin\",\"permissions\":\"all\",\"status\":\"active\",\"createdAt\":\"2024-04-23T20:41:06.071Z\",\"updatedAt\":\"2024-04-23T20:41:06.071Z\",\"id\":\"5\"}"
     },
     "RequestCreateShop": {
       "1": "{\"idOfUser\":\"1\",\"status\":\"aceepted\",\"pickUpAddress\":\"Khu phố thị trấn Thanh Thủy\",\"pickUpProvinceName\":\"Phú Thọ \",\"pickUpProvinceId\":\" 229\",\"pickUpDistrictName\":\"Huyện Thanh Thủy \",\"pickUpDistrictId\":\" 2237\",\"pickUpWardName\":\"Xã Đoan Hạ \",\"pickUpWardId\":\" 151204\",\"returnAddress\":\"khu phố thị trấn Thanh Thủy\",\"returnProvinceName\":\"Phú Thọ \",\"returnProvinceId\":\" 229\",\"returnDistrictName\":\"Huyện Thanh Thủy \",\"returnDistrictId\":\" 2237\",\"returnWardName\":\"Xã Đoan Hạ \",\"returnWardId\":\" 151204\",\"IDcardImg\":[{\"filename\":\"2024-04-15T09:27:09.897ZSum.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-15T09:27:09.897ZSum.jpg?alt=media\"},{\"filename\":\"2024-04-15T09:27:09.898Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-15T09:27:09.898Zdog.jpg?alt=media\"}],\"BLicenseImg\":[{\"filename\":\"2024-04-15T09:27:10.771ZScreenshot from 2024-03-27 19-15-20.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-15T09:27:10.771ZScreenshot%20from%202024-03-27%2019-15-20.png?alt=media\"},{\"filename\":\"2024-04-15T09:27:10.772ZScreenshot from 2024-03-16 22-20-01.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-15T09:27:10.772ZScreenshot%20from%202024-03-16%2022-20-01.png?alt=media\"}],\"email\":\"hung@gmail.com\",\"name\":\"sốp vui vẻ úp đết lần 2\",\"id\":\"1\",\"phoneNumber\":\"0915047678\"}"

@@ -313,6 +313,7 @@ export class UserManagementController {
     return this.userRepository.findById(idOfUser);
   }
 
+  //
   @post('/register/customer', {
     responses: {
       '200': {
@@ -331,31 +332,38 @@ export class UserManagementController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(User, {
-            title: 'NewUser',
-            exclude: ['id', 'role'],
-          }),
+          schema: {
+            type: 'object',
+          },
         },
       },
     })
-    newUserRequest: Omit<User, 'id'>,
+    newUserRequest: any,
   ): Promise<any> {
     // All new users have the "customer" role by default
     newUserRequest.role = 'customer';
     newUserRequest.status = 'active';
+    const time = new Date().toISOString();
 
     try {
-      if (
-        (
-          await this.userRepository.find({
-            where: {email: newUserRequest.email},
-          })
-        ).length > 0
-      ) {
-        return this.response.status(400).send('Đã tồn tại email này rồi');
+      const checked = await this.userRepository.find({
+        where: {email: newUserRequest.email},
+      });
+      if (checked.length > 0) {
+        return {
+          code: 400,
+          message: 'Email đã tồn tại',
+        };
       }
-      const data = await this.userRepository.create(newUserRequest);
-      return data;
+      const data = await this.userRepository.create({
+        ...newUserRequest,
+        createdAt: time,
+        updatedAt: time,
+      });
+      return {
+        code: 200,
+        data,
+      };
     } catch (error) {
       throw error;
     }
@@ -379,29 +387,38 @@ export class UserManagementController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Admin, {
-            title: 'NewAdmin',
-            exclude: ['id', 'role'],
-          }),
+          schema: {
+            type: 'object',
+          },
         },
       },
     })
-    newUserRequest: Omit<Admin, 'id'>,
+    newUserRequest: any,
   ): Promise<any> {
-    // All new users have the "customer" role by default
-    newUserRequest.role = 'admin';
-    newUserRequest.permissions = 'all';
-    newUserRequest.status = 'active';
+    const time = new Date().toISOString();
 
     try {
       const list = await this.adminrepository.find({
         where: {email: newUserRequest.email},
       });
       if (list.length > 0) {
-        return this.response.status(400).send('Đã tồn tại username này rồi');
+        return {
+          code: 400,
+          message: 'Email đã tồn tại',
+        };
       }
-      const data = await this.adminrepository.create(newUserRequest);
-      return data;
+      const data = await this.adminrepository.create({
+        ...newUserRequest,
+        role: 'admin',
+        permissions: 'all',
+        status: 'active',
+        createdAt: time,
+        updatedAt: time,
+      });
+      return {
+        code: 200,
+        data,
+      };
     } catch (error) {
       throw error;
     }
@@ -843,6 +860,117 @@ export class UserManagementController {
       throw new HttpErrors.Unauthorized(invalidCredentialsError);
     }
     const foundUser = await this.userRepository.findOne({
+      where: {email},
+    });
+
+    if (foundUser?.password !== password)
+      throw new HttpErrors.Unauthorized(invalidCredentialsError);
+
+    if (!foundUser) {
+      throw new HttpErrors.Unauthorized(invalidCredentialsError);
+    }
+
+    return {
+      code:200,
+      data: foundUser
+    };
+  }
+
+  @post('getInfoByPass/admin', {
+    responses: {
+      '200': {
+        description: 'Return current user',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'USER',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getAdminByPassword(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              email: {
+                type: 'string',
+              },
+              password: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req: any,
+  ): Promise<any> {
+    const {email, password} = req;
+    const invalidCredentialsError = 'Invalid email or password.';
+
+    if (!email) {
+      throw new HttpErrors.Unauthorized(invalidCredentialsError);
+    }
+    const foundUser = await this.adminrepository.findOne({
+      where: {email},
+    });
+
+    if (foundUser?.password !== password)
+      throw new HttpErrors.Unauthorized(invalidCredentialsError);
+
+    if (!foundUser) {
+      throw new HttpErrors.Unauthorized(invalidCredentialsError);
+    }
+
+    return foundUser;
+  }
+
+  @post('getInfoByPass/employee', {
+    responses: {
+      '200': {
+        description: 'Return current user',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'USER',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getEmployeeByPassword(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              email: {
+                type: 'string',
+              },
+              password: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req: any,
+  ): Promise<any> {
+    const {email, password} = req;
+    const invalidCredentialsError = 'Invalid email or password.';
+
+    if (!email) {
+      throw new HttpErrors.Unauthorized(invalidCredentialsError);
+    }
+    const foundUser = await this.employeeRepository.findOne({
       where: {email},
     });
 

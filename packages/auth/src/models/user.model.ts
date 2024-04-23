@@ -83,16 +83,16 @@ export class User extends Entity {
   resetToken: string;
 
   @property({
-    type: 'Date',
-    required: false,
+    type: 'date',
+    required: true,
   })
-  createdAt: Date;
+  createdAt: string ;
 
   @property({
-    type: 'Date',
-    required: false,
+    type: 'date',
+    required: true,
   })
-  updatedAt: Date;
+  updatedAt: string;
 
 
   constructor(data?: Partial<User>) {
