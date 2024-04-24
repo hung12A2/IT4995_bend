@@ -1,7 +1,14 @@
 // Uncomment these imports to begin using these cool features!
 
 import {inject} from '@loopback/core';
-import {post, requestBody, get, RestBindings, Response} from '@loopback/rest';
+import {
+  post,
+  requestBody,
+  get,
+  RestBindings,
+  Response,
+  Request,
+} from '@loopback/rest';
 import {UserServiceBindings} from '../key';
 import {UserManagementService} from '../services/userManament.service';
 import {TokenServiceBindings, User} from '@loopback/authentication-jwt';
@@ -25,6 +32,7 @@ export class UserController {
     @inject(UserServiceBindings.EMPLOYEE_SERVICE)
     public employeeService: EmployeeManagementService,
     @inject(RestBindings.Http.RESPONSE) public response: Response,
+    @inject(RestBindings.Http.REQUEST) public request: Request,
   ) {}
 
   @post('login/customer', {
@@ -123,10 +131,11 @@ export class UserController {
       password,
     });
 
-    if (!foundUser) return {
-      code:401,
-      message: 'Invalid email or password'
-    }
+    if (!foundUser)
+      return {
+        code: 401,
+        message: 'Invalid email or password',
+      };
 
     const userProfile = this.adminService.convertToUserProfile(foundUser);
 
@@ -134,8 +143,8 @@ export class UserController {
 
     return {
       code: 200,
-      token
-    }
+      token,
+    };
   }
 
   @post('login/employee', {
@@ -178,16 +187,16 @@ export class UserController {
       password,
     });
 
-    if (!foundUser) return { code: 401, message: 'Invalid email or password'}
+    if (!foundUser) return {code: 401, message: 'Invalid email or password'};
 
     const userProfile = this.employeeService.convertToUserProfile(foundUser);
 
     const token = await this.jwtService.generateToken(userProfile);
 
     return {
-      code:200,
-      token
-    }
+      code: 200,
+      token,
+    };
   }
 
   @post('/register/customer', {
@@ -289,8 +298,147 @@ export class UserController {
     return data;
   }
 
+  @post('/forgotPassword/customer', {
+    responses: {
+      '200': {
+        description: 'send mail to reset password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async forgotPassword(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              email: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req: any,
+  ): Promise<any> {
+    const data = await axios
+      .post('/forgotPassword/Customer', req)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @post('/resetPassword/customer', {
+    responses: {
+      '200': {
+        description: 'Change Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async resetPassword(
+    @requestBody({
+      description: 'Change Password',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              token: {
+                type: 'string',
+              },
+              newPassword: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    {token, newPassword}: {token: string; newPassword: string},
+  ): Promise<any> {
+    const data = await axios
+      .post('/resetPassword/Customer', {token, newPassword})
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
   @authenticate('jwt')
-  // @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
+  @post('/changePassword/customer', {
+    responses: {
+      '200': {
+        description: 'Change Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async changePassword(
+    @requestBody({
+      description: 'Change Password',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              oldPassword: {
+                type: 'string',
+              },
+              newPassword: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req: {
+      oldPassword: string;
+      newPassword: string;
+    },
+  ): Promise<any> {
+    const data = await axios
+      .post(
+        '/changePassword/customer',
+        {
+          oldPassword: req.oldPassword,
+          newPassword: req.newPassword,
+        },
+        {
+          headers: {
+            authorization: `${this.request.headers.authorization}`,
+          },
+        },
+      )
+      .then(res => res)
+      .catch(e => console.log(e.response.data));
+
+    return data;
+  }
+
+  @authenticate('jwt')
   @get('whoAmI', {
     responses: {
       '200': {

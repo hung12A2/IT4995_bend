@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 const instance = axios.create({
   baseURL: 'http://localhost:8080/',
   headers: {
@@ -29,37 +28,37 @@ instance.interceptors.response.use(
       // forbidden (permission related issues)
       case 403: {
         //toast.error("You don't have permission to access this resource...");
-        return Promise.reject(error);
+        return error.response.data;
       }
 
       // bad request
       case 400: {
         //toast.error("Something wrong from server");
 
-        return Promise.reject(error);
+        return error.response.data;
       }
 
       // not found
       case 404: {
         //toast.error("Not found... ");
 
-        return Promise.reject(error);
+        return error.response.data;
       }
 
       // conflict
       case 409: {
-        return Promise.reject(error);
+        return error.response.data;
       }
 
       // unprocessable
       case 422: {
-        return Promise.reject(error);
+        return error.response.data;
       }
 
       // generic api error (server related) unexpected
       default: {
         //toast.error("Something wrong... ");
-        return Promise.reject(error);
+        return error.response.data;
       }
     }
   },

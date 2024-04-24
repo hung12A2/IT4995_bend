@@ -614,6 +614,7 @@ export class UserManagementController {
 
     if (!user) {
       return {
+        code: 400,
         message: 'Email không tồn tại',
       };
     }
@@ -646,6 +647,7 @@ export class UserManagementController {
 
     const data = await transporter.sendMail(mailOptions);
     return {
+      code: 200,
       message: 'Email sent',
     };
   }
@@ -691,7 +693,10 @@ export class UserManagementController {
       decoded = await verifyAsync(token, 'hello');
       console.log(decoded);
       if (!decoded.id)
-        return this.response.status(400).send({message: 'Invalid token'});
+        return {
+          code: 400,
+          message: 'Invalid or expired token',
+        };
     } catch (error) {
       throw new Error('Invalid or expired token');
     }
@@ -699,7 +704,10 @@ export class UserManagementController {
     const user = await this.userRepository.findById(decoded.id);
 
     if (!user || user.resetToken !== token) {
-      throw new Error('Invalid or expired token');
+      return {
+        code: 400,
+        message: 'Invalid or expired token',
+      };
     }
 
     user.password = newPassword;
@@ -707,7 +715,7 @@ export class UserManagementController {
 
     await this.userRepository.updateById(user.id, user);
 
-    return {message: 'Password has been changed'};
+    return {code: 200, message: 'Password has been changed'};
   }
 
   @authenticate('jwt')
@@ -756,26 +764,29 @@ export class UserManagementController {
     const user = await this.userRepository.findById(id);
 
     if (!user) {
-      return this.response.status(400).send({message: 'User not found'});
+      return {
+        code: 400,
+        message: 'User not found',
+      };
     }
 
     const isPasswordMatch = user.password === oldPassword;
 
     if (!isPasswordMatch) {
-      return this.response
-        .status(400)
-        .send({message: 'Old password is incorrect'});
+      return {
+        code: 400,
+        message: 'Old password is incorrect',
+      };
     }
 
     user.password = newPassword;
 
     await this.userRepository.updateById(user.id, user);
 
-    return {message: 'Password has been changed'};
+    return {code: 200, message: 'Password has been changed'};
   }
 
   @authenticate('jwt')
-  // @authorize({allowedRoles: ['admin'], voters: [basicAuthorization]})
   @get('whoAmI', {
     responses: {
       '200': {
@@ -871,8 +882,8 @@ export class UserManagementController {
     }
 
     return {
-      code:200,
-      data: foundUser
+      code: 200,
+      data: foundUser,
     };
   }
 

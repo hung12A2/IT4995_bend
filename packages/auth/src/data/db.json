@@ -11,7 +11,7 @@
   "models": {
     "User": {
       "1": "{\"idOfShop\":\"1\",\"email\":\"string\",\"password\":\"string\",\"phoneNumber\":\"string\",\"gender\":\"string\",\"fullName\":\"string\",\"role\":\"customer\",\"status\":\"active\",\"coverImage\":{},\"avatar\":{},\"resetToken\":\"string\",\"createdAt\":\"2024-04-15T09:07:34.640Z\",\"updatedAt\":\"2024-04-15T09:07:34.640Z\",\"id\":\"1\"}",
-      "35": "{\"email\":\"hung131119782002@gmail.com\",\"password\":\"string\",\"phoneNumber\":\"string\",\"gender\":\"string\",\"fullName\":\"string\",\"role\":\"customer\",\"status\":\"active\",\"createdAt\":\"2024-04-23T20:29:21.187Z\",\"updatedAt\":\"2024-04-23T20:29:21.187Z\",\"id\":\"35\"}"
+      "35": "{\"email\":\"hung131119782002@gmail.com\",\"password\":\"1234567\",\"phoneNumber\":\"string\",\"gender\":\"string\",\"fullName\":\"string\",\"role\":\"customer\",\"status\":\"active\",\"createdAt\":\"2024-04-23T20:29:21.187Z\",\"updatedAt\":\"2024-04-23T20:29:21.187Z\",\"id\":\"35\",\"resetToken\":null}"
     },
     "Admin": {
       "1": "{\"email\":\"string\",\"password\":\"string\",\"role\":\"admin\",\"permissions\":\"all\",\"status\":\"active\",\"coverImage\":{},\"avatar\":{},\"additionalProp1\":{},\"id\":\"1\"}",

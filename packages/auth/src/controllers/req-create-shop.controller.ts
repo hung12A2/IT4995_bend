@@ -47,7 +47,7 @@ export class ReqCreateShopController {
   ) {}
 
   @authenticate('jwt')
-  @post('/request-create-shops')
+  @post('/request-create-shops/user/{idOfUser}')
   @response(200, {
     description: 'RequestCreateShop model instance',
     content: {
@@ -55,8 +55,7 @@ export class ReqCreateShopController {
     },
   })
   async create(
-    @inject(SecurityBindings.USER)
-    currentUserProfile: UserProfile,
+    @param.path.string('idOfUser') idOfUser: string,
     @requestBody({
       description: 'multipart/form-data value.',
       required: true,
@@ -71,7 +70,6 @@ export class ReqCreateShopController {
     request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<any> {
-    const idOfUser = currentUserProfile.id;
     const requestCreate = await this.requestCreateShopRepository.find({
       where: {idOfUser: idOfUser},
     });
@@ -182,7 +180,11 @@ export class ReqCreateShopController {
       BLicenseImg: BLicenseImg,
     });
 
-    return this.requestCreateShopRepository.create(requestCreateShopData);
+    const dataReq = await this.requestCreateShopRepository.create(requestCreateShopData);
+    return {
+      code: 200,
+      data
+    }
   }
 
   @post('/request-create-shops/accepted/{id}')
