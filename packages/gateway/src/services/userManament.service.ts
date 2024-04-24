@@ -6,8 +6,7 @@
 import {UserService} from '@loopback/authentication';
 import {securityId, UserProfile} from '@loopback/security';
 import {Credentials} from '../types';
-import axios from 'axios';
-import {HttpErrors} from '@loopback/rest';
+import axios from '../services/authAxios.service';
 
 export class UserManagementService implements UserService<any, any> {
   constructor() {}
@@ -15,7 +14,7 @@ export class UserManagementService implements UserService<any, any> {
   async verifyCredentials(credentials: Credentials): Promise<any> {
     const {email, password} = credentials;
     const data = await axios
-      .post(`http://localhost:8080/getInfoByPass/customer`, {
+      .post(`login/Customer`, {
         email,
         password,
       })

@@ -3,6 +3,7 @@ import {TokenServiceBindings} from '@loopback/authentication-jwt';
 import {inject} from '@loopback/context';
 import {del, HttpErrors} from '@loopback/rest';
 import {securityId, UserProfile} from '@loopback/security';
+import axios from '../services/authAxios.service';
 import {promisify} from 'util';
 
 const jwt = require('jsonwebtoken');
@@ -28,11 +29,17 @@ export class JWTService implements TokenService {
 
     try {
       // decode user profile from token
-      const decodedToken = await verifyAsync(token, this.jwtSecret);
+      const decodedToken: any = await axios.post(
+        `whoAmI`,
+        {},
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        },
+      );
       // don't copy over  token field 'iat' and 'exp', nor 'email' to user profile
       const role = decodedToken.role;
-      delete decodedToken.iat;
-      delete decodedToken.exp;
       if (role == 'customer ') {
         userProfile = Object.assign(
           {[securityId]: '', name: ''},

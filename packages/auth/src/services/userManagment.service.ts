@@ -6,7 +6,7 @@
 import {UserService} from '@loopback/authentication';
 import {repository} from '@loopback/repository';
 import {HttpErrors} from '@loopback/rest';
-import {securityId} from '@loopback/security'; 
+import {securityId} from '@loopback/security';
 import {Admin, User} from '../models';
 import {AdminRepository, UserRepository} from '../repositories';
 import {Credentials} from '../types';
@@ -45,28 +45,12 @@ export class UserManagementService implements UserService<User, Credentials> {
     if (user.id) {
       return {
         [securityId]: user.id,
-        fullname: user.fullName,
-        gender: user.gender,
-        phonenumber: user.phoneNumber,
-        email: user.email,
-        id: user.id,
-        role: user.role,
-        status: user.status,
-        idOfShop: user.idOfShop,
-        idOfKiot: user.idOfKiot,
+        ...user,
       };
     } else
       return {
         [securityId]: '',
-        fullname: user.fullName,
-        email: user.email,
-        gender: user.gender,
-        phonenumber: user.phoneNumber,
-        id: user.id,
-        role: user.role,
-        status: user.status,
-        idOfShop: user.idOfShop,
-        idOfKiot: user.idOfKiot,
+        ...user,
       };
   }
 }

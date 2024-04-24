@@ -70,20 +70,16 @@ export class UserController {
     req: any,
   ): Promise<any> {
     const {email, password} = req;
-    const foundUser = await this.userService.verifyCredentials({
+    const token = await this.userService.verifyCredentials({
       email,
       password,
     });
 
-    if (!foundUser)
+    if (!token)
       return {
-        code: 400,
+        code: 401,
         message: 'Invalid email or password',
       };
-
-    const userProfile = this.userService.convertToUserProfile(foundUser);
-
-    const token = await this.jwtService.generateToken(userProfile);
 
     return {
       code: 200,
@@ -126,20 +122,16 @@ export class UserController {
     req: any,
   ): Promise<any> {
     const {email, password} = req;
-    const foundUser = await this.adminService.verifyCredentials({
+    const token = await this.adminService.verifyCredentials({
       email,
       password,
     });
 
-    if (!foundUser)
+    if (!token)
       return {
         code: 401,
         message: 'Invalid email or password',
       };
-
-    const userProfile = this.adminService.convertToUserProfile(foundUser);
-
-    const token = await this.jwtService.generateToken(userProfile);
 
     return {
       code: 200,
@@ -182,16 +174,12 @@ export class UserController {
     req: any,
   ): Promise<any> {
     const {email, password} = req;
-    const foundUser = await this.employeeService.verifyCredentials({
+    const token = await this.employeeService.verifyCredentials({
       email,
       password,
     });
 
-    if (!foundUser) return {code: 401, message: 'Invalid email or password'};
-
-    const userProfile = this.employeeService.convertToUserProfile(foundUser);
-
-    const token = await this.jwtService.generateToken(userProfile);
+    if (!token) return {code: 401, message: 'Invalid email or password'};
 
     return {
       code: 200,

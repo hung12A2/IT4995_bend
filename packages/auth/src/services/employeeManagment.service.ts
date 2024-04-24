@@ -44,22 +44,12 @@ export class EmployeeManagmentService
     if (employee.id) {
       return {
         [securityId]: employee.id,
-        id: employee.id,
-        role: employee.role,
-        permissions: employee.permissions,
-        status: employee.status,
-        idOfShop: employee.idOfShop,
-        idOfKiot: employee.idOfKiot,
+        ...employee,
       };
     } else
       return {
         [securityId]: '',
-        id: employee.id,
-        role: employee.role,
-        permissions: employee.permissions,
-        status: employee.status,
-        idOfShop: employee.idOfShop,
-        idOfKiot: employee.idOfKiot,
+        ...employee,
       };
   }
 }

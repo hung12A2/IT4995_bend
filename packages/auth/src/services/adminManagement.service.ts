@@ -44,20 +44,12 @@ export class AdminManagmentService implements UserService<Admin, Credentials> {
     if (admin.id) {
       return {
         [securityId]: admin.id,
-        email: admin.email,
-        id: admin.id,
-        role: admin.role,
-        permissions: admin.permissions,
-        status: admin.status,
+        ...admin,
       };
     } else
       return {
         [securityId]: '',
-        email: admin.email,
-        id: admin.id,
-        role: admin.role,
-        permissions: admin.permissions,
-        status: admin.status,
+        ...admin,
       };
   }
 }
