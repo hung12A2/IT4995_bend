@@ -138,16 +138,22 @@ export class RequestCreateShop extends Entity {
   name: string;
 
   @property({
-    type: 'Date',
+    type: 'date',
     required: false,
   })
-  createdAt: Date;
+  createdAt: String;
 
   @property({
-    type: 'Date',
+    type: 'string',
     required: false,
   })
-  updatedAt: Date;
+  createdBy: String;
+
+  @property({
+    type: 'date',
+    required: false,
+  })
+  updatedAt: string;
 
   @property({
     type: 'string',

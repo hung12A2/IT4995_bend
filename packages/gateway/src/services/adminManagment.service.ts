@@ -18,7 +18,7 @@ export class AdminManagementService implements UserService<any, any> {
         email,
         password,
       })
-      .then(res => res.data)
+      .then((res:any) => res.token)
       .catch(e => console.log(e));
 
     if (data) return data;

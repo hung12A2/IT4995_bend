@@ -60,6 +60,7 @@
     "@loopback/security": "^0.11.1",
     "@loopback/service-proxy": "^7.0.0",
     "axios": "^1.6.8",
+    "form-data": "^4.0.0",
     "tslib": "^2.0.0"
   },
   "devDependencies": {

@@ -63,8 +63,9 @@ export class UserManagementController {
     private response: Response,
   ) {}
 
+  //
   @authenticate('jwt')
-  @post('/uploadAvatar')
+  @post('/uploadAvatar/user')
   @response(200, {
     description: 'RequestCreateShop model instance',
     content: {
@@ -104,10 +105,17 @@ export class UserManagementController {
       });
     });
 
+    const oldUser: any = await this.userRepository.findById(idOfUser);
+
     const avatar = data.files.avatar;
 
+    console.log(data);
+
     if (avatar.length > 1) {
-      return response.status(400).send('Chỉ được upload 1 ảnh dai dien');
+      return {
+        code: 400,
+        message: 'Chỉ được upload 1 ảnh dai dien',
+      };
     }
 
     if (role == 'customer') {
@@ -121,140 +129,16 @@ export class UserManagementController {
       });
     }
 
-    return this.userRepository.findById(idOfUser);
+    const dataImg = await this.userRepository.findById(idOfUser);
+    if (oldUser.avatar.url) {
+      deleteRemoteFile(oldUser.avatar.filename);
+      return {code: 200, data: dataImg};
+    }
+    return {code: 200, data: dataImg};
   }
 
   @authenticate('jwt')
-  @post('/changeAvatar')
-  @response(200, {
-    description: 'RequestCreateShop model instance',
-    content: {
-      'application/json': {schema: getModelSchemaRef(User)},
-    },
-  })
-  async changeAvatar(
-    @inject(SecurityBindings.USER)
-    currentUserProfile: UserProfile,
-    @requestBody({
-      description: 'multipart/form-data value.',
-      required: true,
-      content: {
-        'multipart/form-data': {
-          // Skip body parsing
-          'x-parser': 'stream',
-          schema: {type: 'object'},
-        },
-      },
-    })
-    request: Request,
-    @inject(RestBindings.Http.RESPONSE) response: Response,
-  ): Promise<any> {
-    const idOfUser = currentUserProfile.id;
-    const role = currentUserProfile.role;
-
-    const oldAvatar = (await this.userRepository.findById(idOfUser)).avatar;
-
-    deleteRemoteFile(oldAvatar.filename);
-
-    const data: any = await new Promise<object>((resolve, reject) => {
-      cpUpload(request, response, (err: unknown) => {
-        if (err) reject(err);
-        else {
-          resolve({
-            files: request.files,
-            body: request.body,
-          });
-        }
-      });
-    });
-
-    const avatar = data.files.avatar;
-
-    if (avatar.length > 1) {
-      return response.status(400).send('Chỉ được upload 1 ảnh dai dien');
-    }
-
-    if (role == 'customer') {
-      const dataAvatar: any = await uploadFile(avatar[0]);
-
-      await this.userRepository.updateById(idOfUser, {
-        avatar: {
-          filename: dataAvatar.filename,
-          url: dataAvatar.url,
-        },
-      });
-    }
-
-    return this.userRepository.findById(idOfUser);
-  }
-
-  @authenticate('jwt')
-  @post('/changeCoverImage')
-  @response(200, {
-    description: 'RequestCreateShop model instance',
-    content: {
-      'application/json': {schema: getModelSchemaRef(User)},
-    },
-  })
-  async changeCoverImage(
-    @inject(SecurityBindings.USER)
-    currentUserProfile: UserProfile,
-    @requestBody({
-      description: 'multipart/form-data value.',
-      required: true,
-      content: {
-        'multipart/form-data': {
-          // Skip body parsing
-          'x-parser': 'stream',
-          schema: {type: 'object'},
-        },
-      },
-    })
-    request: Request,
-    @inject(RestBindings.Http.RESPONSE) response: Response,
-  ): Promise<any> {
-    const idOfUser = currentUserProfile.id;
-    const role = currentUserProfile.role;
-
-    const oldCoverImage = (await this.userRepository.findById(idOfUser))
-      .coverImage;
-
-    deleteRemoteFile(oldCoverImage.filename);
-
-    const data: any = await new Promise<object>((resolve, reject) => {
-      cpUpload(request, response, (err: unknown) => {
-        if (err) reject(err);
-        else {
-          resolve({
-            files: request.files,
-            body: request.body,
-          });
-        }
-      });
-    });
-
-    const coverImage = data.files.coverImage;
-
-    if (coverImage.length > 1) {
-      return response.status(400).send('Chỉ được upload 1 ảnh dai dien');
-    }
-
-    if (role == 'customer') {
-      const dataCoverImage: any = await uploadFile(coverImage[0]);
-
-      await this.userRepository.updateById(idOfUser, {
-        coverImage: {
-          filename: dataCoverImage.filename,
-          url: dataCoverImage.url,
-        },
-      });
-    }
-
-    return this.userRepository.findById(idOfUser);
-  }
-
-  @authenticate('jwt')
-  @post('/uploadCoverImage')
+  @post('/uploadCoverImage/user')
   @response(200, {
     description: 'RequestCreateShop model instance',
     content: {
@@ -281,6 +165,8 @@ export class UserManagementController {
     const idOfUser = currentUserProfile.id;
     const role = currentUserProfile.role;
 
+    const oldUser: any = await this.userRepository.findById(idOfUser);
+
     const data: any = await new Promise<object>((resolve, reject) => {
       cpUpload(request, response, (err: unknown) => {
         if (err) reject(err);
@@ -301,6 +187,10 @@ export class UserManagementController {
 
     if (role == 'customer') {
       const dataCoverImage: any = await uploadFile(coverImage[0]);
+
+      if (oldUser.coverImage.url) {
+        deleteRemoteFile(oldUser.coverImage.filename);
+      }
 
       await this.userRepository.updateById(idOfUser, {
         coverImage: {

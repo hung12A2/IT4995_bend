@@ -158,7 +158,19 @@ export class Store extends Entity {
     type: 'Date',
     required: false,
   })
-  createdAt: Date;
+  createdAt: string;
+
+  @property({
+    type: 'Date',
+    required: false,
+  })
+  updatedAt: string;
+
+  @property({
+    type: 'string',
+    required: false,
+  })
+  acceptedBy: string;
 
   // Define well-known properties here
 

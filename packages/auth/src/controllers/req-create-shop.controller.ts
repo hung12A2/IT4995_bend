@@ -47,7 +47,7 @@ export class ReqCreateShopController {
   ) {}
 
   @authenticate('jwt')
-  @post('/request-create-shops/user/{idOfUser}')
+  @post('/request-create-shops')
   @response(200, {
     description: 'RequestCreateShop model instance',
     content: {
@@ -55,7 +55,8 @@ export class ReqCreateShopController {
     },
   })
   async create(
-    @param.path.string('idOfUser') idOfUser: string,
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
     @requestBody({
       description: 'multipart/form-data value.',
       required: true,
@@ -70,6 +71,7 @@ export class ReqCreateShopController {
     request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<any> {
+    const idOfUser = currentUser.id;
     const requestCreate = await this.requestCreateShopRepository.find({
       where: {idOfUser: idOfUser},
     });
@@ -78,13 +80,17 @@ export class ReqCreateShopController {
     });
 
     if (requestCreate.length > 0 && requestCreate[0].status == 'pending') {
-      return response
-        .status(200)
-        .send({messsage: 'Dang xu ly yeu cau tao shop '});
+      return {
+        code: 400,
+        message: 'Yêu cầu của bạn đang được xử lý',
+      };
     }
 
     if (Store.length > 0) {
-      return response.status(200).send({messsage: 'khong the tao 2 shop'});
+      return {
+        code: 400,
+        message: 'Bạn đã có cửa hàng',
+      };
     }
 
     const data: any = await new Promise<object>((resolve, reject) => {
@@ -156,6 +162,7 @@ export class ReqCreateShopController {
       }),
     );
 
+    const time = new Date().toISOString();
     const requestCreateShopData: RequestCreateShop = Object.assign({
       idOfUser: idOfUser,
       status: 'pending',
@@ -178,15 +185,21 @@ export class ReqCreateShopController {
       name,
       IDcardImg: IDcardImg,
       BLicenseImg: BLicenseImg,
+      createdAt: time,
+      updatedAt: time,
+      createdBy: `user-${idOfUser}`,
     });
 
-    const dataReq = await this.requestCreateShopRepository.create(requestCreateShopData);
+    const dataReq = await this.requestCreateShopRepository.create(
+      requestCreateShopData,
+    );
     return {
       code: 200,
-      data
-    }
+      data: dataReq,
+    };
   }
 
+  @authenticate('jwt')
   @post('/request-create-shops/accepted/{id}')
   @response(200, {
     description: 'RequestCreateShop model instance',
@@ -195,11 +208,16 @@ export class ReqCreateShopController {
     },
   })
   async acceptRequestCreateShop(
-    @inject(RestBindings.Http.RESPONSE) response: Response,
     @param.path.string('id') idOfRequest: string,
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
   ): Promise<any> {
-    const requestCreatShopData =
+    const requestCreatShopData: any =
       await this.requestCreateShopRepository.findById(idOfRequest);
+
+    if (requestCreatShopData.status != 'pending')
+      return {code: 400, message: 'yeu cau da duoc xu ly'};
+
     const {
       idOfUser,
       pickUpAddress,
@@ -223,6 +241,7 @@ export class ReqCreateShopController {
       name,
     } = requestCreatShopData;
 
+    const time = new Date().toISOString();
     const storeData: Store = Object.assign({
       idOfUser,
       coverImage: {filename: '', url: ''},
@@ -248,17 +267,26 @@ export class ReqCreateShopController {
       returnProvinceId,
       returnWardName,
       returnWardId,
+      createdAt: time,
+      updatedAt: time,
+      acceptedBy: `admin-${currentUser.id}`,
     });
     await this.requestCreateShopRepository.updateById(idOfRequest, {
-      status: 'aceepted',
+      status: 'accepted',
+      updatedAt: new Date().toISOString(),
+      updatedBy: `admin-${currentUser.id}`,
     });
     const data = await this.storeRepository.create(storeData);
 
     await this.userRepository.updateById(idOfUser, {idOfShop: data.id});
 
-    return data;
+    return {
+      code: 200,
+      data: data,
+    };
   }
 
+  @authenticate('jwt')
   @post('/request-create-shops/reject/{id}')
   @response(200, {
     description: 'RequestCreateShop model instance',
@@ -267,12 +295,28 @@ export class ReqCreateShopController {
     },
   })
   async rejectRequestCreateShop(
-    @inject(RestBindings.Http.RESPONSE) response: Response,
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
     @param.path.string('id') idOfRequest: string,
   ): Promise<any> {
+    const oldRequest: any =
+      await this.requestCreateShopRepository.findById(idOfRequest);
+    if (oldRequest.status != 'pending')
+      return {
+        code: 400,
+        message: 'Yêu cầu đã được xử lý',
+      };
+
     await this.requestCreateShopRepository.updateById(idOfRequest, {
       status: 'rejected',
+      updatedAt: new Date().toISOString(),
+      updatedBy: `admin - ${currentUser.id}`,
     });
+
+    return {
+      code: 200,
+      message: 'Yêu cầu đã bị từ chối',
+    };
   }
 
   @get('/request-create-shops/count')
@@ -300,8 +344,12 @@ export class ReqCreateShopController {
   })
   async find(
     @param.filter(RequestCreateShop) filter?: Filter<RequestCreateShop>,
-  ): Promise<RequestCreateShop[]> {
-    return this.requestCreateShopRepository.find(filter);
+  ): Promise<any> {
+    const data = await this.requestCreateShopRepository.find(filter);
+    return {
+      code: 200,
+      data: data,
+    };
   }
 
   @get('/request-create-shops/{id}')
@@ -322,7 +370,7 @@ export class ReqCreateShopController {
   }
 
   @authenticate('jwt')
-  @patch('/request-create-shops/')
+  @patch('/request-create-shops')
   @response(204, {
     description: 'RequestCreateShop PATCH success',
   })
@@ -360,6 +408,20 @@ export class ReqCreateShopController {
     const oldRequest: any = await this.requestCreateShopRepository.findOne({
       where: {idOfUser: idOfUser},
     });
+
+    if (!oldRequest) {
+      return {
+        code: 400,
+        message: 'Khong tim thay yeu cau',
+      };
+    }
+
+    if (oldRequest.status !== 'pending') {
+      return {
+        code: 400,
+        message: 'Khong the thay doi',
+      };
+    }
 
     const {
       pickUpAddress,
@@ -425,7 +487,7 @@ export class ReqCreateShopController {
       }),
     );
 
-    if (IDcardImg) {
+    if (IDcardImg.length > 0 ) {
       const oldfilesIDcardImg = oldRequest.IDcardImg;
       await Promise.all(
         oldfilesIDcardImg.map(async (file: any) => {
@@ -450,7 +512,7 @@ export class ReqCreateShopController {
       }),
     );
 
-    if (BLicenseImg) {
+    if (BLicenseImg.length > 0) {
       const oldfilesBLicenseImg = oldRequest.BLicenseImg;
       await Promise.all(
         oldfilesBLicenseImg.map(async (file: any) => {
@@ -478,8 +540,11 @@ export class ReqCreateShopController {
       phoneNumber,
       email,
       name,
-      IDcardImg,
-      BLicenseImg,
+      IDcardImg: IDcardImg.length > 0 ? IDcardImg : oldRequest.IDcardImg,
+      BLicenseImg:
+        BLicenseImg.length > 0 ? BLicenseImg : oldRequest.BLicenseImg,
+      updatedAt: new Date().toISOString(),
+      updatedBy: `user-${idOfUser}`,
     });
 
     await this.requestCreateShopRepository.updateById(
@@ -487,7 +552,14 @@ export class ReqCreateShopController {
       requestCreateShopData,
     );
 
-    return this.requestCreateShopRepository.findById(oldRequest.id);
+    const dataReturn = await this.requestCreateShopRepository.findById(
+      oldRequest.id,
+    );
+
+    return {
+      code: 200,
+      data: dataReturn,
+    };
   }
 
   @del('/request-create-shops/{id}')

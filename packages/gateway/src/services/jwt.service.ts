@@ -29,9 +29,8 @@ export class JWTService implements TokenService {
 
     try {
       // decode user profile from token
-      const decodedToken: any = await axios.post(
+      const decodedToken: any = await axios.get(
         `whoAmI`,
-        {},
         {
           headers: {
             authorization: `Bearer ${token}`,

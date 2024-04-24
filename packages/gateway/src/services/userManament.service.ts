@@ -18,9 +18,10 @@ export class UserManagementService implements UserService<any, any> {
         email,
         password,
       })
-      .then(res => res.data)
+      .then((res:any) => res.token)
       .catch(e => console.log(e));
 
+      console.log (data)
     return data;
   }
 
