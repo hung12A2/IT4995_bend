@@ -11,3 +11,4 @@ export * from './rating-product.repository';
 export * from './order-kiot.repository';
 export * from './products-in-order-kiot.repository';
 export * from './wallet-of-shop.repository';
+export * from './request-creat-product.repository';

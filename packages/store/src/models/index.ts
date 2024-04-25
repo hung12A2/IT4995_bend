@@ -11,3 +11,4 @@ export * from './rating-product.model';
 export * from './order-kiot.model';
 export * from './products-in-order-kiot.model';
 export * from './wallet-of-shop.model';
+export * from './request-create-product.model';

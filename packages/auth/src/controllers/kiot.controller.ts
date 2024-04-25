@@ -115,7 +115,7 @@ export class KiotController {
     const returnWardName = returnWard.split('-')[0].trim();
     const returnWardId = returnWard.split('-')[1].trim();
 
-    const createTime = new Date().toISOString();
+    const createTime = new Date().toLocaleString();
     const createdAt = createTime;
     const updatedAt = createTime;
     const createdBy = `shopOwner${idOfUser}`;
@@ -258,7 +258,7 @@ export class KiotController {
     const returnWardName = returnWard.split('-')[0].trim();
     const returnWardId = returnWard.split('-')[1].trim();
 
-    const createTime = new Date().toISOString();
+    const createTime = new Date().toLocaleString();
     const updatedAt = createTime;
     const updatedBy = `shopOwner${idOfUser}`;
 

@@ -1,3 +1,7 @@
+// Uncomment these imports to begin using these cool features!
+
+// import {inject} from '@loopback/core';
+
 import {
   Count,
   CountSchema,
@@ -32,7 +36,7 @@ const upload = multer({storage});
 
 var cpUpload = upload.fields([{name: 'image'}]);
 
-export class ProductController {
+export class RequestCreateProductController {
   constructor(
     @repository(ProductRepository)
     public productRepository: ProductRepository,

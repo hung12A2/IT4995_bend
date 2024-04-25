@@ -233,7 +233,7 @@ export class UserManagementController {
     // All new users have the "customer" role by default
     newUserRequest.role = 'customer';
     newUserRequest.status = 'active';
-    const time = new Date().toISOString();
+    const time = new Date().toLocaleString();
 
     try {
       const checked = await this.userRepository.find({
@@ -285,7 +285,7 @@ export class UserManagementController {
     })
     newUserRequest: any,
   ): Promise<any> {
-    const time = new Date().toISOString();
+    const time = new Date().toLocaleString();
 
     try {
       const list = await this.adminrepository.find({

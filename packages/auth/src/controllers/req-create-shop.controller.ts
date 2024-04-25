@@ -162,7 +162,7 @@ export class ReqCreateShopController {
       }),
     );
 
-    const time = new Date().toISOString();
+    const time = new Date().toLocaleString();
     const requestCreateShopData: RequestCreateShop = Object.assign({
       idOfUser: idOfUser,
       status: 'pending',
@@ -241,7 +241,7 @@ export class ReqCreateShopController {
       name,
     } = requestCreatShopData;
 
-    const time = new Date().toISOString();
+    const time = new Date().toLocaleString();
     const storeData: Store = Object.assign({
       idOfUser,
       coverImage: {filename: '', url: ''},
@@ -273,7 +273,7 @@ export class ReqCreateShopController {
     });
     await this.requestCreateShopRepository.updateById(idOfRequest, {
       status: 'accepted',
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date().toLocaleString(),
       updatedBy: `admin-${currentUser.id}`,
     });
     const data = await this.storeRepository.create(storeData);
@@ -309,7 +309,7 @@ export class ReqCreateShopController {
 
     await this.requestCreateShopRepository.updateById(idOfRequest, {
       status: 'rejected',
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date().toLocaleString(),
       updatedBy: `admin - ${currentUser.id}`,
     });
 
@@ -543,7 +543,7 @@ export class ReqCreateShopController {
       IDcardImg: IDcardImg.length > 0 ? IDcardImg : oldRequest.IDcardImg,
       BLicenseImg:
         BLicenseImg.length > 0 ? BLicenseImg : oldRequest.BLicenseImg,
-      updatedAt: new Date().toISOString(),
+      updatedAt: new Date().toLocaleString(),
       updatedBy: `user-${idOfUser}`,
     });
 

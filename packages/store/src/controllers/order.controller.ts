@@ -271,7 +271,7 @@ export class OrderController {
             idOfUser,
             amountOfMoney: order[0].priceOfAll,
             type: 'receive',
-            createdAt: new Date().toISOString(),
+            createdAt: new Date().toLocaleString(),
             idOfOrder: id,
           });
 
@@ -284,7 +284,7 @@ export class OrderController {
           const dataNoti = JSON.stringify({
             idOfUser,
             content: `Đơn hàng ${id} đã bi huy va tien da duoc hoan lai vao tai khoan cua ban`,
-            createdAt: new Date().toISOString(),
+            createdAt: new Date().toLocaleString(),
           });
 
           (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -297,7 +297,7 @@ export class OrderController {
         const dataNoti = JSON.stringify({
           idOfUser,
           content: `Đơn hàng ${id} đã bi huy`,
-          createdAt: new Date().toISOString(),
+          createdAt: new Date().toLocaleString(),
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -341,7 +341,7 @@ export class OrderController {
         const dataNoti = JSON.stringify({
           idOfUser: order[0].idOfUser,
           content: `Đơn hàng ${id} đã duoc chap nhan`,
-          createdAt: new Date().toISOString(),
+          createdAt: new Date().toLocaleString(),
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -400,7 +400,7 @@ export class OrderController {
           idOfShop: order.idOfShop,
           amountOfMoney: order.codAmount - order.totalFee,
           type: 'receive',
-          createdAt: new Date().toISOString(),
+          createdAt: new Date().toLocaleString(),
           idOfOrder: id,
         });
 
@@ -413,7 +413,7 @@ export class OrderController {
         const dataNoti = JSON.stringify({
           idOfShop: order.idOfShop,
           content: `Đơn hàng ${id} đã được nhận ${order.codAmount - order.totalFee} đã được chuyển vào tài khoản của bạn`,
-          createdAt: new Date().toISOString(),
+          createdAt: new Date().toLocaleString(),
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -578,7 +578,7 @@ export class OrderController {
             idOfUser,
             amountOfMoney: order[0].priceOfAll,
             type: 'refund',
-            createdAt: new Date().toISOString(),
+            createdAt: new Date().toLocaleString(),
             idOfOrder: id,
           });
 
@@ -591,7 +591,7 @@ export class OrderController {
           const dataNoti = JSON.stringify({
             idOfUser,
             content: `Đơn hàng ${id} đã được hủy và tiền đã được hoàn lại vào tài khoản của bạn`,
-            createdAt: new Date().toISOString(),
+            createdAt: new Date().toLocaleString(),
           });
 
           (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -604,7 +604,7 @@ export class OrderController {
         const dataNoti = JSON.stringify({
           idOfShop: order[0].idOfShop,
           content: `Đơn hàng ${id} đã bi huy`,
-          createdAt: new Date().toISOString(),
+          createdAt: new Date().toLocaleString(),
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -791,7 +791,7 @@ export class OrderController {
       idOfShop,
       content: `Đơn hàng ${idOrder} đã được tạo thành công voi gia tien ${priceOfAll}`,
       image: imageOrder,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toLocaleString(),
     });
 
     (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -805,7 +805,7 @@ export class OrderController {
         idOfUser,
         amountOfMoney: priceOfAll,
         type: 'send',
-        createdAt: new Date().toISOString(),
+        createdAt: new Date().toLocaleString(),
         image: imageOrder,
         idOfOrder: idOrder,
       });

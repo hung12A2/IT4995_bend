@@ -56,7 +56,7 @@ export class SocketIoController {
       await this.conversationRepository.create({
         idOfUser,
         idOfShop,
-        createdAt: new Date().toISOString(),
+        createdAt: new Date().toLocaleString(),
       });
       console.log('created conversation', conversationId);
     }
@@ -76,7 +76,7 @@ export class SocketIoController {
       targetId,
       content,
       imgLink,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toLocaleString(),
     });
 
     await this.conversationRepository.updateAll(

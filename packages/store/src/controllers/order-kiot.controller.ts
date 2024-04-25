@@ -116,14 +116,14 @@ export class OrderKiotController {
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'deliverd',
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date().toLocaleString(),
         });
 
         const dataNoti = JSON.stringify({
           idOfUser: order[0].idOfUser,
           content: `Don hang ${id} da den noi`,
           image: order[0].image,
-          createdAt: new Date().toISOString(),
+          createdAt: new Date().toLocaleString(),
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -163,14 +163,14 @@ export class OrderKiotController {
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'inTransit',
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date().toLocaleString(),
         });
 
         const dataNoti = JSON.stringify({
           idOfUser: order[0].idOfUser,
           content: `Don hang ${id} dang tren duong van chuyen`,
           image: order[0].image,
-          createdAt: new Date().toISOString(),
+          createdAt: new Date().toLocaleString(),
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -210,14 +210,14 @@ export class OrderKiotController {
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'prepared',
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date().toLocaleString(),
         });
 
         const dataNoti = JSON.stringify({
           idOfUser: order[0].idOfUser,
           content: `Don hang ${id} da duoc chuan bi`,
           image: order[0].image,
-          createdAt: new Date().toISOString(),
+          createdAt: new Date().toLocaleString(),
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -258,7 +258,7 @@ export class OrderKiotController {
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'rejected',
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date().toLocaleString(),
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -274,7 +274,7 @@ export class OrderKiotController {
             idOfUser,
             content: `Don hang ${id} da bi huy, nhan lai ${order[0].priceOfAll}`,
             image: order[0].image,
-            createdAt: new Date().toISOString(),
+            createdAt: new Date().toLocaleString(),
           });
 
           (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -287,7 +287,7 @@ export class OrderKiotController {
             idOfUser,
             amountOfMoney: order[0].priceOfAll,
             type: 'receive',
-            createdAt: new Date().toISOString(),
+            createdAt: new Date().toLocaleString(),
             image: order[0].image,
             idOfOrder: order[0].id,
           });
@@ -303,7 +303,7 @@ export class OrderKiotController {
           idOfUser,
           content: `Don hang ${id} da bi huy, nhan lai ${order[0].priceOfAll}`,
           image: order[0].image,
-          createdAt: new Date().toISOString(),
+          createdAt: new Date().toLocaleString(),
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -342,14 +342,14 @@ export class OrderKiotController {
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'accepted',
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date().toLocaleString(),
         });
 
         const dataNoti = JSON.stringify({
           idOfUser: order[0].idOfUser,
           content: `Don hang ${id} da duoc chap nhan`,
           image: order[0].image,
-          createdAt: new Date().toISOString(),
+          createdAt: new Date().toLocaleString(),
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -389,7 +389,7 @@ export class OrderKiotController {
       if (order) {
         await this.orderKiotRepository.updateById(id, {
           status: 'received',
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date().toLocaleString(),
         });
         const oldWallet = await this.walletOfShopRepository.findOne({
           where: {idOfShop: order.idOfShop},
@@ -407,7 +407,7 @@ export class OrderKiotController {
           idOfShop: order.idOfShop,
           content: `Don hang ${id} da duoc nhan, nhan duoc ${order.codAmount}`,
           image: order.image,
-          createdAt: new Date().toISOString(),
+          createdAt: new Date().toLocaleString(),
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -420,7 +420,7 @@ export class OrderKiotController {
           idOfShop: order.idOfShop,
           amountOfMoney: order.codAmount,
           type: 'receive',
-          createdAt: new Date().toISOString(),
+          createdAt: new Date().toLocaleString(),
           image: order.image,
           idOfOrder: order.id,
         });
@@ -498,7 +498,7 @@ export class OrderKiotController {
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'returned',
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date().toLocaleString(),
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -514,7 +514,7 @@ export class OrderKiotController {
             idOfUser,
             content: `Don hang ${id} da bi hoan tra, nhan lai ${order[0].priceOfAll}`,
             image: order[0].image,
-            createdAt: new Date().toISOString(),
+            createdAt: new Date().toLocaleString(),
           });
 
           (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -529,7 +529,7 @@ export class OrderKiotController {
             idOfUser,
             amountOfMoney: order[0].priceOfAll,
             type: 'receive',
-            createdAt: new Date().toISOString(),
+            createdAt: new Date().toLocaleString(),
             image: order[0].image,
             idOfOrder: order[0].id,
           });
@@ -544,7 +544,7 @@ export class OrderKiotController {
           idOfShop,
           content: `Don hang ${id} da bi hoan tra`,
           image: order[0].image,
-          createdAt: new Date().toISOString(),
+          createdAt: new Date().toLocaleString(),
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -617,7 +617,7 @@ export class OrderKiotController {
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'canceled',
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date().toLocaleString(),
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -633,7 +633,7 @@ export class OrderKiotController {
             idOfUser: order[0].idOfUser,
             content: `Don hang hoa toc ${id} da bi huy, nhan lai ${order[0].priceOfAll}`,
             image: order[0].image,
-            createdAt: new Date().toISOString(),
+            createdAt: new Date().toLocaleString(),
           });
 
           (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -646,7 +646,7 @@ export class OrderKiotController {
             idOfUser,
             amountOfMoney: order[0].priceOfAll,
             type: 'receive',
-            createdAt: new Date().toISOString(),
+            createdAt: new Date().toLocaleString(),
             image: order[0].image,
             idOfOrder: order[0].id,
           });
@@ -662,7 +662,7 @@ export class OrderKiotController {
           idOfShop: order[0].idOfShop,
           content: `Don hang hoa toc ${id} da bi huy`,
           image: order[0].image,
-          createdAt: new Date().toISOString(),
+          createdAt: new Date().toLocaleString(),
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -775,7 +775,7 @@ export class OrderKiotController {
 
     const dimension = `${lengthBox}|${widthBox}|${heightBox}`;
 
-    const time = new Date().toISOString();
+    const time = new Date().toLocaleString();
 
     const NewOrder: any = {
       fromName,
@@ -843,7 +843,7 @@ export class OrderKiotController {
       idOfShop,
       content: `Đơn hàng ${idOrder} đã được tạo thành công voi gia tien ${priceOfAll}`,
       image: imageOrder,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toLocaleString(),
     });
 
     (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -857,7 +857,7 @@ export class OrderKiotController {
         idOfUser,
         amountOfMoney: priceOfAll,
         type: 'send',
-        createdAt: new Date().toISOString(),
+        createdAt: new Date().toLocaleString(),
         image: imageOrder,
         idOfOrder: idOrder,
       });

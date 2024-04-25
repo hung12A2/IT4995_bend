@@ -304,4 +304,24 @@ export class ReqCreateShopController {
 
     return data;
   }
+
+
+  @get('test', {
+    responses: {
+      '200': {
+        description: 'Return all request create shop',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'REQ-SHOP',
+            },
+          },
+        },
+      },
+    },
+  })
+  async test(): Promise<any> { 
+    const data = new Date().toLocaleString();
+   return(data);
+  }
 }

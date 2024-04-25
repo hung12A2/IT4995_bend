@@ -63,7 +63,7 @@ export class AdminController {
     admin.role = 'admin';
     admin.status = 'active';
     admin.password = generateRandomString(10);
-    const time = new Date().toISOString();
+    const time = new Date().toLocaleString();
     admin.createdAt = time;
     admin.updatedAt = time;
     admin.updatedBy = `admin-${currentUserProfile.id}`;
