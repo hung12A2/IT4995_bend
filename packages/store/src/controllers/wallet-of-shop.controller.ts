@@ -22,7 +22,7 @@ import {
 import {WalletOfShop} from '../models';
 import {WalletOfShopRepository} from '../repositories';
 import {inject} from '@loopback/core';
-import { RabbitMQService } from '../services/rabbitMqServices';
+import {RabbitMQService} from '../services/rabbitMqServices';
 
 export class WalletOfShopController {
   constructor(
@@ -60,9 +60,16 @@ export class WalletOfShopController {
       where: {idOfShop},
     });
     if (oldWallet) {
-      return response.status(400).send({message: 'Wallet already exists'});
+      return {
+        code: 400,
+        message: 'Wallet of shop existed',
+      };
     } else {
-      return this.walletOfShopRepository.create(NewWallet);
+      const data = await this.walletOfShopRepository.create(NewWallet);
+      return {
+        code: 200,
+        data,
+      };
     }
   }
 

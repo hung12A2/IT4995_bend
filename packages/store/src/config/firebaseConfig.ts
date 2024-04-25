@@ -7,7 +7,7 @@ admin.initializeApp({
 });
 
 function uploadFile(file: any) {
-  const newNameFile = new Date().toLocaleString() + file.originalname;
+  const newNameFile = new Date().toISOString() + file.originalname;
   const blob = bucket.file(newNameFile);
   const blobStream = blob.createWriteStream({
     metadata: {

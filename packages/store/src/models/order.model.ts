@@ -198,13 +198,13 @@ export class Order extends Entity {
     type: 'date',
     required: true,
   })
-  createdAt: Date;
+  createdAt: string;
 
   @property({
     type: 'date',
     required: true,
   })
-  updatedAt: Date;
+  updatedAt: string;
 
   @property({
     type: 'object',

@@ -24,8 +24,12 @@ import {
   Response,
   Request,
 } from '@loopback/rest';
-import {Product} from '../models';
-import {CategoryRepository, ProductRepository} from '../repositories';
+import {Product, RequestCreateProduct} from '../models';
+import {
+  CategoryRepository,
+  ProductRepository,
+  RequestCreatProductRepository,
+} from '../repositories';
 
 import {uploadFile, deleteRemoteFile} from '../config/firebaseConfig';
 import multer from 'multer';
@@ -34,17 +38,20 @@ import {inject} from '@loopback/core';
 const storage = multer.memoryStorage();
 const upload = multer({storage});
 
-var cpUpload = upload.fields([{name: 'image'}]);
+var cpUpload = upload.fields([{name: 'images'}]);
 
 export class RequestCreateProductController {
   constructor(
+    @repository(RequestCreatProductRepository)
+    public requestCreatProductRepository: RequestCreatProductRepository,
     @repository(ProductRepository)
     public productRepository: ProductRepository,
+
     @repository(CategoryRepository)
     public categoryRepository: CategoryRepository,
   ) {}
 
-  @post('/products/shop/{idOfShop}/category/{idOfCategory}')
+  @post('/request-create-product/shop/{idOfShop}/category/{idOfCategory}')
   @response(200, {
     description: 'Product model instance',
     content: {'application/json': {schema: getModelSchemaRef(Product)}},
@@ -91,24 +98,61 @@ export class RequestCreateProductController {
       dimension,
     } = data.body;
 
+    if (!idOfKiot && isKiotProduct) {
+      return {
+        code: 400,
+        message: 'Missing idOfKiot',
+      };
+    }
+
+    if (
+      !(
+        name &&
+        productDescription &&
+        productDetails &&
+        price &&
+        weight &&
+        dimension
+      )
+    ) {
+      return {
+        code: 400,
+        message: 'Missing required fields',
+      };
+    }
+
+    if (!data.files.images) {
+      return {
+        code: 400,
+        message: 'Missing image',
+      };
+    }
+
     const category = await this.categoryRepository.findById(idOfCategory);
 
     if (!category) {
-      return response.status(400).send('Category not found');
+      return {
+        code: 400,
+        message: 'Category not found',
+      };
     }
 
     const cateName = category.cateName;
-
-    const imageData: any = await uploadFile(data.files.image[0]);
-    if (!isKiotProduct) {
+    const image = await Promise.all(
+      data.files.images.map(async (image: any) => {
+        const dataImg: any = await uploadFile(image);
+        return {
+          url: dataImg.url,
+          filename: dataImg.filename,
+        };
+      }),
+    );
+    if (!idOfKiot) {
       const time = new Date().toLocaleString();
 
-      const product = new Product({
+      const product = {
         name,
-        image: {
-          url: imageData.url,
-          filename: imageData.filename,
-        },
+        image,
         idOfCategory,
         idOfShop,
         productDescription,
@@ -117,28 +161,24 @@ export class RequestCreateProductController {
         countInStock,
         isBestSeller,
         cateName,
-        status: 'active',
+        status: 'pending',
         weight,
         dimension,
-        rating: 0,
         isOnlineProduct,
         isKiotProduct,
         createdAt: time,
         updatedAt: time,
         createdBy: `shop-${idOfShop}`,
         updatedBy: `shop-${idOfShop}`,
-      });
+      };
 
-      const data = await this.productRepository.create(product);
+      const data = await this.requestCreatProductRepository.create(product);
       return data;
     } else {
       const time = new Date().toLocaleString();
-      const product = new Product({
+      const product = {
         name,
-        image: {
-          url: imageData.url,
-          filename: imageData.filename,
-        },
+        image,
         idOfCategory,
         idOfShop,
         isOnlineProduct,
@@ -150,7 +190,7 @@ export class RequestCreateProductController {
         countInStock,
         isBestSeller,
         cateName,
-        status: 'active',
+        status: 'pending',
         weight,
         dimension,
         rating: 0,
@@ -158,22 +198,119 @@ export class RequestCreateProductController {
         updatedAt: time,
         createdBy: `shop-${idOfShop}`,
         updatedBy: `shop-${idOfShop}`,
-      });
-      const data = await this.productRepository.create(product);
-      return data;
+      };
+      const data = await this.requestCreatProductRepository.create(product);
+      return {
+        code: 200,
+        data,
+      };
     }
   }
 
-  @get('/products/count')
+  @post('/request-create-product/{idOfRequest}/accepted/admin/{idOfAdmin}')
   @response(200, {
-    description: 'Product model count',
-    content: {'application/json': {schema: CountSchema}},
+    description: 'Product model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Product)}},
   })
-  async count(@param.where(Product) where?: Where<Product>): Promise<Count> {
-    return this.productRepository.count(where);
+  async accepted(
+    @param.path.string('idOfRequest') idOfRequest: string,
+    @param.path.string('idOfAdmin') idOfAdmin: string,
+  ): Promise<any> {
+    const requestData: any =
+      await this.requestCreatProductRepository.findById(idOfRequest);
+    const {
+      name,
+      productDescription,
+      price,
+      productDetails,
+      countInStock,
+      isBestSeller,
+      weight,
+      dimension,
+      isKiotProduct,
+      isOnlineProduct,
+      idOfKiot,
+      image,
+      idOfCategory,
+      idOfShop,
+      cateName,
+      status
+    } = requestData;
+
+    if (status != 'pending') return {
+      code: 400,
+      message: 'Request is processed or rejected already',
+    }
+
+    const newProduct: any = {
+      name,
+      productDescription,
+      price,
+      productDetails,
+      countInStock,
+      isBestSeller,
+      weight,
+      dimension,
+      isKiotProduct,
+      isOnlineProduct,
+      image,
+      idOfCategory,
+      idOfShop,
+      cateName,
+      status: 'active',
+      rating: 0,
+      createdAt: new Date().toLocaleString(),
+      updatedAt: new Date().toLocaleString(),
+      createdBy: `shop-${requestData.idOfShop}`,
+      updatedBy: `admin-${idOfAdmin}`,
+    };
+
+    if (idOfKiot) newProduct.idOfKiot = idOfKiot;
+
+    const dataProduct = await this.productRepository.create(newProduct);
+    await this.requestCreatProductRepository.updateById(idOfRequest, {
+      status: 'accepted',
+      updatedAt: new Date().toLocaleString(),
+      updatedBy: `admin-${idOfAdmin}`,
+    });
+
+    return {
+      code: 200,
+      data: dataProduct,
+    };
   }
 
-  @get('/products')
+  @post('/request-create-product/{idOfRequest}/rejected/admin/{idOfAdmin}')
+  @response(200, {
+    description: 'Product model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Product)}},
+  })
+  async rejected(
+    @param.path.string('idOfRequest') idOfRequest: string,
+    @param.path.string('idOfAdmin') idOfAdmin: string,
+  ): Promise<any> {
+    if (
+      (await this.requestCreatProductRepository.findById(idOfRequest)).status !=
+      'pending'
+    )
+      return {
+        code: 400,
+        message: 'Request is processed or accepted already',
+      };
+
+    await this.requestCreatProductRepository.updateById(idOfRequest, {
+      status: 'rejected',
+      updatedAt: new Date().toLocaleString(),
+      updatedBy: `admin-${idOfAdmin}`,
+    });
+
+    return {
+      code: 200,
+      data: await this.requestCreatProductRepository.findById(idOfRequest),
+    };
+  }
+
+  @get('/request-create-product')
   @response(200, {
     description: 'Array of Product model instances',
     content: {
@@ -185,13 +322,15 @@ export class RequestCreateProductController {
       },
     },
   })
-  async find(
-    @param.filter(Product) filter?: Filter<Product>,
-  ): Promise<Product[]> {
-    return this.productRepository.find(filter);
+  async find(@param.filter(Product) filter?: Filter<Product>): Promise<any> {
+    const data = this.requestCreatProductRepository.find(filter);
+    return {
+      code: 200,
+      data,
+    };
   }
 
-  @get('/products/{id}')
+  @get('/request-create-product/{id}')
   @response(200, {
     description: 'Product model instance',
     content: {
@@ -204,11 +343,11 @@ export class RequestCreateProductController {
     @param.path.string('id') id: string,
     @param.filter(Product, {exclude: 'where'})
     filter?: FilterExcludingWhere<Product>,
-  ): Promise<Product> {
-    return this.productRepository.findById(id, filter);
+  ): Promise<RequestCreateProduct> {
+    return this.requestCreatProductRepository.findById(id, filter);
   }
 
-  @patch('/products/shop/{idOfShop}/category/{idOfCategory}/{id}')
+  @patch('/request-create-product/shop/{idOfShop}/category/{idOfCategory}/{id}')
   @response(204, {
     description: 'Product PATCH success',
   })
@@ -250,56 +389,76 @@ export class RequestCreateProductController {
       isBestSeller,
       weight,
       dimension,
-      status,
       isKiotProduct,
       isOnlineProduct,
       idOfKiot,
     } = data.body;
 
+    if (!idOfKiot && isKiotProduct) {
+      return {
+        code: 400,
+        message: 'Missing idOfKiot',
+      };
+    }
+
     const category = await this.categoryRepository.findById(idOfCategory);
-    const oldImage: any = (await this.productRepository.findById(id)).image;
+    const oldImage: any = (
+      await this.requestCreatProductRepository.findById(id)
+    ).image;
 
     if (!category) {
-      return response.status(400).send('Category not found');
+      return {
+        code: 400,
+        message: 'Category not found',
+      };
     }
 
     const cateName = category.cateName;
 
-    if (data.files == null) {
-      const imageData: any = await uploadFile(data.files.image[0]);
+    if (data.files.images?.length > 0) {
+      const image = await Promise.all(
+        data.files.images.map(async (image: any) => {
+          const dataImg: any = await uploadFile(image);
+          return {
+            url: dataImg.url,
+            filename: dataImg.filename,
+          };
+        }),
+      );
       const time = new Date().toLocaleString();
-      const product = new Product({
+      let product: any = {
         name,
-        image: {
-          url: imageData.url,
-          filename: imageData.filename,
-        },
+        image,
         idOfCategory,
         idOfShop,
         isKiotProduct,
         isOnlineProduct,
-        idOfKiot: isKiotProduct ? idOfKiot : null,
         productDescription,
         productDetails,
         price,
         countInStock,
         isBestSeller,
         cateName,
-        status,
         weight,
         dimension,
         updatedAt: time,
         updatedBy: `shop-${idOfShop}`,
-      });
+      };
 
-      await this.productRepository.updateById(id, product);
+      if (idOfKiot) product.idOfKiot = idOfKiot;
 
-      if (oldImage) {
-        await deleteRemoteFile(oldImage.filename);
+      await this.requestCreatProductRepository.updateById(id, product);
+
+      if (oldImage.length > 0) {
+        await Promise.all(
+          oldImage.map(async (img: any) => {
+            await deleteRemoteFile(img.filename);
+          }),
+        );
       }
     } else {
       const time = new Date().toLocaleString();
-      const product = new Product({
+      const product = {
         name,
         idOfCategory,
         idOfShop,
@@ -312,17 +471,22 @@ export class RequestCreateProductController {
         countInStock,
         isBestSeller,
         cateName,
-        status,
         weight,
         dimension,
         updatedAt: time,
         updatedBy: `shop-${idOfShop}`,
-      });
+      };
+      if (idOfKiot) product.idOfKiot = idOfKiot;
 
-      await this.productRepository.updateById(id, product);
+      await this.requestCreatProductRepository.updateById(id, product);
     }
 
-    return this.productRepository.findById(id);
+    const dataReturn = await this.requestCreatProductRepository.findById(id);
+
+    return {
+      code: 200,
+      data: dataReturn,
+    };
   }
 
   @del('/products/{id}')
@@ -330,6 +494,6 @@ export class RequestCreateProductController {
     description: 'Product DELETE success',
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.productRepository.deleteById(id);
+    await this.requestCreatProductRepository.deleteById(id);
   }
 }

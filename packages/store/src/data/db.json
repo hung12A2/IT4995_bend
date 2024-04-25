@@ -1,20 +1,21 @@
 {
   "ids": {
     "Category": 4,
-    "Product": 5,
+    "Product": 7,
     "Cart": 2,
     "LocationUser": 3,
     "LocationShop": 2,
-    "ProductsInCart": 4,
-    "Order": 10,
-    "ProductsInOrder": 21,
+    "ProductsInCart": 8,
+    "Order": 11,
+    "ProductsInOrder": 23,
     "Wallet": 3,
     "BoughtProduct": 4,
     "ReturnOrder": 5,
     "RatingProduct": 4,
     "OrderKiot": 8,
     "ProductsInOrderKiot": 22,
-    "WalletOfShop": 1
+    "WalletOfShop": 2,
+    "RequestCreateProduct": 9
   },
   "models": {
     "Category": {
@@ -23,84 +24,37 @@
       "3": "{\"cateName\":\"do gia dung\",\"description\":\"san pham cho moi gia dinh\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-04T15:12:58.303ZPostcard.png?alt=media\",\"filename\":\"2024-04-04T15:12:58.303ZPostcard.png\"},\"status\":\"inActive\",\"id\":\"3\"}"
     },
     "Product": {
-      "1": "{\"name\":\"quat dien\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"idOfCategory\":\"1\",\"idOfShop\":\"3\",\"productDescription\":\"quat dien trung quoc\",\"productDetails\":\"Cong suat 220V \\nRat mat\",\"price\":1000000,\"countInStock\":99,\"isBestSeller\":true,\"cateName\":\"def\",\"status\":\"inActive\",\"weight\":1,\"dimension\":\"10|10|10\",\"rating\":1,\"id\":\"1\"}",
-      "2": "{\"name\":\"quạt điện\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-07T13:23:26.330Zdog.jpg?alt=media\",\"filename\":\"2024-04-07T13:23:26.330Zdog.jpg\"},\"idOfCategory\":\"1\",\"idOfShop\":\"3\",\"productDescription\":\"Quạt điện cho ngày nóng\",\"productDetails\":\"Công suất 220 V \\nDòng điện I  =10 A \\nThích hợp dùng trong đi dã ngoại \",\"price\":99000,\"countInStock\":13,\"isBestSeller\":true,\"cateName\":\"def\",\"status\":\"active\",\"weight\":1.3,\"dimension\":\"10|10|20\",\"rating\":0,\"id\":\"2\"}",
-      "3": "{\"name\":\"quạt mặt trời\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-07T13:24:52.205ZSum.jpg?alt=media\",\"filename\":\"2024-04-07T13:24:52.205ZSum.jpg\"},\"idOfCategory\":\"1\",\"idOfShop\":\"3\",\"productDescription\":\"Quạt điện cho ngày nóng\",\"productDetails\":\"Công suất 220 V \\nDòng điện I  =10 A \\nThích hợp dùng trong đi dã ngoại\\nThích hợp ngày nóng mất điện \",\"price\":126000,\"countInStock\":20,\"isBestSeller\":true,\"cateName\":\"def\",\"status\":\"active\",\"weight\":1.3,\"dimension\":\"10|10|20\",\"rating\":0,\"id\":\"3\"}",
-      "4": "{\"name\":\"Nước yến \",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"idOfCategory\":\"2\",\"idOfShop\":\"3\",\"isOnlineProduct\":false,\"isKiotProduct\":false,\"productDescription\":\"Thơm ngon bổ dưỡng\",\"productDetails\":\"Lốc 6 lon \\nThể tích 100ml mỗi lon\",\"price\":1000000,\"countInStock\":10,\"isBestSeller\":true,\"cateName\":\"do gia dung\",\"weight\":1,\"dimension\":\"10|10|10\",\"rating\":0,\"id\":\"4\"}"
+      "5": "{\"name\":\"Request1\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:26:21.524Zdog.jpg?alt=media\",\"filename\":\"2024-04-25T02:26:21.524Zdog.jpg\"},{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:26:21.527ZScreenshot%20from%202024-04-05%2008-25-17.png?alt=media\",\"filename\":\"2024-04-25T02:26:21.527ZScreenshot from 2024-04-05 08-25-17.png\"}],\"idOfCategory\":\"2\",\"idOfShop\":\"1\",\"isOnlineProduct\":true,\"isKiotProduct\":false,\"productDescription\":\"sanr pham chat luong 5 sao\",\"productDetails\":\"rat thom ngon \\ncuc bo duong\",\"price\":99000,\"countInStock\":15,\"isBestSeller\":true,\"cateName\":\"do gia dung\",\"status\":\"active\",\"weight\":2,\"dimension\":\"10|10|10\",\"rating\":0,\"createdAt\":\"2024-04-25T03:10:33.000Z\",\"createdBy\":\"shop-1\",\"updatedBy\":\"admin-1\",\"updatedAt\":\"2024-04-25T03:10:33.000Z\",\"id\":\"5\"}",
+      "6": "{\"name\":\"Request1\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:28:32.665ZSum.jpg?alt=media\",\"filename\":\"2024-04-25T02:28:32.665ZSum.jpg\"}],\"idOfCategory\":\"2\",\"idOfShop\":\"1\",\"isOnlineProduct\":true,\"isKiotProduct\":false,\"productDescription\":\"sanr pham chat luong 5 sao\",\"productDetails\":\"rat thom ngon \\ncuc bo duong\",\"price\":99000,\"countInStock\":15,\"isBestSeller\":true,\"cateName\":\"do gia dung\",\"status\":\"active\",\"weight\":2,\"dimension\":\"10|10|10\",\"rating\":0,\"createdAt\":\"2024-04-25T03:47:08.000Z\",\"createdBy\":\"shop-1\",\"updatedBy\":\"admin-1\",\"updatedAt\":\"2024-04-25T03:47:08.000Z\",\"id\":\"6\"}"
     },
-    "Cart": {
-      "1": "{\"idOfUser\":\"1\",\"id\":\"1\"}"
-    },
+    "Cart": {},
     "LocationUser": {},
     "LocationShop": {},
     "ProductsInCart": {
-      "1": "{\"idOfUser\":\"1\",\"idOfProduct\":\"1\",\"quantity\":2,\"id\":\"1\"}",
-      "2": "{\"idOfUser\":\"1\",\"idOfProduct\":\"2\",\"quantity\":4,\"id\":\"2\"}",
-      "3": "{\"idOfUser\":\"1\",\"idOfProduct\":\"3\",\"quantity\":3,\"id\":\"3\"}"
+      "7": "{\"idOfUser\":\"1\",\"idOfProduct\":\"5\",\"quantity\":7,\"isKiot\":false,\"id\":\"7\"}"
     },
     "Order": {
-      "8": "{\"idOfShop\":\"3\",\"idOfUser\":\"1\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915087678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"clientOrderCode\":\"GHN6923\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|50\",\"insuranceValue\":1225000,\"serviceTypeId\":5,\"serviceId\":100039,\"paymentTypeId\":2,\"requiredNote\":\"CHOTHUHANG\",\"status\":\"received\",\"totalFee\":37917,\"note\":\"không có note\",\"pickShift\":null,\"createdAt\":\"2024-04-10T15:43:07.747Z\",\"updatedAt\":\"2024-04-10T16:27:37.420Z\",\"id\":\"8\"}",
-      "9": "{\"idOfShop\":\"3\",\"idOfUser\":\"1\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915057678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"clientOrderCode\":\"GHN8658\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":7,\"dimension\":\"10|10|90\",\"insuranceValue\":3351000,\"serviceTypeId\":5,\"serviceId\":100039,\"paymentTypeId\":2,\"requiredNote\":\"CHOTHUHANG\",\"status\":\"returned\",\"totalFee\":37917,\"note\":\"không có note\",\"pickShift\":null,\"createdAt\":\"2024-04-10T15:43:55.010Z\",\"updatedAt\":\"2024-04-10T18:27:06.178Z\",\"id\":\"9\"}"
+      "10": "{\"idOfShop\":\"1\",\"paymentMethod\":\"payOnline\",\"idOfUser\":\"1\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915047678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"clientOrderCode\":\"GHN7348\",\"codAmount\":0,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|20\",\"insuranceValue\":198000,\"serviceTypeId\":5,\"serviceId\":100039,\"paymentTypeId\":2,\"requiredNote\":\"CHOTHUHANG\",\"status\":\"prepared\",\"totalFee\":34793,\"priceOfAll\":93000,\"note\":\"không có note\",\"pickShift\":null,\"createdAt\":\"2024-04-25T05:07:38.948Z\",\"updatedAt\":\"2024-04-25T05:11:06.000Z\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:26:21.524Zdog.jpg?alt=media\",\"filename\":\"2024-04-25T02:26:21.524Zdog.jpg\"},{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:26:21.527ZScreenshot%20from%202024-04-05%2008-25-17.png?alt=media\",\"filename\":\"2024-04-25T02:26:21.527ZScreenshot from 2024-04-05 08-25-17.png\"}],\"id\":\"10\"}"
     },
     "ProductsInOrder": {
-      "15": "{\"idOfOrder\":\"8\",\"idOfProduct\":\"1\",\"quantity\":\"1\",\"id\":\"15\"}",
-      "16": "{\"idOfOrder\":\"8\",\"idOfProduct\":\"2\",\"quantity\":\"1\",\"id\":\"16\"}",
-      "17": "{\"idOfOrder\":\"8\",\"idOfProduct\":\"3\",\"quantity\":\"1\",\"id\":\"17\"}",
-      "18": "{\"idOfOrder\":\"9\",\"idOfProduct\":\"1\",\"quantity\":\"3\",\"id\":\"18\"}",
-      "19": "{\"idOfOrder\":\"9\",\"idOfProduct\":\"2\",\"quantity\":\"1\",\"id\":\"19\"}",
-      "20": "{\"idOfOrder\":\"9\",\"idOfProduct\":\"3\",\"quantity\":\"2\",\"id\":\"20\"}"
+      "21": "{\"idOfOrder\":\"10\",\"idOfProduct\":\"5\",\"quantity\":1,\"id\":\"21\"}",
+      "22": "{\"idOfOrder\":\"10\",\"idOfProduct\":\"6\",\"quantity\":1,\"id\":\"22\"}"
     },
     "Wallet": {
-      "1": "{\"idOfUser\":\"1\",\"amountMoney\":10000372000,\"id\":\"1\"}",
-      "2": "{\"idOfUser\":\"3\",\"amountMoney\":55083,\"id\":\"2\"}"
+      "1": "{\"idOfUser\":\"1\",\"amountMoney\":999907000,\"id\":\"1\"}",
+      "2": "{\"idOfUser\":\"3\",\"amountMoney\":1000000000,\"id\":\"2\"}"
     },
-    "BoughtProduct": {
-      "1": "{\"idOfProduct\":\"1\",\"idOfUser\":\"1\",\"idOfOrder\":\"9\",\"quantity\":1,\"createAt\":\"2024-04-10T16:27:37.436Z\",\"id\":\"1\"}",
-      "2": "{\"idOfProduct\":\"2\",\"idOfUser\":\"1\",\"idOfOrder\":\"9\",\"quantity\":1,\"createAt\":\"2024-04-10T16:27:37.436Z\",\"id\":\"2\"}",
-      "3": "{\"idOfProduct\":\"3\",\"idOfUser\":\"1\",\"idOfOrder\":\"9\",\"quantity\":1,\"createAt\":\"2024-04-10T16:27:37.436Z\",\"id\":\"3\"}"
+    "BoughtProduct": {},
+    "ReturnOrder": {},
+    "RatingProduct": {},
+    "OrderKiot": {},
+    "ProductsInOrderKiot": {},
+    "WalletOfShop": {
+      "1": "{\"idOfShop\":\"1\",\"amountOfMoney\":0,\"id\":\"1\"}"
     },
-    "ReturnOrder": {
-      "1": "{\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"idOfOrder\":\"9\",\"reason\":\"hàng kém chất lượng\",\"images\":[{\"filename\":\"2024-04-10T18:27:06.223ZSum.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-10T18:27:06.223ZSum.jpg?alt=media\"},{\"filename\":\"2024-04-10T18:27:06.226Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-10T18:27:06.226Zdog.jpg?alt=media\"}],\"id\":\"1\"}",
-      "2": "{\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"idOfOrder\":\"4\",\"reason\":\"Sản phẩm như quần què\",\"images\":[{\"filename\":\"2024-04-20T12:56:55.702ZSum.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-20T12:56:55.702ZSum.jpg?alt=media\"},{\"filename\":\"2024-04-20T12:56:55.705Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-20T12:56:55.705Zdog.jpg?alt=media\"}],\"isKiot\":true,\"id\":\"2\"}",
-      "3": "{\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"idOfOrder\":\"4\",\"reason\":\"Sản phẩm như quần què\",\"images\":[{\"filename\":\"2024-04-20T12:58:26.349ZSum.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-20T12:58:26.349ZSum.jpg?alt=media\"},{\"filename\":\"2024-04-20T12:58:26.350Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-20T12:58:26.350Zdog.jpg?alt=media\"}],\"isKiot\":true,\"id\":\"3\"}",
-      "4": "{\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"idOfOrder\":\"4\",\"reason\":\"Sản phẩm như quần què\",\"images\":[{\"filename\":\"2024-04-20T12:59:33.612ZSum.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-20T12:59:33.612ZSum.jpg?alt=media\"},{\"filename\":\"2024-04-20T12:59:33.616Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-20T12:59:33.616Zdog.jpg?alt=media\"}],\"isKiot\":true,\"id\":\"4\"}"
-    },
-    "RatingProduct": {
-      "2": "{\"idOfOrder\":\"9\",\"idOfProduct\":\"1\",\"idOfUser\":\"1\",\"rating\":1,\"isDeleted\":false,\"comment\":\"Ăn mới bị đau bụng đi ỉa\",\"id\":\"2\"}",
-      "3": "{\"idOfOrder\":\"9\",\"idOfProduct\":\"1\",\"idOfUser\":\"1\",\"rating\":1,\"isDeleted\":false,\"comment\":\"Ăn mới bị đau bụng đi ỉa\",\"id\":\"3\"}"
-    },
-    "OrderKiot": {
-      "1": "{\"idOfKiot\":\"3\",\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915047678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|50\",\"insuranceValue\":1225000,\"paymentMethod\":\"cod\",\"requiredNote\":\"CHOTHUHANG\",\"note\":\"không có note\",\"status\":\"pending\",\"totalFee\":0,\"priceOfAll\":93000,\"createdAt\":\"2024-04-19T09:41:32.728Z\",\"updatedAt\":\"2024-04-19T09:41:32.728Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"createdBy\":\"user-1\",\"updatedBy\":\"user-1\",\"id\":\"1\"}",
-      "2": "{\"idOfKiot\":\"3\",\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915047678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|50\",\"insuranceValue\":1225000,\"paymentMethod\":\"cod\",\"requiredNote\":\"CHOTHUHANG\",\"note\":\"không có note\",\"status\":\"pending\",\"totalFee\":0,\"priceOfAll\":93000,\"createdAt\":\"2024-04-19T21:55:23.609Z\",\"updatedAt\":\"2024-04-19T21:55:23.609Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"createdBy\":\"user-1\",\"updatedBy\":\"user-1\",\"id\":\"2\"}",
-      "3": "{\"idOfKiot\":\"3\",\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915047678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|50\",\"insuranceValue\":1225000,\"paymentMethod\":\"cod\",\"requiredNote\":\"CHOTHUHANG\",\"note\":\"không có note\",\"status\":\"pending\",\"totalFee\":0,\"priceOfAll\":93000,\"createdAt\":\"2024-04-19T21:55:44.553Z\",\"updatedAt\":\"2024-04-19T21:55:44.553Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"createdBy\":\"user-1\",\"updatedBy\":\"user-1\",\"id\":\"3\"}",
-      "4": "{\"idOfKiot\":\"3\",\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915047678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"codAmount\":0,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|50\",\"insuranceValue\":1225000,\"paymentMethod\":\"payOnline\",\"requiredNote\":\"CHOTHUHANG\",\"note\":\"không có note\",\"status\":\"returned\",\"totalFee\":0,\"priceOfAll\":93000,\"createdAt\":\"2024-04-19T21:57:34.032Z\",\"updatedAt\":\"2024-04-20T12:59:33.591Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"createdBy\":\"user-1\",\"updatedBy\":\"user-1\",\"id\":\"4\"}",
-      "5": "{\"idOfKiot\":\"3\",\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915047678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|50\",\"insuranceValue\":1225000,\"paymentMethod\":\"cod\",\"requiredNote\":\"CHOTHUHANG\",\"note\":\"không có note\",\"status\":\"pending\",\"totalFee\":0,\"priceOfAll\":93000,\"createdAt\":\"2024-04-20T07:54:49.710Z\",\"updatedAt\":\"2024-04-20T07:54:49.710Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"createdBy\":\"user-1\",\"updatedBy\":\"user-1\",\"id\":\"5\"}",
-      "6": "{\"idOfKiot\":\"3\",\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915047678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|50\",\"insuranceValue\":1225000,\"paymentMethod\":\"cod\",\"requiredNote\":\"CHOTHUHANG\",\"note\":\"không có note\",\"status\":\"pending\",\"totalFee\":0,\"priceOfAll\":93000,\"createdAt\":\"2024-04-20T07:57:42.247Z\",\"updatedAt\":\"2024-04-20T07:57:42.247Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"createdBy\":\"user-1\",\"updatedBy\":\"user-1\",\"id\":\"6\"}",
-      "7": "{\"idOfKiot\":\"3\",\"idOfUser\":\"1\",\"idOfShop\":\"3\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915047678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"codAmount\":93000,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|50\",\"insuranceValue\":1225000,\"paymentMethod\":\"cod\",\"requiredNote\":\"CHOTHUHANG\",\"note\":\"không có note\",\"status\":\"deliverd\",\"totalFee\":0,\"priceOfAll\":93000,\"createdAt\":\"2024-04-20T08:50:28.274Z\",\"updatedAt\":\"2024-04-20T09:50:40.160Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-05T07:22:30.150ZPostcard.png?alt=media\",\"filename\":\"2024-04-05T07:22:30.150ZPostcard.png\"},\"createdBy\":\"user-1\",\"updatedBy\":\"user-1\",\"id\":\"7\"}"
-    },
-    "ProductsInOrderKiot": {
-      "1": "{\"idOfOrder\":\"1\",\"idOfProduct\":\"1\",\"quantity\":1,\"id\":\"1\"}",
-      "2": "{\"idOfOrder\":\"1\",\"idOfProduct\":\"2\",\"quantity\":1,\"id\":\"2\"}",
-      "3": "{\"idOfOrder\":\"1\",\"idOfProduct\":\"3\",\"quantity\":1,\"id\":\"3\"}",
-      "4": "{\"idOfOrder\":\"2\",\"idOfProduct\":\"1\",\"quantity\":1,\"id\":\"4\"}",
-      "5": "{\"idOfOrder\":\"2\",\"idOfProduct\":\"2\",\"quantity\":1,\"id\":\"5\"}",
-      "6": "{\"idOfOrder\":\"2\",\"idOfProduct\":\"3\",\"quantity\":1,\"id\":\"6\"}",
-      "7": "{\"idOfOrder\":\"3\",\"idOfProduct\":\"4\",\"quantity\":1,\"id\":\"7\"}",
-      "8": "{\"idOfOrder\":\"3\",\"idOfProduct\":\"2\",\"quantity\":1,\"id\":\"8\"}",
-      "9": "{\"idOfOrder\":\"3\",\"idOfProduct\":\"3\",\"quantity\":1,\"id\":\"9\"}",
-      "10": "{\"idOfOrder\":\"4\",\"idOfProduct\":\"4\",\"quantity\":1,\"id\":\"10\"}",
-      "11": "{\"idOfOrder\":\"4\",\"idOfProduct\":\"2\",\"quantity\":1,\"id\":\"11\"}",
-      "12": "{\"idOfOrder\":\"4\",\"idOfProduct\":\"3\",\"quantity\":1,\"id\":\"12\"}",
-      "13": "{\"idOfOrder\":\"5\",\"idOfProduct\":\"1\",\"quantity\":1,\"id\":\"13\"}",
-      "14": "{\"idOfOrder\":\"5\",\"idOfProduct\":\"2\",\"quantity\":1,\"id\":\"14\"}",
-      "15": "{\"idOfOrder\":\"5\",\"idOfProduct\":\"3\",\"quantity\":1,\"id\":\"15\"}",
-      "16": "{\"idOfOrder\":\"6\",\"idOfProduct\":\"1\",\"quantity\":1,\"id\":\"16\"}",
-      "17": "{\"idOfOrder\":\"6\",\"idOfProduct\":\"2\",\"quantity\":1,\"id\":\"17\"}",
-      "18": "{\"idOfOrder\":\"6\",\"idOfProduct\":\"3\",\"quantity\":1,\"id\":\"18\"}",
-      "19": "{\"idOfOrder\":\"7\",\"idOfProduct\":\"1\",\"quantity\":1,\"id\":\"19\"}",
-      "20": "{\"idOfOrder\":\"7\",\"idOfProduct\":\"2\",\"quantity\":1,\"id\":\"20\"}",
-      "21": "{\"idOfOrder\":\"7\",\"idOfProduct\":\"3\",\"quantity\":1,\"id\":\"21\"}"
-    },
-    "WalletOfShop": {}
+    "RequestCreateProduct": {
+      "7": "{\"name\":\"Request1\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:26:21.524Zdog.jpg?alt=media\",\"filename\":\"2024-04-25T02:26:21.524Zdog.jpg\"},{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:26:21.527ZScreenshot%20from%202024-04-05%2008-25-17.png?alt=media\",\"filename\":\"2024-04-25T02:26:21.527ZScreenshot from 2024-04-05 08-25-17.png\"}],\"idOfCategory\":\"2\",\"idOfShop\":\"1\",\"isOnlineProduct\":true,\"isKiotProduct\":false,\"productDescription\":\"sanr pham chat luong 5 sao\",\"productDetails\":\"rat thom ngon \\ncuc bo duong\",\"price\":99000,\"countInStock\":15,\"isBestSeller\":true,\"cateName\":\"do gia dung\",\"status\":\"accepted\",\"weight\":2,\"dimension\":\"10|10|10\",\"createdAt\":\"2024-04-25T02:26:22.000Z\",\"updatedAt\":\"2024-04-25T03:10:33.000Z\",\"createdBy\":\"shop-1\",\"updatedBy\":\"admin-1\",\"id\":\"7\"}",
+      "8": "{\"name\":\"Request1\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:28:32.665ZSum.jpg?alt=media\",\"filename\":\"2024-04-25T02:28:32.665ZSum.jpg\"}],\"idOfCategory\":\"2\",\"idOfShop\":\"1\",\"isOnlineProduct\":true,\"isKiotProduct\":false,\"productDescription\":\"sanr pham chat luong 5 sao\",\"productDetails\":\"rat thom ngon \\ncuc bo duong\",\"price\":99000,\"countInStock\":15,\"isBestSeller\":true,\"cateName\":\"do gia dung\",\"status\":\"accepted\",\"weight\":2,\"dimension\":\"10|10|10\",\"createdAt\":\"2024-04-25T02:28:33.000Z\",\"updatedAt\":\"2024-04-25T03:47:08.000Z\",\"createdBy\":\"shop-1\",\"updatedBy\":\"admin-1\",\"id\":\"8\"}"
+    }
   }
 }

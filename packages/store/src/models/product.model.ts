@@ -16,10 +16,11 @@ export class Product extends Entity {
   name: string;
 
   @property({
-    type: 'object',
+    type: 'array',
+    itemType: 'object',
     required: true,
   })
-  image: object;
+  image: object[];
 
   @property({
     type: 'string',

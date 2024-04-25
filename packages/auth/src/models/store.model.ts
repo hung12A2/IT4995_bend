@@ -59,6 +59,18 @@ export class Store extends Entity {
   pickUpAddress: string;
 
   @property({
+    type: 'object',
+    required: true,
+  })
+  pickUpGeometry: object;
+
+  @property({
+    type: 'object',
+    required: true,
+  })
+  returnGeometry: object;
+
+  @property({
     type: 'string',
     required: true,
   })

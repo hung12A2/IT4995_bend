@@ -222,7 +222,7 @@ export class OrderController {
         await this.orderRepository.updateById(id, {
           totalFee: response.data.data.total_fee,
           status: 'prepared',
-          updatedAt: new Date(),
+          updatedAt: new Date().toLocaleString(),
         });
 
         return response.data;
@@ -255,7 +255,7 @@ export class OrderController {
       if (order.length == 1) {
         await this.orderRepository.updateById(id, {
           status: 'rejected',
-          updatedAt: new Date(),
+          updatedAt: new Date().toLocaleString(),
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -335,7 +335,7 @@ export class OrderController {
       if (order.length == 1) {
         await this.orderRepository.updateById(id, {
           status: 'accepted',
-          updatedAt: new Date(),
+          updatedAt: new Date().toLocaleString(),
         });
 
         const dataNoti = JSON.stringify({
@@ -382,7 +382,7 @@ export class OrderController {
       if (order) {
         await this.orderRepository.updateById(id, {
           status: 'received',
-          updatedAt: new Date(),
+          updatedAt: new Date().toLocaleString(),
         });
         const oldWallet = await this.walletOfShopRepository.findOne({
           where: {idOfShop: order.idOfShop},
@@ -488,7 +488,7 @@ export class OrderController {
       if (order.length == 1) {
         await this.orderRepository.updateById(id, {
           status: 'returned',
-          updatedAt: new Date(),
+          updatedAt: new Date().toLocaleString(),
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -562,7 +562,7 @@ export class OrderController {
       if (order.length == 1) {
         await this.orderRepository.updateById(id, {
           status: 'canceled',
-          updatedAt: new Date(),
+          updatedAt: new Date().toLocaleString(),
         });
 
         if (order[0].paymentMethod == 'payOnline') {

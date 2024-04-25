@@ -181,6 +181,18 @@ export class Kiot extends Entity {
   })
   updatedBy: string;
 
+  @property({
+    type: 'object',
+    required: true,
+  })
+  pickUpGeometry: object;
+
+  @property({
+    type: 'object',
+    required: true,
+  })
+  returnGeometry: object;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

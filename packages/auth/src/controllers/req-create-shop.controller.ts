@@ -28,6 +28,7 @@ import {deleteRemoteFile, uploadFile} from '../config/firebaseConfig';
 import {UserRepository} from '@loopback/authentication-jwt';
 import {SecurityBindings, UserProfile} from '@loopback/security';
 import {authenticate} from '@loopback/authentication';
+import {geometry} from '../utils/getGeometry';
 
 // upload
 const storage = multer.memoryStorage();
@@ -241,6 +242,21 @@ export class ReqCreateShopController {
       name,
     } = requestCreatShopData;
 
+    const pickUpGeometryName = `${pickUpAddress},${pickUpWardName}, ${pickUpDistrictName}, ${pickUpProvinceName}`;
+    const returnGeometryName = `${returnAddress},${returnWardName}, ${returnDistrictName}, ${returnProvinceName}`;
+
+    const pickUpGeometryData: any = await geometry(pickUpGeometryName);
+    if (pickUpGeometryData.status !== 'OK') {
+      return {code: 400, message: 'Loi he thong'};
+    }
+    const pickUpGeometry = pickUpGeometryData.results[0].geometry.location;
+
+    const returnGeometryData: any = await geometry(returnGeometryName);
+    if (returnGeometryData.status !== 'OK') {
+      return {code: 400, message: 'Loi he thong'};
+    }
+    const returnGeometry = returnGeometryData.results[0].geometry.location;
+
     const time = new Date().toLocaleString();
     const storeData: Store = Object.assign({
       idOfUser,
@@ -270,6 +286,8 @@ export class ReqCreateShopController {
       createdAt: time,
       updatedAt: time,
       acceptedBy: `admin-${currentUser.id}`,
+      pickUpGeometry,
+      returnGeometry
     });
     await this.requestCreateShopRepository.updateById(idOfRequest, {
       status: 'accepted',
@@ -487,7 +505,7 @@ export class ReqCreateShopController {
       }),
     );
 
-    if (IDcardImg.length > 0 ) {
+    if (IDcardImg.length > 0) {
       const oldfilesIDcardImg = oldRequest.IDcardImg;
       await Promise.all(
         oldfilesIDcardImg.map(async (file: any) => {

@@ -1,6 +1,4 @@
-import {
-  repository,
-} from '@loopback/repository';
+import {repository} from '@loopback/repository';
 import {
   post,
   param,
@@ -8,24 +6,20 @@ import {
   getModelSchemaRef,
   requestBody,
   response,
-
 } from '@loopback/rest';
 import {ProductsInCart} from '../models';
-import {
-  ProductRepository,
-  ProductsInCartRepository,
-} from '../repositories';
+import {ProductRepository, ProductsInCartRepository} from '../repositories';
 import {inject} from '@loopback/core';
 
 export class CartController {
   constructor(
     @repository(ProductsInCartRepository)
-    public productsInCartRepository: ProductsInCart,
+    public productsInCartRepository: ProductsInCartRepository,
     @repository(ProductRepository)
     public productRepository: ProductRepository,
   ) {}
 
-  @get('/carts/user/{idOfUser}')
+  @get('/carts/user/{idOfUser}/kiot')
   @response(200, {
     description: 'Array of Cart model instances',
     content: {
@@ -39,7 +33,7 @@ export class CartController {
   })
   async find(@param.path.string('idOfUser') idOfUser: string): Promise<any> {
     const productsInCart = await this.productsInCartRepository.find({
-      where: {idOfUser},
+      where: {idOfUser, isKiot: true},
     });
 
     const productsInCartList = await Promise.all(
@@ -52,12 +46,49 @@ export class CartController {
           price,
           image,
           quantity: productInCart.quantity,
+          isKiot: productInCart.isKiot,
         };
       }),
     );
 
     return productsInCartList;
   }
+
+  @get('/carts/user/{idOfUser}/online')
+  @response(200, {
+    description: 'Array of Cart model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(ProductsInCart, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findOnline(@param.path.string('idOfUser') idOfUser: string): Promise<any> {
+    const productsInCart = await this.productsInCartRepository.find({
+      where: {idOfUser, isKiot: false},
+    });
+
+    const productsInCartList = await Promise.all(
+      productsInCart.map(async (productInCart: any) => {
+        const idProduct = productInCart.idOfProduct;
+        const product: any = await this.productRepository.findById(idProduct);
+        const {name, price, image} = product;
+        return {
+          name,
+          price,
+          image,
+          quantity: productInCart.quantity,
+          isKiot: productInCart.isKiot,
+        };
+      }),
+    );
+
+    return productsInCartList;
+  }
+
 
   @post('/carts/user/{idOfUser}/product/{idOfProduct}')
   @response(200, {
@@ -76,21 +107,34 @@ export class CartController {
     })
     productsInCart: ProductsInCart,
   ): Promise<any> {
-    const {quantity} = productsInCart;
-    const oldProductInCart: any = this.productsInCartRepository.find({
-      idOfProduct,
-      idOfUser,
+    const {quantity, isKiot} = productsInCart;
+    const checkProduct = await this.productRepository.findById(idOfProduct);
+    if (!checkProduct)
+      return {
+        code: 400,
+        message: 'Product not found',
+      };
+    if (!checkProduct.isKiotProduct && isKiot) {
+      return {
+        code: 400,
+        message: 'This product is not Kiot product',
+      };
+    }
+    const oldProductInCart: any = await this.productsInCartRepository.find({
+      where: {idOfProduct, idOfUser, isKiot},
     });
-    if (oldProductInCart.length > 0) {
-      await this.productsInCartRepository.updateById(
-        {idOfProduct, idOfUser},
+
+    if (oldProductInCart?.length > 0) {
+      await this.productsInCartRepository.updateAll(
         {quantity},
+        {idOfProduct, idOfUser, isKiot},
       );
     } else {
       await this.productsInCartRepository.create({
         quantity,
         idOfProduct,
         idOfUser,
+        isKiot,
       });
     }
     return {

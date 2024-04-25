@@ -27,6 +27,7 @@ import {
 } from '../repositories';
 import {inject} from '@loopback/core';
 import {UserRepository} from '@loopback/authentication-jwt';
+import {geometry} from '../utils/getGeometry';
 
 export class KiotController {
   constructor(
@@ -94,11 +95,17 @@ export class KiotController {
     const checkKiot = await this.kiotRepository.findOne({where: {idOfUser}});
 
     if (checkKiot) {
-      return response.status(400).send({message: 'Kiot already exists'});
+      return {
+        code: 400,
+        message: 'Kiot already exists',
+      };
     }
 
     if (!shop) {
-      return response.status(400).send({message: 'Shop not found'});
+      return {
+        code: 400,
+        message: 'Shop not found',
+      };
     }
 
     const pickUpProvinceName = pickUpProvince.split('-')[0].trim();
@@ -118,8 +125,23 @@ export class KiotController {
     const createTime = new Date().toLocaleString();
     const createdAt = createTime;
     const updatedAt = createTime;
-    const createdBy = `shopOwner${idOfUser}`;
-    const updatedBy = `shopOwner${idOfUser}`;
+    const createdBy = `user - ${idOfUser}`;
+    const updatedBy = `user - ${idOfUser}`;
+
+    const pickUpGeometryName = `${pickUpAddress},${pickUpWardName}, ${pickUpDistrictName}, ${pickUpProvinceName}`;
+    const returnGeometryName = `${returnAddress},${returnWardName}, ${returnDistrictName}, ${returnProvinceName}`;
+
+    const pickUpGeometryData: any = await geometry(pickUpGeometryName);
+    if (pickUpGeometryData.status !== 'OK') {
+      return {code: 400, message: 'Loi he thong'};
+    }
+    const pickUpGeometry = pickUpGeometryData.results[0].geometry.location;
+
+    const returnGeometryData: any = await geometry(returnGeometryName);
+    if (returnGeometryData.status !== 'OK') {
+      return {code: 400, message: 'Loi he thong'};
+    }
+    const returnGeometry = returnGeometryData.results[0].geometry.location;
 
     const newKiot = {
       idOfArea,
@@ -151,13 +173,15 @@ export class KiotController {
       IDcardImg: shop.IDcardImg,
       phoneNumber,
       email,
+      pickUpGeometry,
+      returnGeometry,
       status: 'active',
     };
 
     const dataKiot = await this.kiotRepository.create(newKiot);
 
     this.userRepository.updateById(idOfUser, {idOfKiot: dataKiot.id});
-    
+
     this.employeeRepository.updateAll(
       {idOfShop: shop.id},
       {idOfKiot: dataKiot.id},
@@ -237,11 +261,17 @@ export class KiotController {
     });
 
     if (!checkKiot) {
-      return response.status(400).send({message: 'Kiot not found'});
+      return {
+        code: 400,
+        message: 'Kiot not found',
+      };
     }
 
     if (!shop) {
-      return response.status(400).send({message: 'Shop not found'});
+      return {
+        code: 400,
+        message: 'Shop not found',
+      };
     }
 
     const pickUpProvinceName = pickUpProvince.split('-')[0].trim();
@@ -262,7 +292,24 @@ export class KiotController {
     const updatedAt = createTime;
     const updatedBy = `shopOwner${idOfUser}`;
 
+    const pickUpGeometryName = `${pickUpAddress},${pickUpWardName}, ${pickUpDistrictName}, ${pickUpProvinceName}`;
+    const returnGeometryName = `${returnAddress},${returnWardName}, ${returnDistrictName}, ${returnProvinceName}`;
+
+    const pickUpGeometryData: any = await geometry(pickUpGeometryName);
+    if (pickUpGeometryData.status !== 'OK') {
+      return {code: 400, message: 'Loi he thong'};
+    }
+    const pickUpGeometry = pickUpGeometryData.results[0].geometry.location;
+
+    const returnGeometryData: any = await geometry(returnGeometryName);
+    if (returnGeometryData.status !== 'OK') {
+      return {code: 400, message: 'Loi he thong'};
+    }
+    const returnGeometry = returnGeometryData.results[0].geometry.location;
+
     const newKiot = {
+      pickUpGeometry,
+      returnGeometry,
       idOfArea,
       idOfUser,
       idOfShop: shop.id,
