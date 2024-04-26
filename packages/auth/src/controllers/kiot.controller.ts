@@ -28,6 +28,10 @@ import {
 import {inject} from '@loopback/core';
 import {UserRepository} from '@loopback/authentication-jwt';
 import {geometry} from '../utils/getGeometry';
+import {authenticate} from '@loopback/authentication';
+import {SecurityBindings, UserProfile} from '@loopback/security';
+import {authorize} from '@loopback/authorization';
+import {basicAuthorization} from '../services/basicAuthorize';
 
 export class KiotController {
   constructor(
@@ -41,14 +45,17 @@ export class KiotController {
     public employeeRepository: EmployeeRepository,
   ) {}
 
-  @post('/kiots/user/{idOfUser}/area/{idOfArea}')
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
+  @post('/kiots/area/{idOfArea}')
   @response(200, {
     description: 'Kiot model instance',
     content: {'application/json': {schema: getModelSchemaRef(Kiot)}},
   })
   async create(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
     @inject(RestBindings.Http.RESPONSE) response: Response,
-    @param.path.string('idOfUser') idOfUser: string,
     @param.path.string('idOfArea') idOfArea: string,
     @requestBody({
       content: {
@@ -75,6 +82,24 @@ export class KiotController {
     })
     kiot: any,
   ): Promise<any> {
+
+    const idOfUser = currentUser.id;
+
+    const checkArea = await this.shopRepository.findOne({where: {id: idOfArea}});
+    if (!checkArea) {
+      return {
+        code:400,
+        message: 'Area not found',
+      }
+     }
+
+    if (!idOfArea || !idOfUser) {
+      return {
+        code: 400,
+        message: 'Missing idOfArea or idOfUser',
+      };
+    }
+
     const {
       name,
       description,
@@ -202,8 +227,12 @@ export class KiotController {
       },
     },
   })
-  async find(@param.filter(Kiot) filter?: Filter<Kiot>): Promise<Kiot[]> {
-    return this.kiotRepository.find(filter);
+  async find(@param.filter(Kiot) filter?: Filter<Kiot>): Promise<any> {
+    const data = await this.kiotRepository.find(filter);
+    return {
+      code:200,
+      data
+    }
   }
 
   @get('/kiots/{id}')
@@ -222,13 +251,18 @@ export class KiotController {
     return this.kiotRepository.findById(id, filter);
   }
 
-  @patch('/kiots/user/{idOfUser}')
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
+  @patch('/kiots/area/{idOfArea}')
   @response(204, {
     description: 'Kiot PATCH success',
   })
   async updateById(
+    @inject (SecurityBindings.USER)
+    currentUser: UserProfile,
     @inject(RestBindings.Http.RESPONSE) response: Response,
-    @param.path.string('idOfUser') idOfUser: string,
+    @param.path.string('idOfArea') idOfArea: string,
     @requestBody({
       content: {
         'application/json': {
@@ -238,6 +272,8 @@ export class KiotController {
     })
     kiot: Kiot,
   ): Promise<any> {
+    const idOfUser = currentUser.id;
+
     const {
       name,
       description,
@@ -251,7 +287,6 @@ export class KiotController {
       returnWard,
       phoneNumber,
       email,
-      idOfArea,
     } = kiot;
 
     const shop: any = await this.shopRepository.findOne({where: {idOfUser}});

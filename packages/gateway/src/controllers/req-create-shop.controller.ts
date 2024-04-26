@@ -20,7 +20,6 @@ import multer from 'multer';
 import FormData from 'form-data';
 import {authorize} from '@loopback/authorization';
 import {basicAuthorization} from '../services/basicAuthorize';
-import {fileURLToPath} from 'url';
 
 const storage = multer.memoryStorage();
 const upload = multer({storage});

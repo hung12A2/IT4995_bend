@@ -24,7 +24,8 @@ export async function basicAuthorization(
   }
 
   const allowedRoles = metadata.allowedRoles;
-  const permissionsOfUser = currentUser.permissions;
+  const per = currentUser.permissions;
+  const permissionsOfUser = per ? per : '';
 
   let role;
   let permission;
@@ -34,14 +35,19 @@ export async function basicAuthorization(
     permission = allowedRoles.slice(1);
   }
 
-  if (permissionsOfUser !== 'all') {
-    const listPermissionsOfUser = permissionsOfUser.split('|');
+  let check = true;
 
+  if (permissionsOfUser !== 'all' && !permissionsOfUser) {
+    const listPermissionsOfUser = permissionsOfUser.split('|');
     permission?.forEach((element: string) => {
       if (!listPermissionsOfUser.includes(element)) {
-        return AuthorizationDecision.DENY;
+        check = false;
       }
     });
+  }
+
+  if (!check) {
+    return AuthorizationDecision.DENY;
   }
 
   if (!currentUser.role) {

@@ -4,13 +4,13 @@
     "Admin": 6,
     "RequestCreateShop": 6,
     "Store": 7,
-    "Area": 2,
-    "Kiot": 5,
+    "Area": 5,
+    "Kiot": 6,
     "Employee": 4
   },
   "models": {
     "User": {
-      "1": "{\"idOfShop\":\"6\",\"email\":\"string\",\"password\":\"string\",\"phoneNumber\":\"string\",\"gender\":\"string\",\"fullName\":\"string\",\"role\":\"customer\",\"status\":\"active\",\"coverImage\":{\"filename\":\"2024-04-24T03:50:39.936ZSum.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-24T03:50:39.936ZSum.jpg?alt=media\"},\"avatar\":{\"filename\":\"2024-04-24T03:35:08.490Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-24T03:35:08.490Zdog.jpg?alt=media\"},\"resetToken\":\"string\",\"createdAt\":\"2024-04-15T09:07:34.640Z\",\"updatedAt\":\"2024-04-15T09:07:34.640Z\",\"id\":\"1\"}",
+      "1": "{\"idOfShop\":\"6\",\"email\":\"string\",\"password\":\"string\",\"phoneNumber\":\"string\",\"gender\":\"string\",\"fullName\":\"string\",\"role\":\"customer\",\"status\":\"active\",\"coverImage\":{\"filename\":\"2024-04-24T03:50:39.936ZSum.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-24T03:50:39.936ZSum.jpg?alt=media\"},\"avatar\":{\"filename\":\"2024-04-24T03:35:08.490Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-24T03:35:08.490Zdog.jpg?alt=media\"},\"resetToken\":\"string\",\"createdAt\":\"2024-04-15T09:07:34.640Z\",\"updatedAt\":\"2024-04-15T09:07:34.640Z\",\"id\":\"1\",\"idOfKiot\":\"5\"}",
       "2": "{\"email\":\"hung131119782002@gmail.com\",\"password\":\"123456\",\"phoneNumber\":\"string\",\"gender\":\"string\",\"fullName\":\"string\",\"role\":\"customer\",\"status\":\"active\",\"createdAt\":\"2024-04-23T20:29:21.187Z\",\"updatedAt\":\"2024-04-23T20:29:21.187Z\",\"id\":\"2\",\"resetToken\":null,\"avatar\":{\"filename\":\"2024-04-24T03:03:06.700Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-24T03:03:06.700Zdog.jpg?alt=media\"}}"
     },
     "Admin": {
@@ -25,8 +25,14 @@
     "Store": {
       "6": "{\"idOfUser\":\"1\",\"coverImage\":{\"filename\":\"\",\"url\":\"\"},\"description\":\"no desc\",\"status\":\"active\",\"IDcardImg\":[{\"filename\":\"2024-04-25T10:06:37.811Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T10:06:37.811Zdog.jpg?alt=media\"}],\"BLicenseImg\":[{\"filename\":\"2024-04-25T10:06:38.569ZPostcard.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T10:06:38.569ZPostcard.png?alt=media\"}],\"pickUpAddress\":\"khu phố thị trấn thanh thủy \",\"pickUpGeometry\":{\"lat\":21.1743032,\"lng\":105.2797277},\"returnGeometry\":{\"lat\":21.1743032,\"lng\":105.2797277},\"pickUpProvinceName\":\"Phú Thọ\",\"pickUpProvinceId\":\"229\",\"pickUpDistrictName\":\"Huyện Thanh Thủy\",\"pickUpDistrictId\":\"2237\",\"pickUpWardName\":\"thị trấn Thanh Thủy \",\"pickUpWardId\":\" 11356\",\"returnAddress\":\"khu phố thị trần thanh thủy\",\"returnProvinceName\":\"Phú Thọ\",\"returnProvinceId\":\"229\",\"returnDistrictName\":\"Huyện Thanh Thủy\",\"returnDistrictId\":\"2237\",\"returnWardName\":\"thị trấn Thanh Thủy \",\"returnWardId\":\" 11356\",\"name\":\"shopVuive\",\"phoneNumber\":\"0915047678\",\"email\":\"hung133@gmail.com\",\"createdAt\":\"2024-04-25T10:11:03.000Z\",\"updatedAt\":\"2024-04-25T10:11:03.000Z\",\"acceptedBy\":\"admin-1\",\"avartar\":{\"filename\":\"\",\"url\":\"\"},\"id\":\"6\"}"
     },
-    "Area": {},
-    "Kiot": {},
+    "Area": {
+      "2": "{\"name\":\"Huyện Thủy-Phú Thọ\",\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện Thanh Thủy\",\"districtId\":\"2237\",\"createdAt\":\"2024-04-26T17:09:18.000Z\",\"updatedAt\":\"2024-04-26T17:17:52.000Z\",\"createdBy\":\"admin-1\",\"updatedBy\":\"admin\",\"id\":\"2\"}",
+      "3": "{\"name\":\"Huyện Thanh Sơn - Phú Thọ\",\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện Yên Lập\",\"districtId\":\"2268\",\"createdAt\":\"2024-04-26T17:09:51.000Z\",\"updatedAt\":\"2024-04-26T17:09:51.000Z\",\"createdBy\":\"admin-1\",\"updatedBy\":\"admin-1\",\"id\":\"3\"}",
+      "4": "{\"name\":\"Huyện Thanh Sơn - Phú Thọ\",\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện Vĩnh Tường\",\"districtId\":\"2269\",\"createdAt\":\"2024-04-26T17:10:03.000Z\",\"updatedAt\":\"2024-04-26T17:10:03.000Z\",\"createdBy\":\"admin-1\",\"updatedBy\":\"admin-1\",\"id\":\"4\"}"
+    },
+    "Kiot": {
+      "5": "{\"idOfUser\":\"1\",\"coverImage\":{\"filename\":\"\",\"url\":\"\"},\"idOfArea\":\"3\",\"description\":\"Kiot bán hàng tại thanh thủy\",\"status\":\"active\",\"IDcardImg\":[{\"filename\":\"2024-04-25T10:06:37.811Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T10:06:37.811Zdog.jpg?alt=media\"}],\"BLicenseImg\":[{\"filename\":\"2024-04-25T10:06:38.569ZPostcard.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T10:06:38.569ZPostcard.png?alt=media\"}],\"pickUpAddress\":\"Gần cầu đảo ngọc\",\"pickUpProvinceName\":\"Phú Thọ\",\"pickUpProvinceId\":\"229\",\"pickUpDistrictName\":\"Huyện Thanh THủy\",\"pickUpDistrictId\":\"2237\",\"pickUpWardName\":\"Thị trấn Thanh Thủy\",\"pickUpWardId\":\"112345\",\"returnAddress\":\"gần cầu đảo ngọc\",\"returnProvinceName\":\"Phú Thọ\",\"returnProvinceId\":\"229\",\"returnDistrictName\":\"Huyện Thanh Thủy\",\"returnDistrictId\":\"2237\",\"returnWardName\":\"Thị trấn Thanh Thủy\",\"returnWardId\":\"112345\",\"name\":\"KiotvuiveUpdate\",\"phoneNumber\":\"0915047678\",\"email\":\"hung@gmail.com\",\"createdAt\":\"2024-04-26T17:42:59.000Z\",\"updatedAt\":\"2024-04-26T18:14:56.000Z\",\"createdBy\":\"user - 1\",\"updatedBy\":\"shopOwner1\",\"pickUpGeometry\":{\"lat\":21.1612084,\"lng\":105.2604409},\"returnGeometry\":{\"lat\":21.1612084,\"lng\":105.2604409},\"idOfShop\":\"6\",\"id\":\"5\"}"
+    },
     "Employee": {}
   }
 }
