@@ -6,7 +6,7 @@
     "Store": 7,
     "Area": 5,
     "Kiot": 6,
-    "Employee": 4
+    "Employee": 5
   },
   "models": {
     "User": {
@@ -33,6 +33,8 @@
     "Kiot": {
       "5": "{\"idOfUser\":\"1\",\"coverImage\":{\"filename\":\"\",\"url\":\"\"},\"idOfArea\":\"3\",\"description\":\"Kiot bán hàng tại thanh thủy\",\"status\":\"active\",\"IDcardImg\":[{\"filename\":\"2024-04-25T10:06:37.811Zdog.jpg\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T10:06:37.811Zdog.jpg?alt=media\"}],\"BLicenseImg\":[{\"filename\":\"2024-04-25T10:06:38.569ZPostcard.png\",\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T10:06:38.569ZPostcard.png?alt=media\"}],\"pickUpAddress\":\"Gần cầu đảo ngọc\",\"pickUpProvinceName\":\"Phú Thọ\",\"pickUpProvinceId\":\"229\",\"pickUpDistrictName\":\"Huyện Thanh THủy\",\"pickUpDistrictId\":\"2237\",\"pickUpWardName\":\"Thị trấn Thanh Thủy\",\"pickUpWardId\":\"112345\",\"returnAddress\":\"gần cầu đảo ngọc\",\"returnProvinceName\":\"Phú Thọ\",\"returnProvinceId\":\"229\",\"returnDistrictName\":\"Huyện Thanh Thủy\",\"returnDistrictId\":\"2237\",\"returnWardName\":\"Thị trấn Thanh Thủy\",\"returnWardId\":\"112345\",\"name\":\"KiotvuiveUpdate\",\"phoneNumber\":\"0915047678\",\"email\":\"hung@gmail.com\",\"createdAt\":\"2024-04-26T17:42:59.000Z\",\"updatedAt\":\"2024-04-26T18:14:56.000Z\",\"createdBy\":\"user - 1\",\"updatedBy\":\"shopOwner1\",\"pickUpGeometry\":{\"lat\":21.1612084,\"lng\":105.2604409},\"returnGeometry\":{\"lat\":21.1612084,\"lng\":105.2604409},\"idOfShop\":\"6\",\"id\":\"5\"}"
     },
-    "Employee": {}
+    "Employee": {
+      "4": "{\"idOfShop\":\"6\",\"idOfKiot\":\"5\",\"email\":\"epl1\",\"phoneNumber\":\"091234567\",\"password\":\"ynb8RKOo45\",\"name\":\"hello\",\"permissions\":\"product\",\"status\":\"active\",\"role\":\"employee\",\"id\":\"4\"}"
+    }
   }
 }

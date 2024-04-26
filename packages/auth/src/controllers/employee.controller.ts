@@ -30,6 +30,8 @@ import {inject} from '@loopback/core';
 import {SecurityBindings, UserProfile} from '@loopback/security';
 import {Storage} from '@google-cloud/storage';
 import {generateRandomString} from '../utils/genString';
+import {authorize} from '@loopback/authorization';
+import {basicAuthorization} from '../services/basicAuthorize';
 
 export class EmployeeController {
   constructor(
@@ -45,6 +47,7 @@ export class EmployeeController {
 
   // for storeOwner
   @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
   @post('/employees')
   @response(200, {
     description: 'Employee model instance',
@@ -70,7 +73,7 @@ export class EmployeeController {
       },
     })
     employee: any,
-  ): Promise<Employee | Response> {
+  ): Promise<any> {
     employee.role = 'employee';
     employee.status = 'active';
     employee.password = generateRandomString(10);
@@ -78,6 +81,13 @@ export class EmployeeController {
     const idOfShop = (
       await this.storeRepository.find({where: {idOfUser: idOfUser}})
     )[0].id;
+
+    if (!idOfShop) {
+      return {
+        code: 400,
+        message: 'not found shop',
+      };
+    }
 
     const idOfKiot = (
       await this.kiotRepository.find({where: {idOfUser: idOfUser}})
@@ -87,9 +97,10 @@ export class EmployeeController {
       idOfShop: idOfShop,
     });
     if (numberOfEmployee.count > 2) {
-      return response
-        .status(200)
-        .send({message: 'khong the tao them nhan vien'});
+      return {
+        code: 400,
+        message: 'number of employee is max',
+      };
     }
 
     if (idOfShop) {
@@ -98,10 +109,18 @@ export class EmployeeController {
         employee.idOfKiot = idOfKiot;
       }
     } else {
-      return response.status(200).send({message: 'khong ton tai shop'});
+      return {
+        code: 400,
+        message: 'not found shop',
+      };
     }
 
-    return this.employeeRepository.create(employee);
+    const data = await this.employeeRepository.create(employee);
+
+    return {
+      code: 200,
+      data,
+    };
   }
 
   // for admin
