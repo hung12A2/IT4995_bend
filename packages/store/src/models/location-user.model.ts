@@ -19,6 +19,32 @@ export class LocationUser extends Entity {
     type: 'string',
     required: true,
   })
+  address: string;
+
+  @property({
+    type: 'object',
+    required: true,
+  })
+  geometry: object;
+
+  @property({
+    type: 'boolean',
+    required: false,
+    default: false,
+  })
+  isDefaultOnline: boolean;
+
+  @property({
+    type: 'boolean',
+    required: false,
+    default: false,
+  })
+  isDefaultKiot: boolean;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
   provinceName: string;
 
   @property({
@@ -50,12 +76,6 @@ export class LocationUser extends Entity {
     required: true,
   })
   wardId: string;
-
-  @property({
-    type: 'boolean',
-    required: true,
-  })
-  isDefault: boolean;
 
   // Define well-known properties here
 

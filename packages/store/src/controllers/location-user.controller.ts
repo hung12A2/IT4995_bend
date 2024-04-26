@@ -19,6 +19,7 @@ import {
 } from '@loopback/rest';
 import {LocationUser} from '../models';
 import {LocationUserRepository} from '../repositories';
+import {geometry} from '../utils/getGeometry';
 
 export class LocationUserController {
   constructor(
@@ -36,21 +37,215 @@ export class LocationUserController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(LocationUser, {
-            title: 'NewLocationUser',
-            exclude: ['id'],
-          }),
+          schema: {
+            type: 'object',
+            properties: {
+              address: {type: 'string'},
+              isDefaultOnline: {type: 'boolean'},
+              isDefaultKiot: {type: 'boolean'},
+              province: {type: 'string'},
+              district: {type: 'string'},
+              ward: {type: 'string'},
+            },
+          },
         },
       },
     })
-    locationUser: Omit<LocationUser, 'id'>,
+    locationUser: any,
   ): Promise<any> {
+    const {address, isDefaultOnline, isDefaultKiot, province, district, ward} =
+      locationUser;
+
+    if (!address || !province || !district || !ward) {
+      return {
+        code: 400,
+        message: 'Missing required fields',
+      };
+    }
+
+    const provinceName = province.split('-')[0];
+    const provinceId = province.split('-')[1];
+    const districtName = district.split('-')[0];
+    const districtId = district.split('-')[1];
+    const wardName = ward.split('-')[0];
+    const wardId = ward.split('-')[1];
+
+    const geometryData = await geometry(
+      `${address}, ${wardName}, ${districtName}, ${provinceName}`,
+    );
+
+    if (geometryData.status !== 'OK') {
+      return {code: 400, message: 'Loi he thong khi lay toa do'};
+    }
+
+    if (isDefaultOnline) {
+      await this.locationUserRepository.updateAll(
+        {isDefaultOnline: false},
+        {idOfUser},
+      );
+    }
+
+    if (isDefaultKiot) {
+      await this.locationUserRepository.updateAll(
+        {isDefaultKiot: false},
+        {idOfUser},
+      );
+    }
+
     const newLocation = {
-      ...locationUser,
-      isDefault: false,
+      address,
+      isDefaultOnline,
+      isDefaultKiot,
+      provinceName,
+      provinceId,
+      districtName,
+      districtId,
+      wardName,
+      wardId,
       idOfUser,
+      geometry: geometryData.results[0].geometry.location,
     };
-    return this.locationUserRepository.create(newLocation);
+
+    const data = await this.locationUserRepository.create(newLocation);
+    
+    return {code: 200, data};
+  }
+
+  @patch('/location-users/{idOfUser}/location-id/{id}')
+  @response(200, {
+    description: 'LocationUser model instance',
+    content: {'application/json': {schema: getModelSchemaRef(LocationUser)}},
+  })
+  async updateLocation(
+    @param.path.string('idOfUser') idOfUser: string,
+    @param.path.string('id') id: string,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              address: {type: 'string'},
+              isDefaultOnline: {type: 'boolean'},
+              isDefaultKiot: {type: 'boolean'},
+              province: {type: 'string'},
+              district: {type: 'string'},
+              ward: {type: 'string'},
+            },
+          },
+        },
+      },
+    })
+    locationUser: any,
+  ): Promise<any> {
+    const oldLocation: any = await this.locationUserRepository.findOne({
+      where: {idOfUser, id},
+    });
+
+    const {address, isDefaultOnline, isDefaultKiot, province, district, ward} =
+      locationUser;
+
+    if (!oldLocation) {
+      return {
+        code: 400,
+        message: 'Location not found',
+      };
+    }
+
+    if ((oldLocation.isDefaultOnline == true, isDefaultOnline == false)) {
+      return {
+        code: 400,
+        message: 'Khong the bo chon mac dinh online',
+      };
+    }
+
+    if ((oldLocation.isDefaultOnline == false, isDefaultOnline == true)) {
+      await this.locationUserRepository.updateAll(
+        {isDefaultOnline: false},
+        {idOfUser},
+      );
+    }
+
+    if ((oldLocation.isDefaultKiot == true, isDefaultKiot == false)) {
+      return {
+        code: 400,
+        message: 'Khong the bo chon mac dinh online',
+      };
+    }
+
+    if ((oldLocation.isDefaultKiot == false, isDefaultKiot == true)) {
+      await this.locationUserRepository.updateAll(
+        {isDefaultKiot: false},
+        {idOfUser},
+      );
+    }
+
+    if (!address || !province || !district || !ward) {
+      return {
+        code: 400,
+        message: 'Missing required fields',
+      };
+    }
+
+    const provinceName = province.split('-')[0];
+    const provinceId = province.split('-')[1];
+    const districtName = district.split('-')[0];
+    const districtId = district.split('-')[1];
+    const wardName = ward.split('-')[0];
+    const wardId = ward.split('-')[1];
+
+    if (
+      oldLocation.provinceName !== provinceName ||
+      oldLocation.districtName !== districtName ||
+      oldLocation.wardName !== wardName
+    ) {
+      const geometryData = await geometry(
+        `${address}, ${wardName}, ${districtName}, ${provinceName}`,
+      );
+
+      if (geometryData.status !== 'OK') {
+        return {code: 400, message: 'Loi he thong khi lay toa do'};
+      }
+
+      const newLocation = {
+        address,
+        isDefaultOnline,
+        isDefaultKiot,
+        provinceName,
+        provinceId,
+        districtName,
+        districtId,
+        wardName,
+        wardId,
+        idOfUser,
+        geometry: geometryData.results[0].geometry.location,
+      };
+
+      const data = await this.locationUserRepository.updateById(
+        id,
+        newLocation,
+      );
+      return {code: 200, data: await this.locationUserRepository.findById(id)};
+    } else {
+      const newLocation = {
+        address,
+        isDefaultOnline,
+        isDefaultKiot,
+        provinceName,
+        provinceId,
+        districtName,
+        districtId,
+        wardName,
+        wardId,
+        idOfUser,
+      };
+
+      const data = await this.locationUserRepository.updateById(
+        id,
+        newLocation,
+      );
+      return {code: 200, data: await this.locationUserRepository.findById(id)};
+    }
   }
 
   @get('/location-users/{idOfUser}')
@@ -66,32 +261,6 @@ export class LocationUserController {
     @param.path.string('idOfUser') idOfUser: string,
   ): Promise<any> {
     return this.locationUserRepository.find({where: {idOfUser}});
-  }
-
-  // set default here 
-  @patch('/location-users/{idOfUser}/location-id/{id}')
-  @response(204, {
-    description: 'LocationUser PATCH success',
-  })
-  async updateById(
-    @param.path.string('idOfUser') idOfUser: string,
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(LocationUser, {partial: true}),
-        },
-      },
-    })
-    locationUser: LocationUser,
-  ): Promise<any> {
-    const newLocation: any = {
-      ...locationUser,
-      idOfUser,
-    };
-
-    await this.locationUserRepository.updateAll(newLocation, {idOfUser, id});
-    return this.locationUserRepository.find({where: {idOfUser, id}});
   }
 
   @del('/location-users/{idOfUser}/location-id/{id}')

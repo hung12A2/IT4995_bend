@@ -3,7 +3,7 @@
     "Category": 4,
     "Product": 7,
     "Cart": 2,
-    "LocationUser": 3,
+    "LocationUser": 6,
     "LocationShop": 2,
     "ProductsInCart": 8,
     "Order": 11,
@@ -28,7 +28,11 @@
       "6": "{\"name\":\"Request1\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:28:32.665ZSum.jpg?alt=media\",\"filename\":\"2024-04-25T02:28:32.665ZSum.jpg\"}],\"idOfCategory\":\"2\",\"idOfShop\":\"1\",\"isOnlineProduct\":true,\"isKiotProduct\":false,\"productDescription\":\"sanr pham chat luong 5 sao\",\"productDetails\":\"rat thom ngon \\ncuc bo duong\",\"price\":99000,\"countInStock\":15,\"isBestSeller\":true,\"cateName\":\"do gia dung\",\"status\":\"active\",\"weight\":2,\"dimension\":\"10|10|10\",\"rating\":0,\"createdAt\":\"2024-04-25T03:47:08.000Z\",\"createdBy\":\"shop-1\",\"updatedBy\":\"admin-1\",\"updatedAt\":\"2024-04-25T03:47:08.000Z\",\"id\":\"6\"}"
     },
     "Cart": {},
-    "LocationUser": {},
+    "LocationUser": {
+      "3": "{\"idOfUser\":\"1\",\"address\":\"cầu đảo ngọc\",\"geometry\":{\"lat\":21.16785835550287,\"lng\":105.28109465299977},\"isDefaultOnline\":true,\"isDefaultKiot\":true,\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện Thanh Thủy\",\"districtId\":\"2237\",\"wardName\":\"Thị trấn Thanh Thủy\",\"wardId\":\"151202\",\"id\":\"3\"}",
+      "4": "{\"idOfUser\":\"1\",\"address\":\"xã xuân thủy\",\"geometry\":{\"lat\":21.384392099000024,\"lng\":105.01986434100007},\"isDefaultOnline\":false,\"isDefaultKiot\":false,\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện Yên Lập\",\"districtId\":\"2268\",\"wardName\":\"Xã Xuân Thủy\",\"wardId\":\"150716\",\"id\":\"4\"}",
+      "5": "{\"idOfUser\":\"1\",\"address\":\"trường tiểu học xuân thủy\",\"geometry\":{\"lat\":21.38864200000006,\"lng\":105.01890200000008},\"isDefaultOnline\":false,\"isDefaultKiot\":false,\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện Yên Lập\",\"districtId\":\"2268\",\"wardName\":\"Xã Xuân Thủy\",\"wardId\":\"150716\",\"id\":\"5\"}"
+    },
     "LocationShop": {},
     "ProductsInCart": {
       "7": "{\"idOfUser\":\"1\",\"idOfProduct\":\"5\",\"quantity\":7,\"isKiot\":false,\"id\":\"7\"}"
