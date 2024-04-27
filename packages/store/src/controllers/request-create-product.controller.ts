@@ -51,6 +51,7 @@ export class RequestCreateProductController {
     public categoryRepository: CategoryRepository,
   ) {}
 
+  //
   @post('/request-create-product/shop/{idOfShop}/category/{idOfCategory}')
   @response(200, {
     description: 'Product model instance',
@@ -207,6 +208,7 @@ export class RequestCreateProductController {
     }
   }
 
+  // 
   @post('/request-create-product/{idOfRequest}/accepted/admin/{idOfAdmin}')
   @response(200, {
     description: 'Product model instance',
@@ -316,14 +318,13 @@ export class RequestCreateProductController {
     content: {
       'application/json': {
         schema: {
-          type: 'array',
-          items: getModelSchemaRef(Product, {includeRelations: true}),
+          type: 'object',
         },
       },
     },
   })
-  async find(@param.filter(Product) filter?: Filter<Product>): Promise<any> {
-    const data = this.requestCreatProductRepository.find(filter);
+  async find(@param.filter(RequestCreateProduct) filter?: Filter<RequestCreateProduct>): Promise<any> {
+    const data = await this.requestCreatProductRepository.find(filter);
     return {
       code: 200,
       data,

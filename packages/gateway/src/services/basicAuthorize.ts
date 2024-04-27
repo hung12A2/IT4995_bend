@@ -35,6 +35,10 @@ export async function basicAuthorization(
     permission = allowedRoles.slice(1);
   }
 
+  if (currentUser.role === 'customer' && role === 'employee') {
+    return AuthorizationDecision.ALLOW;
+  }
+
   let check = true;
 
   if (permissionsOfUser !== 'all' && !permissionsOfUser) {

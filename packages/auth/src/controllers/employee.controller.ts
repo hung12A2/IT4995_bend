@@ -32,6 +32,7 @@ import {Storage} from '@google-cloud/storage';
 import {generateRandomString} from '../utils/genString';
 import {authorize} from '@loopback/authorization';
 import {basicAuthorization} from '../services/basicAuthorize';
+import {AnyARecord} from 'dns';
 
 export class EmployeeController {
   constructor(
@@ -138,10 +139,15 @@ export class EmployeeController {
   })
   async find(@param.filter(Employee) filter?: Filter<Employee>): Promise<any> {
     const employee = await this.employeeRepository.find(filter);
-    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
-    return this.response
-      .header('Content-Range', `Employees 0-20/20`)
-      .send(employee);
+    // this.response.header('Access-Control-Expose-Headers', 'Content-Range');
+    // return this.response
+    //   .header('Content-Range', `Employees 0-20/20`)
+    //   .send(employee);
+
+    return {
+      code: 200,
+      data: employee,
+    };
   }
 
   // for storeOwner
@@ -162,12 +168,15 @@ export class EmployeeController {
     return this.employeeRepository.findById(id, filter);
   }
 
-  // for storeOwner
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
   @patch('/employees/inActive/{id}')
   @response(204, {
     description: 'Employee PATCH success',
   })
   async inActiveById(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     @param.path.string('id') id: string,
     @requestBody({
       content: {
@@ -177,8 +186,18 @@ export class EmployeeController {
       },
     })
     employee: Employee,
-  ): Promise<void> {
+  ): Promise<any> {
+    if (currentUserProfile.idOfShop !== employee.idOfShop) {
+      return {
+        code: 400,
+        message: 'not shop owner',
+      };
+    }
     await this.employeeRepository.updateById(id, {status: 'inActive'});
+    return {
+      code: 200,
+      data: await this.employeeRepository.findById(id),
+    }
   }
 
   // for storeOwner update permission

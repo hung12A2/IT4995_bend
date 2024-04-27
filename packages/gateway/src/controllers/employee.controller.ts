@@ -13,6 +13,7 @@ import {
   Request,
   response,
   param,
+  patch,
 } from '@loopback/rest';
 import {authenticate} from '@loopback/authentication';
 import axios from '../services/authAxios.service';
@@ -84,7 +85,7 @@ export class EmployeeController {
     voters: [basicAuthorization],
     allowedRoles: ['admin', 'area-Managment'],
   })
-  @post('areas/update/{id}', {
+  @get('employees', {
     responses: {
       '200': {
         description: 'Return new area',
@@ -98,36 +99,49 @@ export class EmployeeController {
       },
     },
   })
-  async updateArea(
-    @param.path.string('id') id: string,
-    @requestBody({
-      description: 'new area data',
-      required: true,
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              name: {type: 'string'},
-              province: {type: 'string'},
-              district: {type: 'string'},
+  async getAllEmployee(
+    @param.query.object('filter') filter: string,
+  ): Promise<any> {
+    const data = await axios
+      .get(`/employees`, {params: {filter}})
+      .then(res => res.data)
+      .catch(e => console.log(e));
+
+    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
+    this.response.header('Content-Range', 'Employees 0-20/20');
+    this.response.status(200).send(data);
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
+  @patch('employees/inActive/{id}', {
+    responses: {
+      '200': {
+        description: 'Return new area',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
             },
           },
         },
       },
-    })
-    request: Request,
-    @inject(RestBindings.Http.RESPONSE) response: Response,
-  ): Promise<any> {
-    const data = axios
-      .patch(`/areas/${id}`, request, {
-        headers: {
-          authorization: this.request.headers.authorization,
+    },
+  })
+  async inActiveEmployees(@param.path.string('id') id: string): Promise<any> {
+    const data = await axios
+      .patch(
+        `/employees/inActive/${id}`,
+        {},
+        {
+          headers: {
+            authorization: this.request.headers.authorization,
+          },
         },
-      })
+      )
       .then(res => res)
       .catch(e => console.log(e));
 
-    return data;
+    return data
   }
 }
