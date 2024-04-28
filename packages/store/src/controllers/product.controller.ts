@@ -52,10 +52,12 @@ export class ProductController {
       },
     },
   })
-  async find(
-    @param.filter(Product) filter?: Filter<Product>,
-  ): Promise<Product[]> {
-    return this.productRepository.find(filter);
+  async find(@param.filter(Product) filter?: Filter<Product>): Promise<any> {
+    const data = await this.productRepository.find(filter);
+    return {
+      code: 200,
+      data,
+    };
   }
 
   @get('/products/{id}')
@@ -87,28 +89,15 @@ export class ProductController {
       description: 'multipart/form-data value.',
       required: true,
       content: {
-        'multipart/form-data': {
+        'application/json': {
           // Skip body parsing
-          'x-parser': 'stream',
           schema: {type: 'object'},
         },
       },
     })
-    request: Request,
+    request: any,
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<any> {
-    const data: any = await new Promise<object>((resolve, reject) => {
-      cpUpload(request, response, (err: unknown) => {
-        if (err) reject(err);
-        else {
-          resolve({
-            files: request.files,
-            body: request.body,
-          });
-        }
-      });
-    });
-
     const {
       price,
       countInStock,
@@ -119,7 +108,7 @@ export class ProductController {
       isKiotProduct,
       isOnlineProduct,
       idOfKiot,
-    } = data.body;
+    } = request;
 
     if (isKiotProduct && !idOfKiot) {
       return {

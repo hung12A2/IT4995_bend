@@ -73,17 +73,6 @@ export class WalletOfShopController {
     }
   }
 
-  @get('/wallet-of-shops/count')
-  @response(200, {
-    description: 'WalletOfShop model count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async count(
-    @param.where(WalletOfShop) where?: Where<WalletOfShop>,
-  ): Promise<Count> {
-    return this.walletOfShopRepository.count(where);
-  }
-
   @get('/wallet-of-shops')
   @response(200, {
     description: 'Array of WalletOfShop model instances',
@@ -102,24 +91,55 @@ export class WalletOfShopController {
     return this.walletOfShopRepository.find(filter);
   }
 
-  @patch('/wallet-of-shops')
+  @patch('/wallet-of-shops/{idOfShop}/type/{type}')
   @response(200, {
-    description: 'WalletOfShop PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
+    description: 'Wallet model instance',
+    content: {'application/json': {schema: getModelSchemaRef(WalletOfShop)}},
   })
-  async updateAll(
+  async transferMoney(
+    @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('type') type: string,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(WalletOfShop, {partial: true}),
+          schema: {
+            properties: {
+              amountMoney: {type: 'number'},
+            },
+          },
         },
       },
     })
-    walletOfShop: WalletOfShop,
-    @param.where(WalletOfShop) where?: Where<WalletOfShop>,
-  ): Promise<Count> {
-    return this.walletOfShopRepository.updateAll(walletOfShop, where);
+    request: any,
+  ): Promise<any> {
+    const {amountMoney} = request;
+    const oldWallet: any = await this.walletOfShopRepository.findOne({
+      where: {idOfShop},
+    });
+    if (type == 'receive') {
+      await this.walletOfShopRepository.updateAll(
+        {amountMoney: amountMoney + oldWallet?.amountMoney},
+        {idOfShop},
+      );
+    } else if (type == 'send') {
+      if (oldWallet?.amountMoney < amountMoney) {
+        return {
+          code: 400,
+          message: 'Not enough money',
+        };
+      } else {
+        await this.walletOfShopRepository.updateAll(
+          {amountMoney: oldWallet?.amountMoney - amountMoney},
+          {idOfShop},
+        );
+      }
+    }
+
+    const data = await this.walletOfShopRepository.findOne({where: {idOfShop}});
+    return {code: 400, data};
   }
+
+  //
 
   @get('/wallet-of-shops/{id}')
   @response(200, {
@@ -154,17 +174,6 @@ export class WalletOfShopController {
     walletOfShop: WalletOfShop,
   ): Promise<void> {
     await this.walletOfShopRepository.updateById(id, walletOfShop);
-  }
-
-  @put('/wallet-of-shops/{id}')
-  @response(204, {
-    description: 'WalletOfShop PUT success',
-  })
-  async replaceById(
-    @param.path.string('id') id: string,
-    @requestBody() walletOfShop: WalletOfShop,
-  ): Promise<void> {
-    await this.walletOfShopRepository.replaceById(id, walletOfShop);
   }
 
   @del('/wallet-of-shops/{id}')

@@ -43,31 +43,17 @@ export class WalletController {
 
     const oldWallet = await this.walletRepository.findOne({where: {idOfUser}});
     if (oldWallet) {
-      return this.response.status(400).send({message: 'Wallet already exists'});
+      return {
+        code: 400,
+        message: 'Wallet already exists',
+      };
     } else {
-      return this.walletRepository.create(NewWallet);
+      const data = await this.walletRepository.create(NewWallet);
+      return {
+        code: 200,
+        data,
+      };
     }
-  }
-
-  @patch('/wallets/{idOfUser}')
-  @response(200, {
-    description: 'Wallet model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Wallet)}},
-  })
-  async updateMoney(
-    @param.path.string('idOfUser') idOfUser: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Wallet, {partial: true}),
-        },
-      },
-    })
-    request: any,
-  ): Promise<any> {
-    const {amountMoney} = request;
-    await this.walletRepository.updateAll({amountMoney}, {idOfUser});
-    return this.walletRepository.findOne({where: {idOfUser}});
   }
 
   @patch('/wallets/{idOfUser}/type/{type}')
@@ -92,15 +78,20 @@ export class WalletController {
     request: any,
   ): Promise<any> {
     const {amountMoney} = request;
-    const oldWallet: any = await this.walletRepository.findOne({where: {idOfUser}});
+    const oldWallet: any = await this.walletRepository.findOne({
+      where: {idOfUser},
+    });
     if (type == 'receive') {
       await this.walletRepository.updateAll(
         {amountMoney: amountMoney + oldWallet?.amountMoney},
         {idOfUser},
       );
-    }else if (type == 'send') {
+    } else if (type == 'send') {
       if (oldWallet?.amountMoney < amountMoney) {
-        return this.response.status(400).send({message: 'Not enough money'});
+        return {
+          code: 400,
+          message: 'Not enough money',
+        };
       } else {
         await this.walletRepository.updateAll(
           {amountMoney: oldWallet?.amountMoney - amountMoney},
@@ -109,7 +100,8 @@ export class WalletController {
       }
     }
 
-    return this.walletRepository.findOne({where: {idOfUser}});
+    const data = await this.walletRepository.findOne({where: {idOfUser}});
+    return {code: 400, data};
   }
 
   @get('/wallets/{idOfUser}')
