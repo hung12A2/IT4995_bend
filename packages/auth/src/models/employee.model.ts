@@ -1,11 +1,13 @@
 import {Entity, model, property} from '@loopback/repository';
+import {v4 as uuid} from 'uuid'
 
-@model()
+
+@model({settings: {}})
 export class Employee extends Entity {
   @property({
     type: 'string',
     id: true,
-    generated: true,
+    default: () => uuid()
   })
   id?: string;
 

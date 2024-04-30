@@ -261,7 +261,7 @@ export class ReqCreateShopController {
     const storeData: Store = Object.assign({
       idOfUser,
       coverImage: {filename: '', url: ''},
-      avartar: {filename: '', url: ''},
+      avatar: {filename: '', url: ''},
       description: 'no desc',
       status: 'active',
       IDcardImg,
