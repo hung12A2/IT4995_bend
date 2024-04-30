@@ -285,7 +285,7 @@ export class OrderKiotController {
 
           const dataTransaction = JSON.stringify({
             idOfUser,
-            amountOfMoney: order[0].priceOfAll,
+            amountMoney: order[0].priceOfAll,
             type: 'receive',
             createdAt: new Date().toLocaleString(),
             image: order[0].image,
@@ -418,7 +418,7 @@ export class OrderKiotController {
 
         const dataTransaction = JSON.stringify({
           idOfShop: order.idOfShop,
-          amountOfMoney: order.codAmount,
+          amountMoney: order.codAmount,
           type: 'receive',
           createdAt: new Date().toLocaleString(),
           image: order.image,
@@ -527,7 +527,7 @@ export class OrderKiotController {
 
           const dataTransaction = JSON.stringify({
             idOfUser,
-            amountOfMoney: order[0].priceOfAll,
+            amountMoney: order[0].priceOfAll,
             type: 'receive',
             createdAt: new Date().toLocaleString(),
             image: order[0].image,
@@ -644,7 +644,7 @@ export class OrderKiotController {
 
           const dataTransaction = JSON.stringify({
             idOfUser,
-            amountOfMoney: order[0].priceOfAll,
+            amountMoney: order[0].priceOfAll,
             type: 'receive',
             createdAt: new Date().toLocaleString(),
             image: order[0].image,
@@ -855,7 +855,7 @@ export class OrderKiotController {
     if (paymentMethod == 'payOnline') {
       const dataTransaction = JSON.stringify({
         idOfUser,
-        amountOfMoney: priceOfAll,
+        amountMoney: priceOfAll,
         type: 'send',
         createdAt: new Date().toLocaleString(),
         image: imageOrder,

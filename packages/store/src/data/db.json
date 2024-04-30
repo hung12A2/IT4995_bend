@@ -8,13 +8,13 @@
     "ProductsInCart": 8,
     "Order": 11,
     "ProductsInOrder": 23,
-    "Wallet": 3,
+    "Wallet": 5,
     "BoughtProduct": 4,
     "ReturnOrder": 5,
     "RatingProduct": 4,
     "OrderKiot": 8,
     "ProductsInOrderKiot": 22,
-    "WalletOfShop": 2,
+    "WalletOfShop": 5,
     "RequestCreateProduct": 12
   },
   "models": {
@@ -46,8 +46,7 @@
       "22": "{\"idOfOrder\":\"10\",\"idOfProduct\":\"6\",\"quantity\":1,\"id\":\"22\"}"
     },
     "Wallet": {
-      "1": "{\"idOfUser\":\"1\",\"amountMoney\":999412000,\"id\":\"1\"}",
-      "2": "{\"idOfUser\":\"3\",\"amountMoney\":1000000000,\"id\":\"2\"}"
+      "4": "{\"idOfUser\":\"1\",\"amountMoney\":100000,\"id\":\"4\"}"
     },
     "BoughtProduct": {},
     "ReturnOrder": {},
@@ -55,7 +54,7 @@
     "OrderKiot": {},
     "ProductsInOrderKiot": {},
     "WalletOfShop": {
-      "1": "{\"idOfShop\":\"1\",\"amountOfMoney\":0,\"id\":\"1\"}"
+      "4": "{\"idOfShop\":\"1\",\"amountMoney\":9999999,\"id\":\"4\"}"
     },
     "RequestCreateProduct": {
       "7": "{\"name\":\"Request1\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:26:21.524Zdog.jpg?alt=media\",\"filename\":\"2024-04-25T02:26:21.524Zdog.jpg\"},{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:26:21.527ZScreenshot%20from%202024-04-05%2008-25-17.png?alt=media\",\"filename\":\"2024-04-25T02:26:21.527ZScreenshot from 2024-04-05 08-25-17.png\"}],\"idOfCategory\":\"2\",\"idOfShop\":\"1\",\"isOnlineProduct\":true,\"isKiotProduct\":false,\"productDescription\":\"sanr pham chat luong 5 sao\",\"productDetails\":\"rat thom ngon \\ncuc bo duong\",\"price\":99000,\"countInStock\":15,\"isBestSeller\":true,\"cateName\":\"do gia dung\",\"status\":\"accepted\",\"weight\":2,\"dimension\":\"10|10|10\",\"createdAt\":\"2024-04-25T02:26:22.000Z\",\"updatedAt\":\"2024-04-25T03:10:33.000Z\",\"createdBy\":\"shop-1\",\"updatedBy\":\"admin-1\",\"id\":\"7\"}",

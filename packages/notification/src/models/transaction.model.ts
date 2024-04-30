@@ -19,7 +19,7 @@ export class Transaction extends Entity {
     type: 'number',
     required: true,
   })
-  amountOfMoney: number;
+  amountMoney: number;
 
   @property({
     type: 'string',

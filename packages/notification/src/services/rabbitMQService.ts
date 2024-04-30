@@ -7,7 +7,7 @@ export class RabbitMQService {
 
   private constructor() {
     this.connectionPromise = new Promise((resolve, reject) => {
-      amqp.connect('amqp://guest:guest@localhost', (error0, connection) => {
+      amqp.connect('amqps://azkluhud:OXbmo02ei30tCDMbrE8DJjn2wK60WZTo@armadillo.rmq.cloudamqp.com/azkluhud', (error0, connection) => {
         if (error0) {
           reject(error0);
         }

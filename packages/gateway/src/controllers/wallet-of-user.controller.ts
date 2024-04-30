@@ -35,11 +35,7 @@ export class WalletOfUserController {
     @inject(RestBindings.Http.REQUEST) public request: Request,
   ) {}
 
-  @authenticate('jwt')
-  @authorize({
-    voters: [basicAuthorization],
-    allowedRoles: ['customer'],
-  })
+
   @post('wallet-of-user/create/{idOfUser}', {
     responses: {
       '200': {

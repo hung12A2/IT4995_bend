@@ -19,7 +19,7 @@ export class WalletOfShop extends Entity {
     type: 'number',
     default: 0,
   })
-  amountOfMoney?: number;
+  amountMoney?: number;
 
   // Define well-known properties here
 

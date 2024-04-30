@@ -8,7 +8,7 @@ export class RabbitMQService {
 
   public async init(): Promise<void> {
     return new Promise((resolve, reject) => {
-      amqp.connect('amqp://localhost', (error0, connection) => {
+      amqp.connect('amqps://azkluhud:OXbmo02ei30tCDMbrE8DJjn2wK60WZTo@armadillo.rmq.cloudamqp.com/azkluhud', (error0, connection) => {
         if (error0) {
           reject(error0);
         }

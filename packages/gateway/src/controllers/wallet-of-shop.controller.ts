@@ -54,14 +54,14 @@ export class WalletOfShopController {
     @param.path.string('idOfShop') idOfShop: string,
   ): Promise<any> {
     const data = await storeAxios
-      .post(`/wallets/${idOfShop}`)
+      .post(`/wallet-of-shops/${idOfShop}`)
       .then(res => res)
       .catch(e => console.log(e));
 
     return data;
   }
 
-  @post('wallet-of-user/update/{idOfShop}', {
+  @post('wallet-of-shop/update/{idOfShop}', {
     responses: {
       '200': {
         description: 'Return new wallet of shop',

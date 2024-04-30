@@ -101,7 +101,7 @@ export class WalletController {
     }
 
     const data = await this.walletRepository.findOne({where: {idOfUser}});
-    return {code: 400, data};
+    return {code: 200, data};
   }
 
   @get('/wallets/{idOfUser}')

@@ -112,10 +112,13 @@ export class WalletOfShopController {
     })
     request: any,
   ): Promise<any> {
+
     const {amountMoney} = request;
     const oldWallet: any = await this.walletOfShopRepository.findOne({
       where: {idOfShop},
     });
+
+    console.log (oldWallet)
     if (type == 'receive') {
       await this.walletOfShopRepository.updateAll(
         {amountMoney: amountMoney + oldWallet?.amountMoney},
@@ -136,7 +139,7 @@ export class WalletOfShopController {
     }
 
     const data = await this.walletOfShopRepository.findOne({where: {idOfShop}});
-    return {code: 400, data};
+    return {code: 200, data};
   }
 
   //
@@ -158,23 +161,6 @@ export class WalletOfShopController {
     return this.walletOfShopRepository.findById(id, filter);
   }
 
-  @patch('/wallet-of-shops/{id}')
-  @response(204, {
-    description: 'WalletOfShop PATCH success',
-  })
-  async updateById(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(WalletOfShop, {partial: true}),
-        },
-      },
-    })
-    walletOfShop: WalletOfShop,
-  ): Promise<void> {
-    await this.walletOfShopRepository.updateById(id, walletOfShop);
-  }
 
   @del('/wallet-of-shops/{id}')
   @response(204, {

@@ -9,7 +9,7 @@
       "1": "{\"idOfUser\":\"1\",\"content\":\"Don hang 4 da bi hoan tra, nhan lai 93000\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"isViewed\":false,\"createdAt\":\"2024-04-20T12:59:33.606Z\",\"id\":\"1\"}"
     },
     "Transaction": {
-      "1": "{\"idOfUser\":\"1\",\"amountOfMoney\":93000,\"type\":\"receive\",\"createdAt\":\"2024-04-20T12:59:33.607Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"idOfOrder\":\"4\",\"id\":\"1\"}"
+      "1": "{\"idOfUser\":\"1\",\"amountMoney\":93000,\"type\":\"receive\",\"createdAt\":\"2024-04-20T12:59:33.607Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"idOfOrder\":\"4\",\"id\":\"1\"}"
     },
     "NotificationForShop": {
       "1": "{\"idOfShop\":\"3\",\"content\":\"Don hang 4 da bi hoan tra\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"isViewed\":false,\"createdAt\":\"2024-04-20T12:59:33.607Z\",\"id\":\"1\"}"

@@ -269,7 +269,7 @@ export class OrderController {
 
           const dataTransaction = JSON.stringify({
             idOfUser,
-            amountOfMoney: order[0].priceOfAll,
+            amountMoney: order[0].priceOfAll,
             type: 'receive',
             createdAt: new Date().toLocaleString(),
             idOfOrder: id,
@@ -398,7 +398,7 @@ export class OrderController {
 
         const dataTransaction = JSON.stringify({
           idOfShop: order.idOfShop,
-          amountOfMoney: order.codAmount - order.totalFee,
+          amountMoney: order.codAmount - order.totalFee,
           type: 'receive',
           createdAt: new Date().toLocaleString(),
           idOfOrder: id,
@@ -576,7 +576,7 @@ export class OrderController {
 
           const dataTransaction = JSON.stringify({
             idOfUser,
-            amountOfMoney: order[0].priceOfAll,
+            amountMoney: order[0].priceOfAll,
             type: 'refund',
             createdAt: new Date().toLocaleString(),
             idOfOrder: id,
@@ -803,7 +803,7 @@ export class OrderController {
     if (paymentMethod == 'payOnline') {
       const dataTransaction = JSON.stringify({
         idOfUser,
-        amountOfMoney: priceOfAll,
+        amountMoney: priceOfAll,
         type: 'send',
         createdAt: new Date().toLocaleString(),
         image: imageOrder,
