@@ -6,8 +6,8 @@ export const geometry = async (k: string) => {
     .get(
       `https://rsapi.goong.io/geocode?address=${address}&api_key=inXFXxBnv2LKqIc5NYwRmbqtMbLeUHdXWDLT32Ii`,
     )
-    .then(res => res.data)
-    .catch(e => console.log(e));
+    .then((res:any) => res.data)
+    .catch((e:any) => console.log(e));
 
   return data;
 };
