@@ -26,6 +26,7 @@ export class LocationController {
     @repository(LocationUserRepository)
     public locationUserRepository: LocationUserRepository,
   ) {}
+  //
 
   @get('/location/province')
   @response(200, {
@@ -52,14 +53,20 @@ export class LocationController {
       );
       if (response.status === 200) {
         const data = response.data.data;
-        return data.map((item: any) => {
+        const dataReturn = data.map((item: any) => {
           return {
             provincId: item.ProvinceID,
             provinceName: item.ProvinceName,
           };
         });
+
+        return {
+          code: 200,
+          data: dataReturn,
+        };
       } else {
         return {
+          code: 400,
           message: 'Error when get data from GHN',
         };
       }
@@ -96,12 +103,11 @@ export class LocationController {
             'Content-Type': 'application/json',
             Token: '33108a16-e157-11ee-8bfa-8a2dda8ec551',
           },
-          
         },
       );
       if (response.status == 200) {
         const data = response.data.data;
-        return data.map((item: any) => {
+        const dataReturn = data.map((item: any) => {
           return {
             districtId: item.DistrictID,
             districtName: item.DistrictName,
@@ -112,8 +118,14 @@ export class LocationController {
             deliverType: item.DeliverType,
           };
         });
+
+        return {
+          code: 200,
+          data: dataReturn,
+        };
       } else {
         return {
+          code: 400,
           message: 'Error when get data from GHN',
         };
       }
@@ -122,7 +134,7 @@ export class LocationController {
     }
   }
 
-  @get('/location/province/distric/{district_id}/ward')
+  @get('/location/province/distric/{district_id}')
   @response(200, {
     description: 'Array of LocationUser model instances',
     content: {
@@ -155,14 +167,17 @@ export class LocationController {
       );
       if (response.status == 200) {
         const data = response.data.data;
-        return data.map((item: any) => {
+        const dataReturn = data.map((item: any) => {
           return {
             wardCode: item.WardCode,
             wardName: item.WardName,
           };
         });
+
+        return {code: 200, data: dataReturn};
       } else {
         return {
+          code: 400,
           message: 'Error when get data from GHN',
         };
       }

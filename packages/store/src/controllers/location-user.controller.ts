@@ -27,6 +27,8 @@ export class LocationUserController {
     public locationUserRepository: LocationUserRepository,
   ) {}
 
+  // 
+
   @post('/location-users/{idOfUser}')
   @response(200, {
     description: 'LocationUser model instance',
@@ -169,7 +171,7 @@ export class LocationUserController {
     if ((oldLocation.isDefaultKiot == true, isDefaultKiot == false)) {
       return {
         code: 400,
-        message: 'Khong the bo chon mac dinh online',
+        message: 'Khong the bo chon mac dinh kiot',
       };
     }
 
@@ -260,7 +262,8 @@ export class LocationUserController {
   async findById(
     @param.path.string('idOfUser') idOfUser: string,
   ): Promise<any> {
-    return this.locationUserRepository.find({where: {idOfUser}});
+    const data = await this.locationUserRepository.find({where: {idOfUser}});
+    return {code:200, data}
   }
 
   @del('/location-users/{idOfUser}/location-id/{id}')

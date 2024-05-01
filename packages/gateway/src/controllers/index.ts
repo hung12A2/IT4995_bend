@@ -9,3 +9,6 @@ export * from './request-create-product.controller';
 export * from './products.controller';
 export * from './wallet-of-user.controller';
 export * from './wallet-of-shop.controller';
+export * from './location.controller';
+export * from './location-user.controller';
+export * from './products-in-cart.controller';

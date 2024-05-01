@@ -3,9 +3,9 @@
     "Category": 4,
     "Product": 8,
     "Cart": 2,
-    "LocationUser": 6,
+    "LocationUser": 7,
     "LocationShop": 2,
-    "ProductsInCart": 8,
+    "ProductsInCart": 9,
     "Order": 11,
     "ProductsInOrder": 23,
     "Wallet": 5,
@@ -30,13 +30,11 @@
     },
     "Cart": {},
     "LocationUser": {
-      "3": "{\"idOfUser\":\"1\",\"address\":\"cầu đảo ngọc\",\"geometry\":{\"lat\":21.16785835550287,\"lng\":105.28109465299977},\"isDefaultOnline\":true,\"isDefaultKiot\":true,\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện Thanh Thủy\",\"districtId\":\"2237\",\"wardName\":\"Thị trấn Thanh Thủy\",\"wardId\":\"151202\",\"id\":\"3\"}",
-      "4": "{\"idOfUser\":\"1\",\"address\":\"xã xuân thủy\",\"geometry\":{\"lat\":21.384392099000024,\"lng\":105.01986434100007},\"isDefaultOnline\":false,\"isDefaultKiot\":false,\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện Yên Lập\",\"districtId\":\"2268\",\"wardName\":\"Xã Xuân Thủy\",\"wardId\":\"150716\",\"id\":\"4\"}",
-      "5": "{\"idOfUser\":\"1\",\"address\":\"trường tiểu học xuân thủy\",\"geometry\":{\"lat\":21.38864200000006,\"lng\":105.01890200000008},\"isDefaultOnline\":false,\"isDefaultKiot\":false,\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện Yên Lập\",\"districtId\":\"2268\",\"wardName\":\"Xã Xuân Thủy\",\"wardId\":\"150716\",\"id\":\"5\"}"
+      "6": "{\"idOfUser\":\"1\",\"address\":\"gần chợ Thanh Thủy\",\"geometry\":{\"lat\":21.173930065000036,\"lng\":105.28476621400006},\"isDefaultOnline\":true,\"isDefaultKiot\":true,\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện THanh Thủy\",\"districtId\":\"1157\",\"wardName\":\"Thị trấn Thanh Thủy\",\"wardId\":\"151201\",\"id\":\"6\"}"
     },
-    "LocationShop": {},
     "ProductsInCart": {
-      "7": "{\"idOfUser\":\"1\",\"idOfProduct\":\"5\",\"quantity\":7,\"isKiot\":false,\"id\":\"7\"}"
+      "7": "{\"idOfUser\":\"1\",\"idOfProduct\":\"5\",\"quantity\":7,\"isKiot\":false,\"id\":\"7\"}",
+      "8": "{\"idOfUser\":\"1\",\"idOfProduct\":\"5\",\"quantity\":5,\"isKiot\":true,\"id\":\"8\"}"
     },
     "Order": {
       "10": "{\"idOfShop\":\"1\",\"paymentMethod\":\"payOnline\",\"idOfUser\":\"1\",\"fromName\":\"Hung1\",\"fromPhone\":\"0915047677\",\"fromAddress\":\"Khu phố thị trấn Thanh Thủy\",\"fromProvince\":\"Phú Thọ - 229\",\"fromDistrict\":\"Huyện Thanh Thủy - 2237\",\"fromWard\":\"Xã Đoan Hạ - 151204\",\"toName\":\"Hà Trang Kiên\",\"toPhone\":\"0915047678\",\"toAddress\":\"Khu phố xã Xuân thủy\",\"toProvince\":\"Phú Thọ - 229\",\"toDistrict\":\"Huyện Yên Lập - 2268\",\"toWard\":\"Xã Xuân Thủy - 150716\",\"clientOrderCode\":\"GHN7348\",\"codAmount\":0,\"content\":\"Đồ gia dụng\",\"weight\":4,\"dimension\":\"10|10|20\",\"insuranceValue\":198000,\"serviceTypeId\":5,\"serviceId\":100039,\"paymentTypeId\":2,\"requiredNote\":\"CHOTHUHANG\",\"status\":\"prepared\",\"totalFee\":34793,\"priceOfAll\":93000,\"note\":\"không có note\",\"pickShift\":null,\"createdAt\":\"2024-04-25T05:07:38.948Z\",\"updatedAt\":\"2024-04-25T05:11:06.000Z\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:26:21.524Zdog.jpg?alt=media\",\"filename\":\"2024-04-25T02:26:21.524Zdog.jpg\"},{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:26:21.527ZScreenshot%20from%202024-04-05%2008-25-17.png?alt=media\",\"filename\":\"2024-04-25T02:26:21.527ZScreenshot from 2024-04-05 08-25-17.png\"}],\"id\":\"10\"}"
