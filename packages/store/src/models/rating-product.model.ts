@@ -29,6 +29,9 @@ export class RatingProduct extends Entity {
   idOfUser: string;
 
   @property({
+    postgresql: {
+      dataType: 'float',
+    },
     type: 'number',
     required: true,
   })

@@ -108,6 +108,9 @@ export class Product extends Entity {
   dimension: string;
 
   @property({
+    postgresql: {
+      dataType: 'float',
+    },
     type: 'number',
     required: true,
   })
