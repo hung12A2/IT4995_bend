@@ -61,7 +61,11 @@ export class NotificationController {
   })
   async find(
     @param.filter(Notification) filter?: Filter<Notification>,
-  ): Promise<Notification[]> {
-    return this.notificationRepository.find(filter);
+  ): Promise<any> {
+    const data = await this.notificationRepository.find(filter);
+    return {
+      code: 200,
+      data
+    }
   }
 }

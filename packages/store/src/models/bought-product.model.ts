@@ -1,6 +1,6 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model({settings: {strict: false}})
+@model({settings: {}})
 export class BoughtProduct extends Entity {
   @property({
     type: 'string',
@@ -37,7 +37,7 @@ export class BoughtProduct extends Entity {
     type: 'date',
     required: true,
   })
-  createAt: Date;
+  createAt: string;
 
   @property({
     type: 'boolean',

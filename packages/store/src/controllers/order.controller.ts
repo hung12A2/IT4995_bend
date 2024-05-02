@@ -481,8 +481,8 @@ export class OrderController {
             const idOfProduct = productInOrder.idOfProduct;
             const quantity = productInOrder.quantity;
             const idOfUser = idOfBuyer;
-            const createAt = new Date();
-            this.boughtProductRepository.create({
+            const createAt = new Date().toLocaleString();
+            await this.boughtProductRepository.create({
               idOfProduct,
               idOfOrder: id,
               idOfUser,
@@ -577,7 +577,7 @@ export class OrderController {
           }),
         );
 
-        this.returnOrderRepository.create({
+        await this.returnOrderRepository.create({
           idOfOrder: id,
           idOfUser,
           idOfShop,

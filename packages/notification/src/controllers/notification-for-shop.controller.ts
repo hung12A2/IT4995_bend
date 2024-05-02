@@ -40,8 +40,12 @@ export class NotificationForShopController {
   })
   async find(
     @param.filter(NotificationForShop) filter?: Filter<NotificationForShop>,
-  ): Promise<NotificationForShop[]> {
-    return this.notificationForShopRepository.find(filter);
+  ): Promise<any> {
+    const data = await this.notificationForShopRepository.find(filter);
+    return {
+      code: 200,
+      data
+    }
   }
 
 

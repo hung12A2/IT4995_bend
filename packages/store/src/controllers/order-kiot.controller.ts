@@ -73,8 +73,6 @@ export class OrderKiotController {
     public productsInCartRepository: ProductsInCartRepository,
     @repository(ProductRepository)
     public productRepository: ProductRepository,
-    @repository(ProductsInOrderRepository)
-    public productsInOrderRepository: ProductsInOrderRepository,
     @repository(ProductsInOrderKiotRepository)
     public productsInOrderKiotRepository: ProductsInOrderKiotRepository,
     @repository(WalletRepository)
@@ -497,17 +495,18 @@ export class OrderKiotController {
         );
 
         const idOfBuyer = order.idOfUser;
-        const listProductsInOrder = await this.productsInOrderRepository.find({
-          where: {idOfOrder: id},
-        });
+        const listProductsInOrder =
+          await this.productsInOrderKiotRepository.find({
+            where: {idOfOrder: id},
+          });
 
         await Promise.all(
           listProductsInOrder.map(async (productInOrder: any) => {
             const idOfProduct = productInOrder.idOfProduct;
             const quantity = productInOrder.quantity;
             const idOfUser = idOfBuyer;
-            const createAt = new Date();
-            this.boughtProductRepository.create({
+            const createAt = new Date().toLocaleString();
+            await this.boughtProductRepository.create({
               idOfProduct,
               idOfOrder: id,
               idOfUser,
@@ -519,15 +518,18 @@ export class OrderKiotController {
         );
 
         return {
+          code: 200,
           message: 'Success',
         };
       } else {
         return {
+          code: 400,
           message: 'Error not found order',
         };
       }
     } catch (error) {
       return {
+        code: 400,
         message: `error ${error}`,
       };
     }
@@ -642,7 +644,7 @@ export class OrderKiotController {
           }),
         );
 
-        this.returnOrderRepository.create({
+        await this.returnOrderRepository.create({
           idOfOrder: id,
           idOfUser,
           idOfShop,
@@ -652,21 +654,24 @@ export class OrderKiotController {
         });
 
         return {
+          code: 200,
           message: 'Success',
         };
       } else {
         return {
+          code: 400,
           message: 'Error not found order',
         };
       }
     } catch (error) {
       return {
+        code: 400,
         message: `error ${error}`,
       };
     }
   }
 
-  @post('/ordersOfKiot/canceled/{idOfUser}/order-id/{id}')
+  @post('/ordersKiot/canceled/{idOfUser}/order-id/{id}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
@@ -737,15 +742,18 @@ export class OrderKiotController {
         );
 
         return {
+          code: 200,
           message: 'Success',
         };
       } else {
         return {
+          code: 400,
           message: 'Error not found order',
         };
       }
     } catch (error) {
       return {
+        code: 200,
         message: `error ${error}`,
       };
     }
@@ -944,15 +952,12 @@ export class OrderKiotController {
     };
   }
 
-  @post('/ordersOfKiot/preview/{idOfUser}/shop/{idOfShop}/kiot/{idOfKiot}')
+  @post('/ordersOfKiot/preview')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
   })
   async previewOrder(
-    @param.path.string('idOfKiot') idOfKiot: string,
-    @param.path.string('idOfUser') idOfUser: string,
-    @param.path.string('idOfShop') idOfShop: string,
     @requestBody({
       content: {
         'application/json': {},
@@ -1046,15 +1051,15 @@ export class OrderKiotController {
       totalFee = totalFee + (distance - 2.5) * 1500;
     }
 
-    if (weightBox > 1) {
-      totalFee = totalFee + (weightBox - 1) * 1500;
+    if (weightBox > 1000) {
+      totalFee = totalFee + ((weightBox - 1000) / 1000) * 1500;
     }
 
     if (estimateTime > 15) {
       totalFee = totalFee + (estimateTime - 15) * 1500;
     }
 
-    if (lengthBox * widthBox * heightBox > 500000) { 
+    if (lengthBox * widthBox * heightBox > 500000) {
       totalFee = totalFee * 1.5;
     }
 
@@ -1064,11 +1069,11 @@ export class OrderKiotController {
       weight: Math.round(weightBox),
       dimension: `${lengthBox}|${widthBox}|${heightBox}`,
       insuranceValue,
-    }
+    };
 
     return {
       code: 200,
-      data: dataReturn
+      data: dataReturn,
     };
   }
 
@@ -1086,6 +1091,57 @@ export class OrderKiotController {
     },
   })
   async find(@param.filter(Order) filter?: Filter<Order>): Promise<any> {
-    return this.orderKiotRepository.find(filter);
+    const data = await this.orderKiotRepository.find(filter);
+    return {
+      code: 200,
+      data,
+    };
   }
+
+  @get('/ordersKiot/{idOfUser}')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findByUser(
+    @param.path.string('idOfUser') idOfUser: string,
+  ): Promise<any> {
+    const data = await this.orderKiotRepository.find({where: {idOfUser}});
+    return {
+      code: 200,
+      data,
+    };
+  }
+
+  @get('/ordersKiot/{idOfShop}')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findByShop(
+    @param.path.string('idOfShop') idOfShop: string,
+  ): Promise<any> {
+    const data = await this.orderKiotRepository.find({where: {idOfShop}});
+    return {
+      code: 200,
+      data,
+    };
+  }
+
+  
+  //
 }
