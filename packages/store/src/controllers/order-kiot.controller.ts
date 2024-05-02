@@ -40,6 +40,7 @@ import {inject} from '@loopback/core';
 import {uploadFile, deleteRemoteFile} from '../config/firebaseConfig';
 import multer from 'multer';
 import {RabbitMQService} from '../services/rabbitMqServices';
+import {geometry, getDistance} from '../utils/getGeometry';
 
 const storage = multer.memoryStorage();
 const upload = multer({storage});
@@ -47,7 +48,7 @@ const upload = multer({storage});
 var cpUpload = upload.fields([{name: 'images'}]);
 
 // import cron from 'node-cron';
-
+//
 // Phu Tho 229
 // Huyen Thanh Thuy 2237
 // Xa Doan Ha 151204
@@ -256,6 +257,35 @@ export class OrderKiotController {
       });
       const idOfUser = order[0].idOfUser;
       if (order.length == 1) {
+        if (order[0].status == 'accepted') {
+          const updatedAt = new Date(order[0].updatedAt).getTime();
+          const newAt = new Date().getTime();
+          if (newAt - updatedAt > 6000000) {
+            return {code: 400, message: 'Khong the huy don hang sau 10 phut'};
+          } else {
+            const idOfOrder = order[0].id;
+            const productInOrders =
+              await this.productsInOrderKiotRepository.find({
+                where: {idOfOrder},
+              });
+
+            await Promise.all(
+              productInOrders.map(async productInOrder => {
+                const product = await this.productRepository.findById(
+                  productInOrder.idOfProduct,
+                );
+                await this.productRepository.updateById(
+                  productInOrder.idOfProduct,
+                  {
+                    countInStock:
+                      product.countInStock + productInOrder.quantity,
+                  },
+                );
+              }),
+            );
+          }
+        }
+
         await this.orderKiotRepository.updateById(id, {
           status: 'rejected',
           updatedAt: new Date().toLocaleString(),
@@ -339,7 +369,39 @@ export class OrderKiotController {
       const order = await this.orderKiotRepository.find({
         where: {id, idOfShop},
       });
+      const idOfOrder = order[0].id;
+
+      const productInOrders = await this.productsInOrderKiotRepository.find({
+        where: {idOfOrder},
+      });
+
+      if (order[0].status !== 'pending') {
+        return {
+          code: 400,
+          message: 'Error order processed',
+        };
+      }
+
       if (order.length == 1) {
+        await Promise.all(
+          productInOrders.map(async productInOrder => {
+            const product = await this.productRepository.findById(
+              productInOrder.idOfProduct,
+            );
+            if (product.countInStock < productInOrder.quantity) {
+              return {
+                code: 400,
+                message: 'Error not enough product',
+              };
+            } else {
+              await this.productRepository.updateById(
+                productInOrder.idOfProduct,
+                {countInStock: product.countInStock - productInOrder.quantity},
+              );
+            }
+          }),
+        );
+
         await this.orderKiotRepository.updateById(id, {
           status: 'accepted',
           updatedAt: new Date().toLocaleString(),
@@ -359,15 +421,18 @@ export class OrderKiotController {
         );
 
         return {
+          code: 400,
           message: 'Success',
         };
       } else {
         return {
+          code: 400,
           message: 'Error not found order',
         };
       }
     } catch (error) {
       return {
+        code: 400,
         message: `error ${error}`,
       };
     }
@@ -523,7 +588,7 @@ export class OrderKiotController {
             dataNoti,
           );
 
-          console.log (order[0].id)
+          console.log(order[0].id);
 
           const dataTransaction = JSON.stringify({
             idOfUser,
@@ -721,6 +786,8 @@ export class OrderKiotController {
       note,
       requiredNote,
       items,
+      distance,
+      totalFee,
     } = order;
 
     let weightBox = 0;
@@ -778,6 +845,8 @@ export class OrderKiotController {
     const time = new Date().toLocaleString();
 
     const NewOrder: any = {
+      distance,
+      totalFee,
       fromName,
       toName,
       fromPhone,
@@ -869,11 +938,142 @@ export class OrderKiotController {
       );
     }
 
-    return dataOrder;
+    return {
+      code: 200,
+      data: dataOrder,
+    };
+  }
+
+  @post('/ordersOfKiot/preview/{idOfUser}/shop/{idOfShop}/kiot/{idOfKiot}')
+  @response(200, {
+    description: 'Order model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Order)}},
+  })
+  async previewOrder(
+    @param.path.string('idOfKiot') idOfKiot: string,
+    @param.path.string('idOfUser') idOfUser: string,
+    @param.path.string('idOfShop') idOfShop: string,
+    @requestBody({
+      content: {
+        'application/json': {},
+      },
+    })
+    order: any,
+  ): Promise<any> {
+    const {
+      fromAddress,
+      toAddress,
+      fromProvince,
+      toProvince,
+      fromDistrict,
+      toDistrict,
+      fromWard,
+      toWard,
+      items,
+    } = order;
+
+    let distance = 0;
+    let totalFee = 10000;
+    let weightBox = 0;
+    let lengthBox = 0;
+    let widthBox = 0;
+    let heightBox = 0;
+    let insuranceValue = 0;
+
+    await Promise.all(
+      items.map(async (item: any, index: number) => {
+        const idProduct = item.idOfProduct;
+        const product: any = await this.productRepository.findById(idProduct);
+        const {name, price, image, dimension, weight} = product;
+        const dimensionList = dimension.split('|');
+        weightBox += weight * item.quantity;
+        const length = +dimensionList[0];
+        const width = +dimensionList[1];
+        const height = +dimensionList[2];
+
+        insuranceValue += price * item.quantity;
+
+        if (length > lengthBox) {
+          lengthBox = length;
+        }
+
+        if (width > widthBox) {
+          widthBox = width;
+        }
+
+        heightBox += height * item.quantity;
+
+        return {
+          name,
+          price,
+          image,
+          quantity: item.quantity,
+          weight,
+          length,
+          width,
+          height,
+        };
+      }),
+    );
+
+    lengthBox = Math.round(lengthBox);
+    widthBox = Math.round(widthBox);
+    heightBox = Math.round(heightBox);
+
+    const fromGeometryData = await geometry(
+      `${fromAddress}, ${fromWard}, ${fromDistrict}, ${fromProvince}`,
+    );
+    const formGeometry = fromGeometryData.results[0].geometry.location;
+    const toGeometryData = await geometry(
+      `${toAddress}, ${toWard}, ${toDistrict}, ${toProvince}`,
+    );
+    const toGeometry = toGeometryData.results[0].geometry.location;
+
+    const fromGeometryString = `${formGeometry.lat},${formGeometry.lng}`;
+    const toGeometryString = `${toGeometry.lat},${toGeometry.lng}`;
+
+    const distanceData = await getDistance(
+      fromGeometryString,
+      toGeometryString,
+    );
+
+    distance = +distanceData.rows[0].elements[0].distance.text.split(' ')[0];
+
+    const estimateTime =
+      +distanceData.rows[0].elements[0].duration.text.split(' ')[0];
+
+    if (distance > 2.5) {
+      totalFee = totalFee + (distance - 2.5) * 1500;
+    }
+
+    if (weightBox > 1) {
+      totalFee = totalFee + (weightBox - 1) * 1500;
+    }
+
+    if (estimateTime > 15) {
+      totalFee = totalFee + (estimateTime - 15) * 1500;
+    }
+
+    if (lengthBox * widthBox * heightBox > 500000) { 
+      totalFee = totalFee * 1.5;
+    }
+
+    const dataReturn = {
+      distance,
+      totalFee,
+      weight: Math.round(weightBox),
+      dimension: `${lengthBox}|${widthBox}|${heightBox}`,
+      insuranceValue,
+    }
+
+    return {
+      code: 200,
+      data: dataReturn
+    };
   }
 
   //get All for admin
-  @get('/orders')
+  @get('/ordersKiot')
   @response(200, {
     description: 'Array of Order model instances',
     content: {

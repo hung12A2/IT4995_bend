@@ -33,7 +33,8 @@ import {
 } from '../repositories';
 import axios from 'axios';
 
-import {inject} from '@loopback/core';
+//
+import {inject, service} from '@loopback/core';
 import {uploadFile, deleteRemoteFile} from '../config/firebaseConfig';
 import multer from 'multer';
 import {RabbitMQService} from '../services/rabbitMqServices';
@@ -81,13 +82,10 @@ export class OrderController {
 
   newRabbitMQService = RabbitMQService.getInstance();
 
-  @post('/orders/orderInfor/{idOfUser}/order-id/{id}')
+  @post('/orders/orderInfor/order-id/{id}')
   @response(200, {description: 'Order model instance'})
-  async orderInfor(
-    @param.path.string('idOfUser') idOfUser: string,
-    @param.path.string('id') id: string,
-  ): Promise<any> {
-    const order: any = await this.orderRepository.find({where: {id, idOfUser}});
+  async orderInfor(@param.path.string('id') id: string): Promise<any> {
+    const order: any = await this.orderRepository.find({where: {id}});
     if (order.length == 1) {
       const clientOrderCode = order[0].clientOrderCode;
       const dataRaw = {
@@ -238,21 +236,48 @@ export class OrderController {
     }
   }
 
-  @post('/orders/rejected/{idOfUser}/order-id/{id}')
+  @post('/orders/rejected/{idOfShop}/order-id/{id}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
   })
   async rejected(
-    @param.path.string('idOfUser') idOfUser: string,
+    @param.path.string('idOfShop') idOfShop: string,
     @param.path.string('id') id: string,
   ): Promise<any> {
     try {
       const order: any = await this.orderRepository.find({
-        where: {id, idOfUser},
+        where: {id, idOfShop},
       });
-      const idOfShop = order[0].idOfShop;
+      const idOfUser = order[0].idOfUser;
       if (order.length == 1) {
+        if (order[0].status == 'accepted') {
+          const updatedAt = new Date(order[0].updatedAt).getTime();
+          const newAt = new Date().getTime();
+          if (newAt - updatedAt > 6000000) {
+            return {code: 400, message: 'Khong the huy don hang sau 10 phut'};
+          } else {
+            const idOfOrder = order[0].id;
+            const productInOrders = await this.productsInOrderRepository.find({
+              where: {idOfOrder},
+            });
+
+            await Promise.all(
+              productInOrders.map(async productInOrder => {
+                const product = await this.productRepository.findById(
+                  productInOrder.idOfProduct,
+                );
+                await this.productRepository.updateById(
+                  productInOrder.idOfProduct,
+                  {
+                    countInStock:
+                      product.countInStock + productInOrder.quantity,
+                  },
+                );
+              }),
+            );
+          }
+        }
         await this.orderRepository.updateById(id, {
           status: 'rejected',
           updatedAt: new Date().toLocaleString(),
@@ -307,10 +332,12 @@ export class OrderController {
         );
 
         return {
+          code: 200,
           message: 'Success',
         };
       } else {
         return {
+          code: 400,
           message: 'Error not found order',
         };
       }
@@ -332,7 +359,29 @@ export class OrderController {
   ): Promise<any> {
     try {
       const order = await this.orderRepository.find({where: {id, idOfShop}});
+      const productInOrders = await this.productsInOrderRepository.find({
+        where: {idOfOrder: id},
+      });
       if (order.length == 1) {
+        await Promise.all(
+          productInOrders.map(async productInOrder => {
+            const product = await this.productRepository.findById(
+              productInOrder.idOfProduct,
+            );
+            if (product.countInStock < productInOrder.quantity) {
+              return {
+                code: 400,
+                message: 'Error not enough product',
+              };
+            } else {
+              await this.productRepository.updateById(
+                productInOrder.idOfProduct,
+                {countInStock: product.countInStock - productInOrder.quantity},
+              );
+            }
+          }),
+        );
+
         await this.orderRepository.updateById(id, {
           status: 'accepted',
           updatedAt: new Date().toLocaleString(),
@@ -351,6 +400,7 @@ export class OrderController {
         );
 
         return {
+          code: 200,
           message: 'Success',
         };
       } else {
@@ -374,7 +424,6 @@ export class OrderController {
     @param.path.string('idOfUser') idOfUser: string,
     @param.path.string('id') id: string,
   ): Promise<any> {
-
     try {
       const order: any = await this.orderRepository.findOne({
         where: {id, idOfUser},
@@ -444,27 +493,30 @@ export class OrderController {
         );
 
         return {
+          code: 200,
           message: 'Success',
         };
       } else {
         return {
+          code:400,
           message: 'Error not found order',
         };
       }
     } catch (error) {
       return {
+        code:400, 
         message: `error ${error}`,
       };
     }
   }
 
-  @post('/orders/returned/{idOfShop}/order-id/{id}')
+  @post('/orders/returned/{idOfUser}/order-id/{id}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
   })
   async returned(
-    @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('idOfUser') idOfUser: string,
     @param.path.string('id') id: string,
     @requestBody({
       description: 'multipart/form-data value.',
@@ -482,9 +534,9 @@ export class OrderController {
   ): Promise<any> {
     try {
       const order: any = await this.orderRepository.find({
-        where: {id, idOfShop},
+        where: {id, idOfUser},
       });
-      const idOfUser = order[0].idOfUser;
+      const idOfShop = order[0].idOfShop;
       if (order.length == 1) {
         await this.orderRepository.updateById(id, {
           status: 'returned',
@@ -534,15 +586,18 @@ export class OrderController {
         });
 
         return {
+          code: 200,
           message: 'Success',
         };
       } else {
         return {
+          code: 400,
           message: 'Error not found order',
         };
       }
     } catch (error) {
       return {
+        code: 400,
         message: `error ${error}`,
       };
     }
@@ -656,8 +711,6 @@ export class OrderController {
       toDistrict,
       fromWard,
       toWard,
-      serviceId,
-      serviceTypeId,
       content,
       priceOfAll,
       paymentMethod,
@@ -679,7 +732,7 @@ export class OrderController {
         const product: any = await this.productRepository.findById(idProduct);
         const {name, price, image, dimension, weight} = product;
         if (index == 0) {
-          imageOrder = image;
+          imageOrder = image[0];
         }
         const dimensionList = dimension.split('|');
         weightBox += weight * item.quantity;
@@ -736,8 +789,8 @@ export class OrderController {
       toDistrict,
       fromWard,
       toWard,
-      serviceId,
-      serviceTypeId,
+      serviceId: 53320,
+      serviceTypeId: 2,
       paymentTypeId: 2,
       content,
       codAmount: paymentMethod == 'cod' ? priceOfAll : 0,
@@ -819,6 +872,102 @@ export class OrderController {
     return dataOrder;
   }
 
+  @post('/orders/preview')
+  @response(200, {
+    description: 'Order model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Order)}},
+  })
+  async preview(
+    @requestBody({
+      content: {
+        'application/json': {},
+      },
+    })
+    order: any,
+  ): Promise<any> {
+    const {fromDistrict, toDistrict, fromWard, toWard, items} = order;
+
+    let weightBox = 0;
+    let lengthBox = 0;
+    let widthBox = 0;
+    let heightBox = 0;
+    let insuranceValue = 0;
+
+    await Promise.all(
+      items.map(async (item: any, index: number) => {
+        const idProduct = item.idOfProduct;
+        const product: any = await this.productRepository.findById(idProduct);
+        const {name, price, image, dimension, weight} = product;
+        const dimensionList = dimension.split('|');
+        weightBox += weight * item.quantity;
+        const length = +dimensionList[0];
+        const width = +dimensionList[1];
+        const height = +dimensionList[2];
+
+        insuranceValue += price * item.quantity;
+
+        if (length > lengthBox) {
+          lengthBox = length;
+        }
+
+        if (width > widthBox) {
+          widthBox = width;
+        }
+
+        heightBox += height * item.quantity;
+
+        return {
+          name,
+          price,
+          image,
+          quantity: item.quantity,
+          weight,
+          length,
+          width,
+          height,
+        };
+      }),
+    );
+
+    lengthBox = Math.round(lengthBox);
+    widthBox = Math.round(widthBox);
+    heightBox = Math.round(heightBox);
+
+    const fromDistrictId = fromDistrict.split('-')[1].trim();
+    const fromWardId = fromWard.split('-')[1].trim();
+    const toDistrictId = toDistrict.split('-')[1].trim();
+    const toWardCode = toWard.split('-')[1].trim();
+
+    const response = await axios
+      .post(
+        'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee',
+        {
+          from_district_id: +fromDistrictId,
+          from_ward_code: fromWardId,
+          to_district_id: +toDistrictId,
+          to_ward_code: toWardCode,
+          service_id: 53320,
+          service_type_id: 2,
+          height: heightBox,
+          length: lengthBox,
+          width: widthBox,
+          weight: Math.round(weightBox),
+          insurance_value: insuranceValue,
+          cod_failed_amount: 10000,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Token: '33108a16-e157-11ee-8bfa-8a2dda8ec551',
+          },
+        },
+      )
+      .then(res => res.data)
+      .catch(e => console.log(e));
+
+    return response;
+  }
+
   @post('/orders/service')
   @response(200, {
     description: 'get service from - to district',
@@ -827,7 +976,15 @@ export class OrderController {
   async getService(
     @requestBody({
       content: {
-        'application/json': {},
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              fromDistrict: {type: 'string'},
+              toDistrict: {type: 'string'},
+            },
+          },
+        },
       },
     })
     req: any,
@@ -876,8 +1033,12 @@ export class OrderController {
       },
     },
   })
-  async find(@param.filter(Order) filter?: Filter<Order>): Promise<Order[]> {
-    return this.orderRepository.find(filter);
+  async find(@param.filter(Order) filter?: Filter<Order>): Promise<any> {
+    const data = await this.orderRepository.find(filter);
+    return {
+      code: 200,
+      data,
+    };
   }
 
   //get All for user
@@ -895,8 +1056,34 @@ export class OrderController {
   })
   async findByUser(
     @param.path.string('idOfUser') idOfUser: string,
-  ): Promise<Order[]> {
-    return this.orderRepository.find({where: {idOfUser}});
+  ): Promise<any> {
+    const data = await this.orderRepository.find({where: {idOfUser}});
+    return {
+      code: 200,
+      data,
+    }
+  }
+
+  @get('/ordersShop/{idOfShop}')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findByShop(
+    @param.path.string('idOfShop') idOfShop: string,
+  ): Promise<any> {
+    const data = await this.orderRepository.find({where: {idOfShop}});
+    return {
+      code: 200,
+      data,
+    }
   }
 
   @get('/orders/{id}')

@@ -12,3 +12,5 @@ export * from './wallet-of-shop.controller';
 export * from './location.controller';
 export * from './location-user.controller';
 export * from './products-in-cart.controller';
+export * from './order-kiot.controller';
+export * from './order.controller';

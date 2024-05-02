@@ -1,6 +1,6 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model({settings: {strict: false}})
+@model({settings: {}})
 export class OrderKiot extends Entity {
   @property({
     type: 'string',
@@ -159,6 +159,16 @@ export class OrderKiot extends Entity {
     default: 0,
   })
   totalFee: number;
+
+  @property({
+    postgresql: {
+      dataType: 'float',
+    },
+    type: 'number',
+    required: false,
+    default: 0,
+  })
+  distance: number;
 
   @property({
     type: 'number',

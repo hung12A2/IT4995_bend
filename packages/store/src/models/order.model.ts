@@ -206,6 +206,7 @@ export class Order extends Entity {
   })
   updatedAt: string;
 
+
   @property({
     type: 'object',
     required: true,
