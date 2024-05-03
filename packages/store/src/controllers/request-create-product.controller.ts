@@ -194,7 +194,6 @@ export class RequestCreateProductController {
         status: 'pending',
         weight,
         dimension,
-        rating: 0,
         createdAt: time,
         updatedAt: time,
         createdBy: `shop-${idOfShop}`,

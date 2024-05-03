@@ -8,17 +8,29 @@ import {juggler} from '@loopback/repository';
 //   file: './src/data/db.json',
 // };
 
+// const config = {
+//   name: 'store',
+//   connector: 'postgresql',
+//   host: 'localhost',
+//   port: 5432,
+//   user: 'postgres',
+//   password: 'postgres',
+//   database: 'shopstore',
+
+// };
+
 const config = {
   name: 'store',
   connector: 'postgresql',
-  host: 'localhost',
+  host: 'dpg-coq7gmv79t8c738b8l1g-a.singapore-postgres.render.com',
   port: 5432,
-  user: 'postgres',
-  password: 'postgres',
-  database: 'shopstore',
-
+  user: 'hungnguyen',
+  password: 'tgPnxt2vabQg66kLQ2HyDf0pSSN8jAlq',
+  database: 'shopstore_2puh',
+  ssl: {
+    rejectUnauthorized: false,
+  },
 };
-
 
 // Observe application's life cycle to disconnect the datasource when
 // application is stopped. This allows the application to be shut down

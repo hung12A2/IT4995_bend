@@ -461,14 +461,14 @@ export class OrderKiotController {
         await this.walletOfShopRepository.updateAll(
           {
             amountMoney:
-              oldWallet?.amountMoney + order.codAmount - order.totalFee,
+              oldWallet?.amountMoney + order.priceOfAll  - order.totalFee,
           },
           {idOfShop: order.idOfShop},
         );
 
         const dataNoti = JSON.stringify({
           idOfShop: order.idOfShop,
-          content: `Don hang ${id} da duoc nhan, nhan duoc ${order.codAmount}`,
+          content: `Don hang ${id} da duoc nhan, nhan duoc ${order.priceOfAll - order.totalFee}`,
           image: order.image,
           createdAt: new Date().toLocaleString(),
         });
@@ -481,7 +481,7 @@ export class OrderKiotController {
 
         const dataTransaction = JSON.stringify({
           idOfShop: order.idOfShop,
-          amountMoney: order.codAmount,
+          amountMoney: order.priceOfAll -order.totalFee ,
           type: 'receive',
           createdAt: new Date().toLocaleString(),
           image: order.image,

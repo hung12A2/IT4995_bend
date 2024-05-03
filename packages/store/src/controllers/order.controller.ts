@@ -205,6 +205,7 @@ export class OrderController {
           items: productsInOrderList,
         };
 
+
         const response = await axios.post(
           'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create',
           dataRaw,
@@ -440,14 +441,14 @@ export class OrderController {
         await this.walletOfShopRepository.updateAll(
           {
             amountMoney:
-              oldWallet?.amountMoney + order.codAmount - order.totalFee,
+              oldWallet?.amountMoney + order.priceOfAll - order.totalFee,
           },
           {idOfShop: order.idOfShop},
         );
 
         const dataTransaction = JSON.stringify({
           idOfShop: order.idOfShop,
-          amountMoney: order.codAmount - order.totalFee,
+          amountMoney: order.priceOfAll - order.totalFee,
           type: 'receive',
           createdAt: new Date().toLocaleString(),
           idOfOrder: id,
@@ -461,7 +462,7 @@ export class OrderController {
 
         const dataNoti = JSON.stringify({
           idOfShop: order.idOfShop,
-          content: `Đơn hàng ${id} đã được nhận ${order.codAmount - order.totalFee} đã được chuyển vào tài khoản của bạn`,
+          content: `Đơn hàng ${id} đã được nhận ${order.priceOfAll - order.totalFee} đã được chuyển vào tài khoản của bạn`,
           createdAt: new Date().toLocaleString(),
         });
 
