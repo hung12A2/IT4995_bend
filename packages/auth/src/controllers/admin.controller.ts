@@ -64,6 +64,8 @@ export class AdminController {
     admin.status = 'active';
     admin.password = generateRandomString(10);
     const time = new Date().toLocaleString();
+    admin.name = admin.email;
+    admin.phoneNumber = '';
     admin.createdAt = time;
     admin.updatedAt = time;
     admin.updatedBy = `admin-${currentUserProfile.id}`;
@@ -119,6 +121,8 @@ export class AdminController {
     description: 'Admin PATCH success',
   })
   async updateById(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
     @param.path.string('id') id: string,
     @requestBody({
       content: {
@@ -129,6 +133,8 @@ export class AdminController {
     })
     admin: Admin,
   ): Promise<void> {
+    admin.updatedAt = new Date().toLocaleString();
+    admin.updatedBy = `admin-${currentUser.id}`;
     await this.adminRepository.updateById(id, admin);
   }
 }

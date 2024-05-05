@@ -16,6 +16,8 @@ import {
   del,
   requestBody,
   response,
+  RestBindings,
+  Response,
 } from '@loopback/rest';
 import {Area} from '../models';
 import {AreaRepository} from '../repositories';
@@ -29,6 +31,7 @@ export class AreaController {
   constructor(
     @repository(AreaRepository)
     public areaRepository: AreaRepository,
+    @inject(RestBindings.Http.RESPONSE) public response: Response,
   ) {}
 
   @authenticate('jwt')
@@ -98,8 +101,33 @@ export class AreaController {
       },
     },
   })
-  async find(@param.filter(Area) filter?: Filter<Area>): Promise<Area[]> {
-    return this.areaRepository.find(filter);
+  async find(@param.filter(Area) filter?: Filter<Area>): Promise<any> {
+    const data = await this.areaRepository.find(filter);
+
+
+    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
+
+    this.response.header('Content-Range', 'Areas 0-20/20');
+    this.response.status(200).send(data);
+  }
+
+  @get('/areas/count')
+  @response(200, {
+    description: 'Array of Area model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Area, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async count(@param.filter(Area) filter?: Filter<Area>): Promise<any> {
+    const data = await this.areaRepository.count(filter);
+    return data;
+
+   
   }
 
   @get('/areas/{id}')

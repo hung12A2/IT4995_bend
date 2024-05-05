@@ -9,7 +9,7 @@ import {
   UserRepository,
 } from '@loopback/authentication-jwt';
 import {inject} from '@loopback/core';
-import {property, repository} from '@loopback/repository';
+import {Filter, property, repository} from '@loopback/repository';
 import {
   HttpErrors,
   Request,
@@ -32,6 +32,7 @@ import multer from 'multer';
 import {deleteRemoteFile, uploadFile} from '../config/firebaseConfig';
 import nodemailer from 'nodemailer';
 import {promisify} from 'util';
+import {basicAuthorization} from '../services/basicAuthorize';
 
 const jwt = require('jsonwebtoken');
 const signAsync = promisify(jwt.sign);
@@ -105,20 +106,17 @@ export class UserManagementController {
       });
     });
 
-    const oldUser: any = await this.userRepository.findById(idOfUser);
-
-    const avatar = data.files.avatar;
-
-    console.log(data);
-
-    if (avatar.length > 1) {
-      return {
-        code: 400,
-        message: 'Chỉ được upload 1 ảnh dai dien',
-      };
-    }
-
     if (role == 'customer') {
+      const oldUser: any = await this.userRepository.findById(idOfUser);
+
+      const avatar = data.files.avatar;
+
+      if (avatar.length > 1) {
+        return {
+          code: 400,
+          message: 'Chỉ được upload 1 ảnh dai dien',
+        };
+      }
       const dataAvatar: any = await uploadFile(avatar[0]);
 
       await this.userRepository.updateById(idOfUser, {
@@ -127,14 +125,71 @@ export class UserManagementController {
           url: dataAvatar.url,
         },
       });
-    }
 
-    const dataImg = await this.userRepository.findById(idOfUser);
-    if (oldUser.avatar.url) {
-      deleteRemoteFile(oldUser.avatar.filename);
+      const dataImg = await this.userRepository.findById(idOfUser);
+      if (oldUser.avatar.url) {
+        deleteRemoteFile(oldUser.avatar.filename);
+        return {code: 200, data: dataImg};
+      }
       return {code: 200, data: dataImg};
     }
-    return {code: 200, data: dataImg};
+
+    if (role == 'admin') {
+      const oldUser: any = await this.adminrepository.findById(idOfUser);
+
+      const avatar = data.files.avatar;
+
+      if (avatar.length > 1) {
+        return {
+          code: 400,
+          message: 'Chỉ được upload 1 ảnh dai dien',
+        };
+      }
+      const dataAvatar: any = await uploadFile(avatar[0]);
+
+      await this.adminrepository.updateById(idOfUser, {
+        avatar: {
+          filename: dataAvatar.filename,
+          url: dataAvatar.url,
+        },
+      });
+
+      const dataImg = await this.adminrepository.findById(idOfUser);
+      if (oldUser.avatar.url) {
+        deleteRemoteFile(oldUser.avatar.filename);
+        return {code: 200, data: dataImg};
+      }
+      return {code: 200, data: dataImg};
+    }
+
+    if (role == 'employee') {
+      const oldUser: any = await this.employeeRepository.findById(idOfUser);
+
+      const avatar = data.files.avatar;
+
+      if (avatar.length > 1) {
+        return {
+          code: 400,
+          message: 'Chỉ được upload 1 ảnh dai dien',
+        };
+      }
+
+      const dataAvatar: any = await uploadFile(avatar[0]);
+
+      await this.employeeRepository.updateById(idOfUser, {
+        avatar: {
+          filename: dataAvatar.filename,
+          url: dataAvatar.url,
+        },
+      });
+
+      const dataImg = await this.employeeRepository.findById(idOfUser);
+      if (oldUser.avatar.url) {
+        deleteRemoteFile(oldUser.avatar.filename);
+        return {code: 200, data: dataImg};
+      }
+      return {code: 200, data: dataImg};
+    }
   }
 
   @authenticate('jwt')
@@ -309,6 +364,137 @@ export class UserManagementController {
         code: 200,
         data,
       };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['admin', 'admin-Managment']})
+  @post('/update/admin', {
+    responses: {
+      '200': {
+        description: 'User',
+        content: {
+          'application/json': {
+            schema: {
+              'x-ts-type': User,
+            },
+          },
+        },
+      },
+    },
+  })
+  async updateAdmin(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+          },
+        },
+      },
+    })
+    newUserRequest: any,
+  ): Promise<any> {
+    const time = new Date().toLocaleString();
+    newUserRequest.updatedAt = time;
+    newUserRequest.updatedBy = `admin-${currentUser.id}`;
+    try {
+     const data = await this.adminrepository.updateById(newUserRequest.id, newUserRequest);
+     return {
+      code: 200,
+      message: `Update success`
+     }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
+  @post('/update/employee', {
+    responses: {
+      '200': {
+        description: 'User',
+        content: {
+          'application/json': {
+            schema: {
+              'x-ts-type': User,
+            },
+          },
+        },
+      },
+    },
+  })
+  async updateEmployee(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+          },
+        },
+      },
+    })
+    newUserRequest: any,
+  ): Promise<any> {
+    const time = new Date().toLocaleString();
+    newUserRequest.updatedAt = time;
+    newUserRequest.updatedBy = `user-${currentUser.id}`;
+    try {
+     const data = await this.employeeRepository.updateById(newUserRequest.id, newUserRequest);
+     return {
+      code: 200,
+      message: `Update success`
+     }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
+  @post('/update/customer', {
+    responses: {
+      '200': {
+        description: 'User',
+        content: {
+          'application/json': {
+            schema: {
+              'x-ts-type': User,
+            },
+          },
+        },
+      },
+    },
+  })
+  async updateCustomer(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+          },
+        },
+      },
+    })
+    newUserRequest: any,
+  ): Promise<any> {
+    const time = new Date().toLocaleString();
+    newUserRequest.updatedAt = time;
+    try {
+     const data = await this.userRepository.updateById(currentUser.id, newUserRequest);
+     return {
+      code: 200,
+      message: `Update success`
+     }
     } catch (error) {
       throw error;
     }
@@ -720,7 +906,12 @@ export class UserManagementController {
     }
   }
 
-  @post('getInfoByPass/customer', {
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'user-Managment'],
+  })
+  @get('getAllUser', {
     responses: {
       '200': {
         description: 'Return current user',
@@ -734,154 +925,14 @@ export class UserManagementController {
       },
     },
   })
-  async getUserByPassword(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              email: {
-                type: 'string',
-              },
-              password: {
-                type: 'string',
-              },
-            },
-          },
-        },
-      },
-    })
-    req: any,
+  async getAllUser(
+    @param.query.object('filter') filter?: Filter<User>,
   ): Promise<any> {
-    const {email, password} = req;
-    const invalidCredentialsError = 'Invalid email or password.';
+    const data = await this.userRepository.find(filter);
 
-    if (!email) {
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-    }
-    const foundUser = await this.userRepository.findOne({
-      where: {email},
-    });
+    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
 
-    if (foundUser?.password !== password)
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-
-    if (!foundUser) {
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-    }
-
-    return {
-      code: 200,
-      data: foundUser,
-    };
-  }
-
-  @post('getInfoByPass/admin', {
-    responses: {
-      '200': {
-        description: 'Return current user',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'USER',
-            },
-          },
-        },
-      },
-    },
-  })
-  async getAdminByPassword(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              email: {
-                type: 'string',
-              },
-              password: {
-                type: 'string',
-              },
-            },
-          },
-        },
-      },
-    })
-    req: any,
-  ): Promise<any> {
-    const {email, password} = req;
-    const invalidCredentialsError = 'Invalid email or password.';
-
-    if (!email) {
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-    }
-    const foundUser = await this.adminrepository.findOne({
-      where: {email},
-    });
-
-    if (foundUser?.password !== password)
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-
-    if (!foundUser) {
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-    }
-
-    return foundUser;
-  }
-
-  @post('getInfoByPass/employee', {
-    responses: {
-      '200': {
-        description: 'Return current user',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'USER',
-            },
-          },
-        },
-      },
-    },
-  })
-  async getEmployeeByPassword(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              email: {
-                type: 'string',
-              },
-              password: {
-                type: 'string',
-              },
-            },
-          },
-        },
-      },
-    })
-    req: any,
-  ): Promise<any> {
-    const {email, password} = req;
-    const invalidCredentialsError = 'Invalid email or password.';
-
-    if (!email) {
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-    }
-    const foundUser = await this.employeeRepository.findOne({
-      where: {email},
-    });
-
-    if (foundUser?.password !== password)
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-
-    if (!foundUser) {
-      throw new HttpErrors.Unauthorized(invalidCredentialsError);
-    }
-
-    return foundUser;
+    this.response.header('Content-Range', 'Users 0-20/20');
+    this.response.status(200).send(data);
   }
 }

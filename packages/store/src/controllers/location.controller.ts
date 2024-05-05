@@ -55,7 +55,7 @@ export class LocationController {
         const data = response.data.data;
         const dataReturn = data.map((item: any) => {
           return {
-            provincId: item.ProvinceID,
+            provinceId: item.ProvinceID,
             provinceName: item.ProvinceName,
           };
         });
