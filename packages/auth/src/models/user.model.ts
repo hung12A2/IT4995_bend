@@ -95,6 +95,12 @@ export class User extends Entity {
   })
   updatedAt: string;
 
+  @property({
+    type: 'string',
+    required: false,
+  })
+  updatedBy: string;
+
 
   constructor(data?: Partial<User>) {
     super(data);

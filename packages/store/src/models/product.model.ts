@@ -116,6 +116,21 @@ export class Product extends Entity {
   })
   rating: number;
 
+
+  @property({
+    type: 'number',
+    required: false,
+    default: 0,
+  })
+  numberOfRating: number;
+
+  @property({
+    type: 'number',
+    required: false,
+    default: 0,
+  })
+  numberOfSold: number;
+
   @property({
     type: 'date',
     required: true,

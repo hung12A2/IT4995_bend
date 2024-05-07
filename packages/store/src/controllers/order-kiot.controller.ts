@@ -31,6 +31,7 @@ import {
   ProductsInOrderKiotRepository,
   ProductsInOrderRepository,
   ReturnOrderRepository,
+  ShopInfoRepository,
   WalletOfShopRepository,
   WalletRepository,
 } from '../repositories';
@@ -65,6 +66,8 @@ export class OrderKiotController {
     private response: Response,
     @inject(RestBindings.Http.REQUEST)
     private request: Request,
+    @repository(ShopInfoRepository)
+    public shopInfoRepository: ShopInfoRepository,
     @repository(OrderKiotRepository)
     public orderKiotRepository: OrderKiotRepository,
     @repository(OrderRepository)
@@ -461,7 +464,7 @@ export class OrderKiotController {
         await this.walletOfShopRepository.updateAll(
           {
             amountMoney:
-              oldWallet?.amountMoney + order.priceOfAll  - order.totalFee,
+              oldWallet?.amountMoney + order.priceOfAll - order.totalFee,
           },
           {idOfShop: order.idOfShop},
         );
@@ -481,7 +484,7 @@ export class OrderKiotController {
 
         const dataTransaction = JSON.stringify({
           idOfShop: order.idOfShop,
-          amountMoney: order.priceOfAll -order.totalFee ,
+          amountMoney: order.priceOfAll - order.totalFee,
           type: 'receive',
           createdAt: new Date().toLocaleString(),
           image: order.image,
@@ -513,6 +516,23 @@ export class OrderKiotController {
               createAt,
               quantity,
               isKiot: true,
+            });
+
+            const oldShopInfo: any = await this.shopInfoRepository.findOne({
+              where: {idOfShop: order.idOfShop},
+            });
+
+            await this.shopInfoRepository.updateAll(
+              {numberOfSold: oldShopInfo.numberOfSold + quantity},
+              {idOfShop: order.idOfShop},
+            );
+
+            const oldProduct: any = await this.productRepository.findOne({
+              where: {id: idOfProduct},
+            });
+
+            await this.productRepository.updateById(idOfProduct, {
+              numberOfSold: oldProduct.numberOfSold + 1,
             });
           }),
         );
@@ -1142,6 +1162,5 @@ export class OrderKiotController {
     };
   }
 
-  
   //
 }

@@ -43,6 +43,23 @@ export class StoreController {
     return await this.storeRepository.find(filter);
   }
 
+  @get('/stores/count')
+  @response(200, {
+    description: 'Array of Store model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Store, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async count(@param.filter(Store) filter?: Filter<Store>): Promise<any> {
+    return await this.storeRepository.count(filter);
+  }
+
+
   // for admin + store owner
   // tim day du thong tin shop cua minh
   // tim thong tin shop nguoi khac bang filter

@@ -24,11 +24,12 @@ import {
   Response,
   Request,
 } from '@loopback/rest';
-import {Product, RequestCreateProduct} from '../models';
+import {Product, RequestCreateProduct, ShopInfo} from '../models';
 import {
   CategoryRepository,
   ProductRepository,
   RequestCreatProductRepository,
+  ShopInfoRepository,
 } from '../repositories';
 
 import {uploadFile, deleteRemoteFile} from '../config/firebaseConfig';
@@ -46,7 +47,8 @@ export class RequestCreateProductController {
     public requestCreatProductRepository: RequestCreatProductRepository,
     @repository(ProductRepository)
     public productRepository: ProductRepository,
-
+    @repository(ShopInfoRepository)
+    public shopInfoRepository: ShopInfoRepository,
     @repository(CategoryRepository)
     public categoryRepository: CategoryRepository,
   ) {}
@@ -207,7 +209,7 @@ export class RequestCreateProductController {
     }
   }
 
-  // 
+  //
   @post('/request-create-product/{idOfRequest}/accepted/admin/{idOfAdmin}')
   @response(200, {
     description: 'Product model instance',
@@ -235,13 +237,14 @@ export class RequestCreateProductController {
       idOfCategory,
       idOfShop,
       cateName,
-      status
+      status,
     } = requestData;
 
-    if (status != 'pending') return {
-      code: 400,
-      message: 'Request is processed or rejected already',
-    }
+    if (status != 'pending')
+      return {
+        code: 400,
+        message: 'Request is processed or rejected already',
+      };
 
     const newProduct: any = {
       name,
@@ -274,6 +277,15 @@ export class RequestCreateProductController {
       updatedAt: new Date().toLocaleString(),
       updatedBy: `admin-${idOfAdmin}`,
     });
+
+    const oldShopInfo: any = await this.shopInfoRepository.findOne({
+      where: {idOfShop},
+    });
+
+    await this.shopInfoRepository.updateAll(
+      {numberOfProduct: oldShopInfo.numberOfProduct + 1},
+      {idOfShop},
+    );
 
     return {
       code: 200,
@@ -322,7 +334,9 @@ export class RequestCreateProductController {
       },
     },
   })
-  async find(@param.filter(RequestCreateProduct) filter?: Filter<RequestCreateProduct>): Promise<any> {
+  async find(
+    @param.filter(RequestCreateProduct) filter?: Filter<RequestCreateProduct>,
+  ): Promise<any> {
     const data = await this.requestCreatProductRepository.find(filter);
     return {
       code: 200,

@@ -10,3 +10,4 @@ export * from './rating-product.controller';
 export * from './order-kiot.controller';
 export * from './wallet-of-shop.controller';
 export * from './request-create-product.controller';
+export * from './shop-info.controller';

@@ -157,7 +157,6 @@ export class UserManagementController {
       const dataImg = await this.adminrepository.findById(idOfUser);
       if (oldUser.avatar.url) {
         deleteRemoteFile(oldUser.avatar.filename);
-        return {code: 200, data: dataImg};
       }
       return {code: 200, data: dataImg};
     }
@@ -357,6 +356,7 @@ export class UserManagementController {
         role: 'admin',
         permissions: 'all',
         status: 'active',
+        createdBy: 'server',
         createdAt: time,
         updatedAt: time,
       });
@@ -370,7 +370,10 @@ export class UserManagementController {
   }
 
   @authenticate('jwt')
-  @authorize({voters: [basicAuthorization], allowedRoles: ['admin', 'admin-Managment']})
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'admin-Managment'],
+  })
   @post('/update/admin', {
     responses: {
       '200': {
@@ -403,11 +406,14 @@ export class UserManagementController {
     newUserRequest.updatedAt = time;
     newUserRequest.updatedBy = `admin-${currentUser.id}`;
     try {
-     const data = await this.adminrepository.updateById(newUserRequest.id, newUserRequest);
-     return {
-      code: 200,
-      message: `Update success`
-     }
+      const data = await this.adminrepository.updateById(
+        newUserRequest.id,
+        newUserRequest,
+      );
+      return {
+        code: 200,
+        message: `Update success`,
+      };
     } catch (error) {
       throw error;
     }
@@ -447,11 +453,14 @@ export class UserManagementController {
     newUserRequest.updatedAt = time;
     newUserRequest.updatedBy = `user-${currentUser.id}`;
     try {
-     const data = await this.employeeRepository.updateById(newUserRequest.id, newUserRequest);
-     return {
-      code: 200,
-      message: `Update success`
-     }
+      const data = await this.employeeRepository.updateById(
+        newUserRequest.id,
+        newUserRequest,
+      );
+      return {
+        code: 200,
+        message: `Update success`,
+      };
     } catch (error) {
       throw error;
     }
@@ -490,15 +499,99 @@ export class UserManagementController {
     const time = new Date().toLocaleString();
     newUserRequest.updatedAt = time;
     try {
-     const data = await this.userRepository.updateById(currentUser.id, newUserRequest);
-     return {
-      code: 200,
-      message: `Update success`
-     }
+      const data = await this.userRepository.updateById(
+        currentUser.id,
+        newUserRequest,
+      );
+      return {
+        code: 200,
+        message: `Update success`,
+      };
     } catch (error) {
       throw error;
     }
   }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'users-Managment'],
+  })
+  @post('/banned/customer/{idOfUser}', {
+    responses: {
+      '200': {
+        description: 'User',
+        content: {
+          'application/json': {
+            schema: {
+              'x-ts-type': User,
+            },
+          },
+        },
+      },
+    },
+  })
+  async BanCustomer(
+    @param.path.string('idOfUser') idOfUser: string,
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+  ): Promise<any> {
+    const time = new Date().toLocaleString();
+    try {
+      const data = await this.userRepository.updateById(idOfUser, {
+        status: 'banned',
+        updatedAt: time,
+        updatedBy: `admin-${currentUser.id}`,
+      });
+      return {
+        code: 200,
+        message: `Update success`,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'users-Managment'],
+  })
+  @post('/unbanned/customer/{idOfUser}', {
+    responses: {
+      '200': {
+        description: 'User',
+        content: {
+          'application/json': {
+            schema: {
+              'x-ts-type': User,
+            },
+          },
+        },
+      },
+    },
+  })
+  async Unban(
+    @param.path.string('idOfUser') idOfUser: string,
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+  ): Promise<any> {
+    const time = new Date().toLocaleString();
+    try {
+      const data = await this.userRepository.updateById(idOfUser, {
+        status: 'active',
+        updatedAt: time,
+        updatedBy: `admin-${currentUser.id}`,
+      });
+      return {
+        code: 200,
+        message: `Update success`,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
 
   @post('/login/Customer', {
     responses: {
@@ -934,5 +1027,30 @@ export class UserManagementController {
 
     this.response.header('Content-Range', 'Users 0-20/20');
     this.response.status(200).send(data);
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'user-Managment'],
+  })
+  @get('getAllUser/count', {
+    responses: {
+      '200': {
+        description: 'Return current user',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'USER',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getAllUserCount(
+    @param.query.object('filter') filter?: Filter<User>,
+  ): Promise<any> {
+    return this.userRepository.count(filter);
   }
 }

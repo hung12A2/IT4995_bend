@@ -28,6 +28,7 @@ import {
   ProductsInCartRepository,
   ProductsInOrderRepository,
   ReturnOrderRepository,
+  ShopInfoRepository,
   WalletOfShopRepository,
   WalletRepository,
 } from '../repositories';
@@ -78,6 +79,8 @@ export class OrderController {
     public boughtProductRepository: BoughtProductRepository,
     @repository(ReturnOrderRepository)
     public returnOrderRepository: ReturnOrderRepository,
+    @repository(ShopInfoRepository)
+    public shopInfoRepository: ShopInfoRepository,
   ) {}
 
   newRabbitMQService = RabbitMQService.getInstance();
@@ -204,7 +207,6 @@ export class OrderController {
           client_order_code: clientOrderCode,
           items: productsInOrderList,
         };
-
 
         const response = await axios.post(
           'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create',
@@ -490,6 +492,23 @@ export class OrderController {
               createAt,
               quantity,
             });
+
+            const oldShopInfo: any = await this.shopInfoRepository.findOne({
+              where: {idOfShop: order.idOfShop},
+            });
+
+            await this.shopInfoRepository.updateAll(
+              {numberOfSold: oldShopInfo.numberOfSold + quantity},
+              {idOfShop: order.idOfShop},
+            );
+
+            const oldProduct: any = await this.productRepository.findOne({
+              where: {id: idOfProduct},
+            });
+
+            await this.productRepository.updateById(idOfProduct, {
+              numberOfSold: oldProduct.numberOfSold + 1,
+            });
           }),
         );
 
@@ -499,13 +518,13 @@ export class OrderController {
         };
       } else {
         return {
-          code:400,
+          code: 400,
           message: 'Error not found order',
         };
       }
     } catch (error) {
       return {
-        code:400, 
+        code: 400,
         message: `error ${error}`,
       };
     }
@@ -1062,7 +1081,7 @@ export class OrderController {
     return {
       code: 200,
       data,
-    }
+    };
   }
 
   @get('/ordersShop/{idOfShop}')
@@ -1084,7 +1103,7 @@ export class OrderController {
     return {
       code: 200,
       data,
-    }
+    };
   }
 
   @get('/orders/{id}')

@@ -24,6 +24,7 @@ import {
   BoughtProductRepository,
   ProductRepository,
   RatingProductRepository,
+  ShopInfoRepository,
 } from '../repositories';
 import {inject} from '@loopback/core';
 
@@ -36,8 +37,9 @@ export class RatingProductController {
     @repository(BoughtProductRepository)
     public boughtProductRepository: BoughtProductRepository,
     @inject(RestBindings.Http.RESPONSE) public response: Response,
-  ) {
-  }
+    @repository(ShopInfoRepository)
+    public shopInfoRepository: ShopInfoRepository,
+  ) {}
 
   @post('/rating-products/order/{idOfOrder}/product/{idOfProduct}')
   @response(200, {
@@ -62,7 +64,6 @@ export class RatingProductController {
     })
     ratingProduct: any,
   ): Promise<any> {
-
     const {rating, comment} = ratingProduct;
     const BoughtProduct: any = await this.boughtProductRepository.findOne({
       where: {idOfOrder: idOfOrder, idOfProduct: idOfProduct},
@@ -81,9 +82,14 @@ export class RatingProductController {
       });
       const oldProduct = (await this.productRepository.findById(idOfProduct))
         .rating;
-      const newRating = (oldProduct * (totalRating.count) + rating - oldRating.rating ) / totalRating.count;
+      const newRating =
+        (oldProduct * totalRating.count + rating - oldRating.rating) /
+        totalRating.count;
 
-      await this.ratingProductRepository.updateById(oldRating.id, {rating, comment})
+      await this.ratingProductRepository.updateById(oldRating.id, {
+        rating,
+        comment,
+      });
       await this.productRepository.updateById(idOfProduct, {rating: newRating});
     }
     const isDeleted = false;
@@ -102,16 +108,31 @@ export class RatingProductController {
       const totalRating: any = await this.ratingProductRepository.count({
         idOfProduct,
       });
-      const oldProduct = (await this.productRepository.findById(idOfProduct))
-        .rating;
-      const newRating = (oldProduct * (totalRating.count - 1) + rating) / totalRating.count;
+      const oldProduct: any = (
+        await this.productRepository.findById(idOfProduct)
+      );
 
-      await this.productRepository.updateById(idOfProduct, {rating: newRating});
+      const oldShopInfo:any = await this.shopInfoRepository.findOne({where:{idOfShop: oldProduct.idOfShop}})
+      
+      await this.shopInfoRepository.updateById(oldShopInfo.id, {
+        numberOfRating: oldShopInfo.numberOfRating + 1,
+        avgRating: (oldShopInfo.avgRating * (oldShopInfo.numberOfRating) + rating) / (oldShopInfo.numberOfRating + 1),
+      } )
+
+      const newRating =
+        (oldProduct.rating * (totalRating.count - 1) + rating) / totalRating.count;
+
+      await this.productRepository.updateById(idOfProduct, {
+        rating: newRating,
+        numberOfRating: oldProduct.numberOfRating + 1,
+      });
     } else {
       return this.response.status(400).send('Rating failed');
     }
 
-    return this.ratingProductRepository.findOne({where: {idOfOrder, idOfProduct, idOfUser}});
+    return this.ratingProductRepository.findOne({
+      where: {idOfOrder, idOfProduct, idOfUser},
+    });
   }
 
   @get('/rating-products')
@@ -129,7 +150,6 @@ export class RatingProductController {
   async find(
     @param.filter(RatingProduct) filter?: Filter<RatingProduct>,
   ): Promise<RatingProduct[]> {
-  
     return this.ratingProductRepository.find(filter);
   }
 
