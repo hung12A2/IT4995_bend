@@ -33,6 +33,7 @@ import {deleteRemoteFile, uploadFile} from '../config/firebaseConfig';
 import nodemailer from 'nodemailer';
 import {promisify} from 'util';
 import {basicAuthorization} from '../services/basicAuthorize';
+import { generateRandomString } from '../utils/genString';
 
 const jwt = require('jsonwebtoken');
 const signAsync = promisify(jwt.sign);
@@ -821,6 +822,156 @@ export class UserManagementController {
     };
   }
 
+  @post('/forgotPassword/Admin', {
+    responses: {
+      '200': {
+        description: 'send mail to reset password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async forgotPasswordAdmin(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              email: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req: any,
+  ): Promise<any> {
+    const {email} = req;
+
+    const user = await this.adminrepository.findOne({where: {email}});
+
+    if (!user) {
+      return {
+        code: 400,
+        message: 'Email không tồn tại',
+      };
+    }
+
+    const userInfor = {
+      id: user.id,
+      email: user.email,
+    };
+
+    const resetToken = await signAsync(userInfor, 'hello', {
+      expiresIn: 60 * 1000 * 2,
+    });
+
+    this.adminrepository.updateById(user.id, {resetToken});
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'hung1311197820022@gmail.com',
+        pass: 'mvza fmtv fbsc gsig',
+      },
+    });
+
+    const mailOptions = {
+      from: 'hung1311197820022@gmail.com',
+      to: email,
+      subject: 'Sending Email using Node.js',
+      text: 'Token: ' + resetToken,
+    };
+
+    const data = await transporter.sendMail(mailOptions);
+    return {
+      code: 200,
+      message: 'Email sent',
+    };
+  }
+
+  @post('/forgotPassword/Customer', {
+    responses: {
+      '200': {
+        description: 'send mail to reset password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async forgotPasswordEployee(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              email: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req: any,
+  ): Promise<any> {
+    const {email} = req;
+
+    const user = await this.employeeRepository.findOne({where: {email}});
+
+    if (!user) {
+      return {
+        code: 400,
+        message: 'Email không tồn tại',
+      };
+    }
+
+    const userInfor = {
+      id: user.id,
+      email: user.email,
+    };
+
+    const resetToken = await signAsync(userInfor, 'hello', {
+      expiresIn: 60 * 1000 * 2,
+    });
+
+    this.employeeRepository.updateById(user.id, {resetToken});
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'hung1311197820022@gmail.com',
+        pass: 'mvza fmtv fbsc gsig',
+      },
+    });
+
+    const mailOptions = {
+      from: 'hung1311197820022@gmail.com',
+      to: email,
+      subject: 'Sending Email using Node.js',
+      text: 'Token: ' + resetToken,
+    };
+
+    const data = await transporter.sendMail(mailOptions);
+    return {
+      code: 200,
+      message: 'Email sent',
+    };
+  }
+
   @post('/resetPassword/Customer', {
     responses: {
       '200': {
@@ -880,9 +1031,142 @@ export class UserManagementController {
     }
 
     user.password = newPassword;
-    user.resetToken = null;
+    user.resetToken = generateRandomString(10);
 
     await this.userRepository.updateById(user.id, user);
+
+    return {code: 200, message: 'Password has been changed'};
+  }
+
+  @post('/resetPassword/Admin', {
+    responses: {
+      '200': {
+        description: 'Change Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async resetPasswordAdmin(
+    @requestBody({
+      description: 'Change Password',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              token: {
+                type: 'string',
+              },
+              newPassword: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    {token, newPassword}: {token: string; newPassword: string},
+  ): Promise<any> {
+    let decoded;
+
+    try {
+      decoded = await verifyAsync(token, 'hello');
+      console.log(decoded);
+      if (!decoded.id)
+        return {
+          code: 400,
+          message: 'Invalid or expired token',
+        };
+    } catch (error) {
+      throw new Error('Invalid or expired token');
+    }
+
+    const user = await this.adminrepository.findById(decoded.id);
+
+    if (!user || user.resetToken !== token) {
+      return {
+        code: 400,
+        message: 'Invalid or expired token',
+      };
+    }
+
+    user.password = newPassword;
+    user.resetToken = generateRandomString(10);
+
+    await this.adminrepository.updateById(user.id, user);
+
+    return {code: 200, message: 'Password has been changed'};
+  }
+
+
+  @post('/resetPassword/Employee', {
+    responses: {
+      '200': {
+        description: 'Change Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async resetPasswordEmployee(
+    @requestBody({
+      description: 'Change Password',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              token: {
+                type: 'string',
+              },
+              newPassword: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    {token, newPassword}: {token: string; newPassword: string},
+  ): Promise<any> {
+    let decoded;
+
+    try {
+      decoded = await verifyAsync(token, 'hello');
+      console.log(decoded);
+      if (!decoded.id)
+        return {
+          code: 400,
+          message: 'Invalid or expired token',
+        };
+    } catch (error) {
+      throw new Error('Invalid or expired token');
+    }
+
+    const user = await this.employeeRepository.findById(decoded.id);
+
+    if (!user || user.resetToken !== token) {
+      return {
+        code: 400,
+        message: 'Invalid or expired token',
+      };
+    }
+
+    user.password = newPassword;
+    user.resetToken = generateRandomString(10);
+
+    await this.employeeRepository.updateById(user.id, user);
 
     return {code: 200, message: 'Password has been changed'};
   }
@@ -951,6 +1235,142 @@ export class UserManagementController {
     user.password = newPassword;
 
     await this.userRepository.updateById(user.id, user);
+
+    return {code: 200, message: 'Password has been changed'};
+  }
+
+  @authenticate('jwt')
+  @post('/changePassword/Admin', {
+    responses: {
+      '200': {
+        description: 'Change Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async changePasswordAdmin(
+    @inject(SecurityBindings.USER)
+    currenUserProfile: UserProfile,
+    @requestBody({
+      description: 'Change Password',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              oldPassword: {
+                type: 'string',
+              },
+              newPassword: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req: {
+      oldPassword: string;
+      newPassword: string;
+    },
+  ): Promise<any> {
+    const {oldPassword, newPassword} = req;
+    const id = currenUserProfile.id;
+    const user = await this.adminrepository.findById(id);
+
+    if (!user) {
+      return {
+        code: 400,
+        message: 'User not found',
+      };
+    }
+
+    const isPasswordMatch = user.password === oldPassword;
+
+    if (!isPasswordMatch) {
+      return {
+        code: 400,
+        message: 'Old password is incorrect',
+      };
+    }
+
+    user.password = newPassword;
+
+    await this.adminrepository.updateById(user.id, user);
+
+    return {code: 200, message: 'Password has been changed'};
+  }
+
+  @authenticate('jwt')
+  @post('/changePassword/employee', {
+    responses: {
+      '200': {
+        description: 'Change Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async changePasswordEmployee(
+    @inject(SecurityBindings.USER)
+    currenUserProfile: UserProfile,
+    @requestBody({
+      description: 'Change Password',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              oldPassword: {
+                type: 'string',
+              },
+              newPassword: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req: {
+      oldPassword: string;
+      newPassword: string;
+    },
+  ): Promise<any> {
+    const {oldPassword, newPassword} = req;
+    const id = currenUserProfile.id;
+    const user = await this.employeeRepository.findById(id);
+
+    if (!user) {
+      return {
+        code: 400,
+        message: 'User not found',
+      };
+    }
+
+    const isPasswordMatch = user.password === oldPassword;
+
+    if (!isPasswordMatch) {
+      return {
+        code: 400,
+        message: 'Old password is incorrect',
+      };
+    }
+
+    user.password = newPassword;
+
+    await this.employeeRepository.updateById(user.id, user);
 
     return {code: 200, message: 'Password has been changed'};
   }

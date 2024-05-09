@@ -80,6 +80,7 @@ export class User extends Entity {
   @property({
     type: 'string',
     required: false,
+    default: ''
   })
   resetToken: string;
 

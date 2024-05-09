@@ -94,6 +94,27 @@ export class AdminController {
     return this.adminRepository.find(filter);
   }
 
+  @authenticate('jwt')
+  @authorize({
+    allowedRoles: ['admin', 'admin-managment'],
+    voters: [basicAuthorization],
+  })
+  @get('/admins/count')
+  @response(200, {
+    description: 'Array of Admin model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Admin, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async count(@param.filter(Admin) filter?: Filter<Admin>): Promise<any> {
+    return this.adminRepository.count(filter);
+  }
+
   @get('/admins/{id}')
   @response(200, {
     description: 'Admin model instance',

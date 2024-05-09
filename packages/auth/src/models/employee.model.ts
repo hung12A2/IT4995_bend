@@ -65,6 +65,13 @@ export class Employee extends Entity {
   })
   createdBy: string;
 
+  @property({
+    type: 'string',
+    required: false,
+    default: ''
+  })
+  resetToken: string;
+
 
   @property({
     type: 'string',

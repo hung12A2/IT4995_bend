@@ -47,6 +47,13 @@ export class Admin extends Entity {
   avatar: object;
 
   @property({
+    type: 'string',
+    required: false,
+    default: ''
+  })
+  resetToken: string;
+
+  @property({
     type: 'date',
     required: true,
   })
