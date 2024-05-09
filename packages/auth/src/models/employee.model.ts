@@ -54,6 +54,31 @@ export class Employee extends Entity {
   permissions: string;
 
   @property({
+    type: 'date',
+    required: true,
+  })
+  createdAt: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  createdBy: string;
+
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  updatedBy: string;
+
+  @property({
+    type: 'date',
+    required: true,
+  })
+  updatedAt: string;
+
+  @property({
     type: 'string',
     required: true,
   })

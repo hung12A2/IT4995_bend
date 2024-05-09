@@ -82,16 +82,17 @@ export class KiotController {
     })
     kiot: any,
   ): Promise<any> {
-
     const idOfUser = currentUser.id;
 
-    const checkArea = await this.shopRepository.findOne({where: {id: idOfArea}});
+    const checkArea = await this.shopRepository.findOne({
+      where: {id: idOfArea},
+    });
     if (!checkArea) {
       return {
-        code:400,
+        code: 400,
         message: 'Area not found',
-      }
-     }
+      };
+    }
 
     if (!idOfArea || !idOfUser) {
       return {
@@ -229,10 +230,24 @@ export class KiotController {
   })
   async find(@param.filter(Kiot) filter?: Filter<Kiot>): Promise<any> {
     const data = await this.kiotRepository.find(filter);
-    return {
-      code:200,
-      data
-    }
+    return data;
+  }
+
+  @get('/kiots/count')
+  @response(200, {
+    description: 'Array of Kiot model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Kiot, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async count(@param.filter(Kiot) filter?: Filter<Kiot>): Promise<any> {
+    const data = await this.kiotRepository.count(filter);
+    return data;
   }
 
   @get('/kiots/{id}')
@@ -251,6 +266,45 @@ export class KiotController {
     return this.kiotRepository.findById(id, filter);
   }
 
+  @post('/kiots/banned/{id}')
+  @response(200, {
+    description: 'Array of Kiot model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Kiot, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async Ban(@param.path.string('id') id: string): Promise<any> {
+    await this.kiotRepository.updateById(id, {status: 'banned'});
+    return {
+      code:200,
+      message: 'Banned successfully'
+    }
+  }
+
+  @post('/kiots/unbanned/{id}')
+  @response(200, {
+    description: 'Array of Kiot model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Kiot, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async unban(@param.path.string('id') id: string): Promise<any> {
+    await this.kiotRepository.updateById(id, {status: 'active'});
+    return {
+      code:200,
+      message: 'Unbanned successfully'
+    }
+  }
 
   @authenticate('jwt')
   @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
@@ -259,7 +313,7 @@ export class KiotController {
     description: 'Kiot PATCH success',
   })
   async updateById(
-    @inject (SecurityBindings.USER)
+    @inject(SecurityBindings.USER)
     currentUser: UserProfile,
     @inject(RestBindings.Http.RESPONSE) response: Response,
     @param.path.string('idOfArea') idOfArea: string,

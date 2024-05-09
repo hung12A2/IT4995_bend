@@ -77,6 +77,10 @@ export class EmployeeController {
   ): Promise<any> {
     employee.role = 'employee';
     employee.status = 'active';
+    employee.createdAt = new Date().toLocaleString();
+    employee.createdBy = `shopOwner-${currentUserProfile.id}`;
+    employee.updatedAt = new Date().toLocaleString();
+    employee.updatedBy = `shopOwner-${currentUserProfile.id}`;
     employee.password = generateRandomString(10);
     const idOfUser = currentUserProfile.id;
     const idOfShop = (
@@ -92,7 +96,7 @@ export class EmployeeController {
 
     const idOfKiot = (
       await this.kiotRepository.find({where: {idOfUser: idOfUser}})
-    )[0].id;
+    )[0]?.id;
 
     const numberOfEmployee = await this.employeeRepository.count({
       idOfShop: idOfShop,
@@ -144,10 +148,24 @@ export class EmployeeController {
     //   .header('Content-Range', `Employees 0-20/20`)
     //   .send(employee);
 
-    return {
-      code: 200,
-      data: employee,
-    };
+    return employee;
+  }
+
+  // for admin
+  @get('/employees/count')
+  @response(200, {
+    description: 'Array of Employee model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'number',
+        }
+      },
+    },
+  })
+  async Count(@param.filter(Employee) filter?: Where<Employee>): Promise<any> {
+    const data = await this.employeeRepository.count(filter);
+    return data;
   }
 
   // for storeOwner
@@ -193,21 +211,29 @@ export class EmployeeController {
         message: 'not shop owner',
       };
     }
-    await this.employeeRepository.updateById(id, {status: 'inActive'});
+    await this.employeeRepository.updateById(id, {
+      status: 'inActive',
+      updatedAt: new Date().toLocaleString(),
+      updatedBy: `shopOwner-${currentUserProfile.id}`,
+    });
     return {
       code: 200,
       data: await this.employeeRepository.findById(id),
-    }
+    };
   }
 
   // for storeOwner update permission
   // update info of employee
   // change Password
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
   @patch('/employees/{id}')
   @response(204, {
     description: 'Employee PATCH success',
   })
   async updateById(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
     @param.path.string('id') id: string,
     @requestBody({
       content: {
@@ -217,16 +243,46 @@ export class EmployeeController {
       },
     })
     employee: Employee,
-  ): Promise<void> {
+  ): Promise<any> {
+    employee.updatedAt = new Date().toLocaleString();
+    employee.updatedBy = `shopOwner-${currentUser.id}`;
     await this.employeeRepository.updateById(id, employee);
+    return {
+      code: 200,
+      message: 'update success',
+    };
   }
 
-  @patch('/employees/banned/{id}')
+  @post('/employees/banned/{id}')
   @response(204, {
     description: 'Employee DELETE success',
   })
-  async bannedById(@param.path.string('id') id: string): Promise<void> {
-    await this.employeeRepository.updateById(id, {status: 'banned'});
+  async bannedById(@param.path.string('id') id: string): Promise<any> {
+    await this.employeeRepository.updateById(id, {
+      status: 'banned',
+      updatedAt: new Date().toLocaleString(),
+      updatedBy: 'admin',
+    });
+    return {
+      code: 200,
+      message: 'banned success',
+    };
+  }
+
+  @post('/employees/unbanned/{id}')
+  @response(204, {
+    description: 'Employee DELETE success',
+  })
+  async unbanned(@param.path.string('id') id: string): Promise<any> {
+    await this.employeeRepository.updateById(id, {
+      status: 'active',
+      updatedAt: new Date().toLocaleString(),
+      updatedBy: 'admin',
+    });
+    return {
+      code: 200,
+      message: 'banned success',
+    };
   }
 
   // upload avatar for employee

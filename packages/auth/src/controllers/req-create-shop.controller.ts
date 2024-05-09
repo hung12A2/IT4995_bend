@@ -287,7 +287,7 @@ export class ReqCreateShopController {
       updatedAt: time,
       acceptedBy: `admin-${currentUser.id}`,
       pickUpGeometry,
-      returnGeometry
+      returnGeometry,
     });
     await this.requestCreateShopRepository.updateById(idOfRequest, {
       status: 'accepted',
@@ -343,9 +343,9 @@ export class ReqCreateShopController {
     content: {'application/json': {schema: CountSchema}},
   })
   async count(
-    @param.where(RequestCreateShop) where?: Where<RequestCreateShop>,
+    @param.filter(RequestCreateShop) filter?: Filter<RequestCreateShop>,
   ): Promise<Count> {
-    return this.requestCreateShopRepository.count(where);
+    return this.requestCreateShopRepository.count(filter);
   }
 
   @get('/request-create-shops')
@@ -364,10 +364,7 @@ export class ReqCreateShopController {
     @param.filter(RequestCreateShop) filter?: Filter<RequestCreateShop>,
   ): Promise<any> {
     const data = await this.requestCreateShopRepository.find(filter);
-    return {
-      code: 200,
-      data: data,
-    };
+    return data;
   }
 
   @get('/request-create-shops/{id}')

@@ -112,11 +112,19 @@ export class StoreController {
   }
 
   // for admin
-  @patch('/stores/banned/{id}')
+  @post('/stores/banned/{id}')
   @response(204, {
     description: 'Store Banned success',
   })
   async BanedById(@param.path.string('id') id: string): Promise<void> {
     await this.storeRepository.updateById(id, {status: 'banned'});
+  }
+
+  @post('/stores/unbanned/{id}')
+  @response(204, {
+    description: 'Store Banned success',
+  })
+  async UnbanedById (@param.path.string('id') id: string): Promise<void> {
+    await this.storeRepository.updateById(id, {status: 'active'});
   }
 }
