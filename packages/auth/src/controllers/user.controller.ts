@@ -527,10 +527,11 @@ export class UserManagementController {
     }
   }
 
+  //
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'users-Managment'],
+    allowedRoles: ['admin'],
   })
   @post('/banned/customer/{idOfUser}', {
     responses: {

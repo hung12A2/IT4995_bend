@@ -17,8 +17,8 @@ import {
 import {authenticate} from '@loopback/authentication';
 import axios from '../services/authAxios.service';
 import multer from 'multer';
-import { authorize } from '@loopback/authorization';
-import { basicAuthorization } from '../services/basicAuthorize';
+import {authorize} from '@loopback/authorization';
+import {basicAuthorization} from '../services/basicAuthorize';
 
 const storage = multer.memoryStorage();
 const upload = multer({storage});
@@ -33,7 +33,7 @@ export class AreaController {
   ) {}
 
   @authenticate('jwt')
-  @post('areas/create', {
+  @post('areas', {
     responses: {
       '200': {
         description: 'Return new area',
@@ -79,13 +79,12 @@ export class AreaController {
     return data;
   }
 
-
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
     allowedRoles: ['admin', 'area-Managment'],
   })
-  @post('areas/update/{id}', {
+  @post('areas/{id}', {
     responses: {
       '200': {
         description: 'Return new area',
@@ -126,6 +125,89 @@ export class AreaController {
           authorization: this.request.headers.authorization,
         },
       })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @get('areas', {
+    responses: {
+      '200': {
+        description: 'Return new area',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getAllAreas(
+    @param.query.object('filter') filter: string,
+  ): Promise<any> {
+    const data = axios
+      .get(`/areas`, {
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @get('areas/count', {
+    responses: {
+      '200': {
+        description: 'Return new area',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async count(
+    @param.query.object('filter') filter: string,
+  ): Promise<any> {
+    const data = axios
+      .get(`/areas/count`, {
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @get('areas/{id}', {
+    responses: {
+      '200': {
+        description: 'Return new area',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOneAreas(
+    @param.path.string('id') id: string,
+  ): Promise<any> {
+    const data = axios
+      .get(`/areas/${id}` )
       .then(res => res)
       .catch(e => console.log(e));
 

@@ -34,7 +34,7 @@ export class ReqCreateShopController {
   ) {}
 
   @authenticate('jwt')
-  @post('request-create-shop/create', {
+  @post('request-create-shops/create', {
     responses: {
       '200': {
         description: 'Return avatar user',
@@ -198,7 +198,7 @@ export class ReqCreateShopController {
     voters: [basicAuthorization],
     allowedRoles: ['admin', 'reqCreateShop-Managment'],
   })
-  @post('request-create-shop/accepted/{idOfRequest}', {
+  @post('request-create-shops/accepted/{idOfRequest}', {
     responses: {
       '200': {
         description: 'Return avatar user',
@@ -236,7 +236,7 @@ export class ReqCreateShopController {
     voters: [basicAuthorization],
     allowedRoles: ['admin', 'reqCreateShop-Managment'],
   })
-  @get('request-create-shop', {
+  @get('request-create-shops', {
     responses: {
       '200': {
         description: 'Return all request create shop',
@@ -269,9 +269,77 @@ export class ReqCreateShopController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
+    allowedRoles: ['admin'],
+  })
+  @get('request-create-shops/{id}', {
+    responses: {
+      '200': {
+        description: 'Return all request create shop',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'REQ-SHOP',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOne(@param.path.string('id') id: string): Promise<any> {
+    const data = await axios
+      .get(`/request-create-shops/${id}`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+       
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
     allowedRoles: ['admin', 'reqCreateShop-Managment'],
   })
-  @post('request-create-shop/rejected/{idOfRequest}', {
+  @get('request-create-shops/count', {
+    responses: {
+      '200': {
+        description: 'Return all request create shop',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'REQ-SHOP',
+            },
+          },
+        },
+      },
+    },
+  })
+  async count(@param.query.object('filter') filter: string): Promise<any> {
+    const data = await axios
+      .get(`/request-create-shops/count`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'reqCreateShop-Managment'],
+  })
+  @post('request-create-shops/reject/{idOfRequest}', {
     responses: {
       '200': {
         description: 'Return all request create shop',

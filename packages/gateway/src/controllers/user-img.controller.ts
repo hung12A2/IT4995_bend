@@ -28,7 +28,7 @@ export class UserImgController {
   ) {}
 
   @authenticate('jwt')
-  @post('user-img/uploadAvt', {
+  @post('/uploadAvatar/user', {
     responses: {
       '200': {
         description: 'Return avatar user',
@@ -97,7 +97,7 @@ export class UserImgController {
   }
 
   @authenticate('jwt')
-  @post('user-img/uploadCoverImg', {
+  @post('/uploadCoverImage/user', {
     responses: {
       '200': {
         description: 'Return avatar user',

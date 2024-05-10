@@ -338,11 +338,28 @@ export class RequestCreateProductController {
     @param.filter(RequestCreateProduct) filter?: Filter<RequestCreateProduct>,
   ): Promise<any> {
     const data = await this.requestCreatProductRepository.find(filter);
-    return {
-      code: 200,
-      data,
-    };
+    return data
   }
+
+  @get('/request-create-product/count')
+  @response(200, {
+    description: 'Array of Product model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+        },
+      },
+    },
+  })
+  async count(
+    @param.filter(RequestCreateProduct) filter?: Filter<RequestCreateProduct>,
+  ): Promise<any> {
+    const data = await this.requestCreatProductRepository.count(filter);
+    return data
+  }
+
+
 
   @get('/request-create-product/{id}')
   @response(200, {

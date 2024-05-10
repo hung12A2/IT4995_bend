@@ -14,3 +14,5 @@ export * from './location-user.controller';
 export * from './products-in-cart.controller';
 export * from './order-kiot.controller';
 export * from './order.controller';
+export * from './admin.controller';
+export * from './category.controller';

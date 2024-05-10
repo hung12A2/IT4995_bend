@@ -232,23 +232,82 @@ export class RequestCreateProductController {
       },
     },
   })
-  async getAll(
-    @param.query.object('filter') filter: string,
-  ): Promise<any> {
-    const data =await  storeAxios
+  async getAll(@param.query.object('filter') filter: string): Promise<any> {
+    const data = await storeAxios
       .get(`/request-create-product`, {
         headers: {
           authorization: `${this.request.headers.authorization}`,
         },
         params: {
-          filter
-        }
+          filter,
+        },
       })
       .then(res => res.data)
       .catch(e => console.log(e));
 
-      return data
+    return data;
   }
 
-  
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'product-Managment'],
+  })
+  @get('request-create-products/{id}', {
+    responses: {
+      '200': {
+        description: 'Return all request products',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'PRODUCT',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOne(@param.path.string(`id`) id: string): Promise<any> {
+    const data = await storeAxios
+      .get(`/request-create-product/${id}`)
+      .then(res => res.data)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'product-Managment'],
+  })
+  @get('request-create-products/count', {
+    responses: {
+      '200': {
+        description: 'Return all request products',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'PRODUCT',
+            },
+          },
+        },
+      },
+    },
+  })
+  async count(@param.query.object('filter') filter: string): Promise<any> {
+    const data = await storeAxios
+      .get(`/request-create-produc/countt`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+        params: {
+          filter,
+        },
+      })
+      .then(res => res.data)
+      .catch(e => console.log(e));
+
+    return data;
+  }
 }

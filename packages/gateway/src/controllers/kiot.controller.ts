@@ -90,11 +90,6 @@ export class KiotController {
     return data;
   }
 
-  @authenticate('jwt')
-  @authorize({
-    voters: [basicAuthorization],
-    allowedRoles: ['admin', 'kiot-Managment'],
-  })
   @get('kiots/', {
     responses: {
       '200': {
@@ -109,14 +104,118 @@ export class KiotController {
       },
     },
   })
-  async getKiot(@param.query.object('filter') filter: object): Promise<any> {
-    const data = axios.get(`/kiots`, {
-      params: {
-        filter,
-      },
-    }).then(res => res).catch(e => console.log(e));
+  async getAllKiot(@param.query.object('filter') filter: object): Promise<any> {
+    const data = axios
+      .get(`/kiots`, {
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
 
-    return data
+    return data;
+  }
+
+  @get('kiots/count', {
+    responses: {
+      '200': {
+        description: 'Return kiot details',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'USER',
+            },
+          },
+        },
+      },
+    },
+  })
+  async countKiot (@param.query.object('filter') filter: object): Promise<any> {
+    const data = axios
+      .get(`/kiots/count`, {
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @post('kiots/banned/{id}', {
+    responses: {
+      '200': {
+        description: 'Return kiot details',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'USER',
+            },
+          },
+        },
+      },
+    },
+  })
+  async bannedKiot(@param.path.string('id') id: string): Promise<any> {
+    const data = axios
+      .post(`/kiots/banned/${id}`)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @post('kiots/unbanned/{id}', {
+    responses: {
+      '200': {
+        description: 'Return kiot details',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'USER',
+            },
+          },
+        },
+      },
+    },
+  })
+  async unbannedKiot(@param.path.string('id') id: string): Promise<any> {
+    const data = axios
+      .post(`/kiots/unbanned/${id}`)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin'],
+  })
+  @get('kiots/{id}', {
+    responses: {
+      '200': {
+        description: 'Return kiot details',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'USER',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOneKiot(@param.path.string('id') id: string): Promise<any> {
+    const data = axios
+      .get(`/kiots/${id}`)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
   }
 
   @authenticate('jwt')

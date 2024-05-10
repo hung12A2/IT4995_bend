@@ -65,9 +65,7 @@ export class ProductsController {
       .then(res => res.data)
       .catch(e => console.log(e));
 
-    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
-    this.response.header('Content-Range', 'Products 0-20/20');
-    this.response.status(200).send(data);
+    return data;
   }
 
   @authenticate('jwt')
@@ -116,9 +114,7 @@ export class ProductsController {
     })
     request: any,
   ): Promise<any> {
-    const {
-      isKiotProduct,
-    } = request;
+    const {isKiotProduct} = request;
     const idOfKiot = currentUser.idOfKiot;
     if (!idOfKiot && isKiotProduct) {
       return {
@@ -143,6 +139,6 @@ export class ProductsController {
       },
     );
 
-    return data
+    return data;
   }
 }

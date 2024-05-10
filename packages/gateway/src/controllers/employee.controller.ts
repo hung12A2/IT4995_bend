@@ -81,10 +81,6 @@ export class EmployeeController {
   }
 
   @authenticate('jwt')
-  @authorize({
-    voters: [basicAuthorization],
-    allowedRoles: ['admin', 'area-Managment'],
-  })
   @get('employees', {
     responses: {
       '200': {
@@ -107,9 +103,57 @@ export class EmployeeController {
       .then(res => res.data)
       .catch(e => console.log(e));
 
-    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
-    this.response.header('Content-Range', 'Employees 0-20/20');
-    this.response.status(200).send(data);
+    return data;
+  }
+
+  @authenticate('jwt')
+  @get('employees/count', {
+    responses: {
+      '200': {
+        description: 'Return new area',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async count(
+    @param.query.object('filter') filter: string,
+  ): Promise<any> {
+    const data = await axios
+      .get(`/employees/count`, {params: {filter}})
+      .then(res => res.data)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @get('employees/{id}', {
+    responses: {
+      '200': {
+        description: 'Return new area',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOne(@param.path.string('id') id: string): Promise<any> {
+    const data = await axios
+      .get(`/employees/${id}`)
+      .then(res => res.data)
+      .catch(e => console.log(e));
+
+    return data;
   }
 
   @authenticate('jwt')
@@ -142,6 +186,74 @@ export class EmployeeController {
       .then(res => res)
       .catch(e => console.log(e));
 
-    return data
+    return data;
+  }
+
+  
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['admin']})
+  @post('employees/banned/{id}', {
+    responses: {
+      '200': {
+        description: 'Return new area',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async banned(@param.path.string('id') id: string): Promise<any> {
+    const data = await axios
+      .patch(
+        `/employees/banned/${id}`,
+        {},
+        {
+          headers: {
+            authorization: this.request.headers.authorization,
+          },
+        },
+      )
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['admin']})
+  @post('employees/banned/{id}', {
+    responses: {
+      '200': {
+        description: 'Return new area',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async unbanned(@param.path.string('id') id: string): Promise<any> {
+    const data = await axios
+      .patch(
+        `/employees/unbanned/${id}`,
+        {},
+        {
+          headers: {
+            authorization: this.request.headers.authorization,
+          },
+        },
+      )
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
   }
 }

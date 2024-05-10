@@ -8,6 +8,7 @@ import {
   RestBindings,
   Response,
   Request,
+  param,
 } from '@loopback/rest';
 import {UserServiceBindings} from '../key';
 import {UserManagementService} from '../services/userManament.service';
@@ -18,6 +19,8 @@ import {SecurityBindings, UserProfile} from '@loopback/security';
 import {AdminManagementService} from '../services/adminManagment.service';
 import {EmployeeManagementService} from '../services/employeeManagment.service';
 import axios from '../services/authAxios.service';
+import {authorize} from '@loopback/authorization';
+import {basicAuthorization} from '../services/basicAuthorize';
 
 // import {inject} from '@loopback/core';
 
@@ -271,6 +274,12 @@ export class UserController {
               password: {
                 type: 'string',
               },
+              name: {
+                type: 'string',
+              },
+              phoneNumber: {
+                type: 'string',
+              },
             },
           },
         },
@@ -427,6 +436,122 @@ export class UserController {
   }
 
   @authenticate('jwt')
+  @post('/changePassword/customer', {
+    responses: {
+      '200': {
+        description: 'Change Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async changePasswordAdmin(
+    @requestBody({
+      description: 'Change Password',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              oldPassword: {
+                type: 'string',
+              },
+              newPassword: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req: {
+      oldPassword: string;
+      newPassword: string;
+    },
+  ): Promise<any> {
+    const data = await axios
+      .post(
+        '/changePassword/Admin',
+        {
+          oldPassword: req.oldPassword,
+          newPassword: req.newPassword,
+        },
+        {
+          headers: {
+            authorization: `${this.request.headers.authorization}`,
+          },
+        },
+      )
+      .then(res => res)
+      .catch(e => console.log(e.response.data));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @post('/changePassword/employees', {
+    responses: {
+      '200': {
+        description: 'Change Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async changePasswordEmployee(
+    @requestBody({
+      description: 'Change Password',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              oldPassword: {
+                type: 'string',
+              },
+              newPassword: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req: {
+      oldPassword: string;
+      newPassword: string;
+    },
+  ): Promise<any> {
+    const data = await axios
+      .post(
+        '/changePassword/employee',
+        {
+          oldPassword: req.oldPassword,
+          newPassword: req.newPassword,
+        },
+        {
+          headers: {
+            authorization: `${this.request.headers.authorization}`,
+          },
+        },
+      )
+      .then(res => res)
+      .catch(e => console.log(e.response.data));
+
+    return data;
+  }
+
+  @authenticate('jwt')
   @get('whoAmI', {
     responses: {
       '200': {
@@ -446,5 +571,135 @@ export class UserController {
     currentUserProfile: UserProfile,
   ): Promise<any> {
     return currentUserProfile;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin'],
+  })
+  @post('/banned/customer/{idOfUser}', {
+    responses: {
+      '200': {
+        description: 'User',
+        content: {
+          'application/json': {
+            schema: {
+              'x-ts-type': User,
+            },
+          },
+        },
+      },
+    },
+  })
+  async BanCustomer(
+    @param.path.string('idOfUser') idOfUser: string,
+  ): Promise<any> {
+    const data = await axios
+      .post(
+        `/banned/customer/${idOfUser}`,
+        {},
+        {headers: {Authorization: `${this.request.headers.authorization}`}},
+      )
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin'],
+  })
+  @post('/unbanned/customer/{idOfUser}', {
+    responses: {
+      '200': {
+        description: 'User',
+        content: {
+          'application/json': {
+            schema: {
+              'x-ts-type': User,
+            },
+          },
+        },
+      },
+    },
+  })
+  async UnbanCustomer(
+    @param.path.string('idOfUser') idOfUser: string,
+  ): Promise<any> {
+    const data = await axios
+      .post(
+        `/unbanned/customer/${idOfUser}`,
+        {},
+        {headers: {Authorization: `${this.request.headers.authorization}`}},
+      )
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'user-Managment'],
+  })
+  @get('getAllUser', {
+    responses: {
+      '200': {
+        description: 'Return current user',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'USER',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getAllUser(
+    @param.query.object('filter') filter?: string,
+  ): Promise<any> {
+    const data = await axios.get(`getAllUser`, {
+      params: {
+        filter,
+      },
+    });
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'user-Managment'],
+  })
+  @get('getAllUser/count', {
+    responses: {
+      '200': {
+        description: 'Return current user',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'USER',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getAllUserCount(
+    @param.query.object('filter') filter?: string,
+  ): Promise<any> {
+    const data = await axios.get(`getAllUser/count`, {
+      params: {
+        filter,
+      },
+    });
+
+    return data;
   }
 }
