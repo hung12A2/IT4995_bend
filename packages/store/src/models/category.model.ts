@@ -34,6 +34,31 @@ export class Category extends Entity {
   })
   status: string;
 
+  @property({
+    type: 'date',
+    required: true,
+  })
+  createdAt: string;
+
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  createdBy: string;
+
+  @property({
+    type: 'string',
+    required: false,
+  })
+  updatedBy: string;
+
+  @property({
+    type: 'date',
+    required: true,
+  })
+  updatedAt: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

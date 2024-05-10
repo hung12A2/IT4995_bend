@@ -53,6 +53,8 @@ export class AdminController {
             properties: {
               email: {type: 'string'},
               permissions: {type: 'string'},
+              name: {type: 'string'},
+              phoneNumber: {type: 'string'},
             },
           },
         },
@@ -64,8 +66,12 @@ export class AdminController {
     admin.status = 'active';
     admin.password = generateRandomString(10);
     const time = new Date().toLocaleString();
-    admin.name = admin.email;
-    admin.phoneNumber = '';
+    if (!admin.name) {
+      admin.name = admin.email;
+    }
+    if (!admin.phoneNumber) {
+      admin.phoneNumber = '';
+    }
     admin.createdAt = time;
     admin.updatedAt = time;
     admin.updatedBy = `admin-${currentUserProfile.id}`;
@@ -126,10 +132,8 @@ export class AdminController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(Admin, {exclude: 'where'})
-    filter?: FilterExcludingWhere<Admin>,
   ): Promise<Admin> {
-    return this.adminRepository.findById(id, filter);
+    return this.adminRepository.findById(id);
   }
 
   @authenticate('jwt')
@@ -153,9 +157,93 @@ export class AdminController {
       },
     })
     admin: Admin,
-  ): Promise<void> {
+  ): Promise<any> {
     admin.updatedAt = new Date().toLocaleString();
     admin.updatedBy = `admin-${currentUser.id}`;
     await this.adminRepository.updateById(id, admin);
+    return {
+      code:200,
+      data: await this.adminRepository.findById(id)
+    }
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'users-Managment'],
+  })
+  @post('/admins/banned/{idOfUser}', {
+    responses: {
+      '200': {
+        description: 'User',
+        content: {
+          'application/json': {
+            schema: {
+              'x-ts-type': Admin,
+            },
+          },
+        },
+      },
+    },
+  })
+  async BanCustomer(
+    @param.path.string('idOfUser') idOfUser: string,
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+  ): Promise<any> {
+    const time = new Date().toLocaleString();
+    try {
+      const data = await this.adminRepository.updateById(idOfUser, {
+        status: 'banned',
+        updatedAt: time,
+        updatedBy: `admin-${currentUser.id}`,
+      });
+      return {
+        code: 200,
+        message: `Update success`,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'users-Managment'],
+  })
+  @post('/admins/unbanned/{idOfUser}', {
+    responses: {
+      '200': {
+        description: 'User',
+        content: {
+          'application/json': {
+            schema: {
+              'x-ts-type': Admin,
+            },
+          },
+        },
+      },
+    },
+  })
+  async unBanned(
+    @param.path.string('idOfUser') idOfUser: string,
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+  ): Promise<any> {
+    const time = new Date().toLocaleString();
+    try {
+      const data = await this.adminRepository.updateById(idOfUser, {
+        status: 'active',
+        updatedAt: time,
+        updatedBy: `admin-${currentUser.id}`,
+      });
+      return {
+        code: 200,
+        message: `Update success`,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }

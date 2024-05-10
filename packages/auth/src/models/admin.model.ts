@@ -38,6 +38,18 @@ export class Admin extends Entity {
     type: 'string',
     required: true,
   })
+  name: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  phoneNumber: string;
+  
+  @property({
+    type: 'string',
+    required: true,
+  })
   status: string;
 
   @property({

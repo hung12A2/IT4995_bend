@@ -247,9 +247,7 @@ export class RequestCreateProductController {
       .then(res => res.data)
       .catch(e => console.log(e));
 
-      this.response.header('Access-Control-Expose-Headers', 'Content-Range');
-      this.response.header('Content-Range', 'Request-Create-Products 0-20/20');
-      this.response.status(200).send(data);
+      return data
   }
 
   

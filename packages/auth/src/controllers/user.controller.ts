@@ -333,7 +333,21 @@ export class UserManagementController {
       content: {
         'application/json': {
           schema: {
-            type: 'object',
+            type: 'object', 
+            properties: {
+              email: {
+                type: 'string',
+              },
+              password: {
+                type: 'string',
+              },
+              name: {
+                type: 'string',
+              },
+              phoneNumber: {
+                type: 'string',
+              },
+            }
           },
         },
       },
