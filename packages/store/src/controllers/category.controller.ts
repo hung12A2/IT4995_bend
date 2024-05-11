@@ -68,6 +68,8 @@ export class CategoryController {
       });
     });
 
+    //
+
     const {cateName, description} = data.body;
 
     const imageData: any = await uploadFile(data.files.image[0]);
@@ -79,6 +81,10 @@ export class CategoryController {
         filename: imageData.filename,
       },
       status: 'active',
+      createdBy: 'admin',
+      createdAt: new Date().toLocaleString(),
+      updatedAt: new Date().toLocaleString(),
+      updatedBy: 'admin'
     });
 
     return this.categoryRepository.create(category);
@@ -99,7 +105,25 @@ export class CategoryController {
   async find(
     @param.filter(Category) filter?: Filter<Category>,
   ): Promise<Category[]> {
-    return this.categoryRepository.find(filter);
+    return await this.categoryRepository.find(filter);
+  }
+
+  @get('/categories/count')
+  @response(200, {
+    description: 'Array of Category model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Category, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async count(
+    @param.filter(Category) filter?: Filter<Category>,
+  ): Promise<any> {
+    return await this.categoryRepository.count(filter);
   }
 
   @patch('/categories')
@@ -189,6 +213,8 @@ export class CategoryController {
         filename: imageData.filename,
       },
       status: status,
+      updatedBy: 'admin',
+      updatedAt: new Date().toLocaleString()
     });
 
     return this.categoryRepository.findById(id);
@@ -202,3 +228,4 @@ export class CategoryController {
     await this.categoryRepository.updateById(id, {status: 'inActive'});
   }
 }
+

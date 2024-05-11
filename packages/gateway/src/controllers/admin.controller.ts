@@ -177,6 +177,8 @@ export class AdminController {
         Authorization: this.request.headers.authorization,
       },
     });
+
+    return data
   }
 
   @authenticate('jwt')

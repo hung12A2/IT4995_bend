@@ -16,3 +16,4 @@ export * from './order-kiot.controller';
 export * from './order.controller';
 export * from './admin.controller';
 export * from './category.controller';
+export * from './stores.controller';

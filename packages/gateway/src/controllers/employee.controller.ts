@@ -99,8 +99,11 @@ export class EmployeeController {
     @param.query.object('filter') filter: string,
   ): Promise<any> {
     const data = await axios
-      .get(`/employees`, {params: {filter}})
-      .then(res => res.data)
+      .get(`/employees`, {
+        params: {filter},
+        headers: {authorization: this.request.headers.authorization},
+      })
+      .then(res => res)
       .catch(e => console.log(e));
 
     return data;
@@ -121,12 +124,15 @@ export class EmployeeController {
       },
     },
   })
-  async count(
-    @param.query.object('filter') filter: string,
-  ): Promise<any> {
+  async count(@param.query.object('filter') filter: string): Promise<any> {
     const data = await axios
-      .get(`/employees/count`, {params: {filter}})
-      .then(res => res.data)
+      .get(`/employees/count`, {
+        params: {filter},
+        headers: {
+          Authorization: this.request.headers.authorization,
+        },
+      })
+      .then(res => res)
       .catch(e => console.log(e));
 
     return data;
@@ -149,8 +155,12 @@ export class EmployeeController {
   })
   async getOne(@param.path.string('id') id: string): Promise<any> {
     const data = await axios
-      .get(`/employees/${id}`)
-      .then(res => res.data)
+      .get(`/employees/${id}`, {
+        headers: {
+          Authorization: this.request.headers.authorization,
+        },
+      })
+      .then(res => res)
       .catch(e => console.log(e));
 
     return data;
@@ -188,8 +198,6 @@ export class EmployeeController {
 
     return data;
   }
-
-  
 
   @authenticate('jwt')
   @authorize({voters: [basicAuthorization], allowedRoles: ['admin']})

@@ -242,7 +242,7 @@ export class RequestCreateProductController {
           filter,
         },
       })
-      .then(res => res.data)
+      .then(res => res)
       .catch(e => console.log(e));
 
     return data;
@@ -297,7 +297,7 @@ export class RequestCreateProductController {
   })
   async count(@param.query.object('filter') filter: string): Promise<any> {
     const data = await storeAxios
-      .get(`/request-create-produc/countt`, {
+      .get(`/request-create-product/count`, {
         headers: {
           authorization: `${this.request.headers.authorization}`,
         },
@@ -305,7 +305,7 @@ export class RequestCreateProductController {
           filter,
         },
       })
-      .then(res => res.data)
+      .then(res => res)
       .catch(e => console.log(e));
 
     return data;

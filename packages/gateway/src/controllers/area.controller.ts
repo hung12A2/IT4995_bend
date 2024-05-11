@@ -13,12 +13,14 @@ import {
   Request,
   response,
   param,
+  patch,
 } from '@loopback/rest';
 import {authenticate} from '@loopback/authentication';
 import axios from '../services/authAxios.service';
 import multer from 'multer';
 import {authorize} from '@loopback/authorization';
 import {basicAuthorization} from '../services/basicAuthorize';
+import { SecurityBindings, UserProfile } from '@loopback/security';
 
 const storage = multer.memoryStorage();
 const upload = multer({storage});
@@ -212,5 +214,51 @@ export class AreaController {
       .catch(e => console.log(e));
 
     return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'area-Managment'],
+  })
+  @patch('/areas/{id}')
+  @response(204, {
+    description: 'Area PATCH success',
+  })
+  async updateById(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+    @param.path.string('id') id: string,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              name: {type: 'string'},
+              province: {type: 'string'},
+              district: {type: 'string'},
+            },
+          },
+        },
+      },
+    })
+    area: any,
+  ): Promise<any> {
+    const {name, province, district} = area;
+    const data = axios
+      .patch(`/areas/${id}`, {
+        name,
+        province,
+        district,
+      }, {
+        headers: {
+          Authorization: this.request.headers.authorization,
+        }
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+      return data
   }
 }

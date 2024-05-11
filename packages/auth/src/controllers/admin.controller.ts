@@ -81,7 +81,7 @@ export class AdminController {
 
   @authenticate('jwt')
   @authorize({
-    allowedRoles: ['admin', 'admin-managment'],
+    allowedRoles: ['admin'],
     voters: [basicAuthorization],
   })
   @get('/admins')

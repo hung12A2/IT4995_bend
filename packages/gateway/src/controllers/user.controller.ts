@@ -38,7 +38,7 @@ export class UserController {
     @inject(RestBindings.Http.REQUEST) public request: Request,
   ) {}
 
-  @post('login/customer', {
+  @post('login/Customer', {
     responses: {
       '200': {
         description: 'Return current user',
@@ -85,12 +85,11 @@ export class UserController {
       };
 
     return {
-      code: 200,
       token,
     };
   }
 
-  @post('login/admin', {
+  @post('login/Admin', {
     responses: {
       '200': {
         description: 'Return current user',
@@ -137,12 +136,11 @@ export class UserController {
       };
 
     return {
-      code: 200,
       token,
     };
   }
 
-  @post('login/employee', {
+  @post('login/Employee', {
     responses: {
       '200': {
         description: 'Return current user',
@@ -185,7 +183,6 @@ export class UserController {
     if (!token) return {code: 401, message: 'Invalid email or password'};
 
     return {
-      code: 200,
       token,
     };
   }
@@ -667,6 +664,9 @@ export class UserController {
       params: {
         filter,
       },
+      headers: {
+        Authorization: `${this.request.headers.authorization}`,
+      },
     });
 
     return data;
@@ -697,6 +697,9 @@ export class UserController {
     const data = await axios.get(`getAllUser/count`, {
       params: {
         filter,
+      },
+      headers: {
+        Authorization: `${this.request.headers.authorization}`,
       },
     });
 

@@ -36,14 +36,14 @@ export class Category extends Entity {
 
   @property({
     type: 'date',
-    required: true,
+    required: false,
   })
   createdAt: string;
 
 
   @property({
     type: 'string',
-    required: true,
+    required: false,
   })
   createdBy: string;
 
