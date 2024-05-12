@@ -54,10 +54,24 @@ export class ProductController {
   })
   async find(@param.filter(Product) filter?: Filter<Product>): Promise<any> {
     const data = await this.productRepository.find(filter);
-    return {
-      code: 200,
-      data,
-    };
+    return data;
+  }
+
+  @get('/products/count')
+  @response(200, {
+    description: 'Array of Product model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Product, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async count(@param.filter(Product) filter?: Filter<Product>): Promise<any> {
+    const data = await this.productRepository.count(filter);
+    return data;
   }
 
   @get('/products/{id}')
@@ -75,6 +89,65 @@ export class ProductController {
     filter?: FilterExcludingWhere<Product>,
   ): Promise<Product> {
     return this.productRepository.findById(id, filter);
+  }
+
+  @post('/products/banned/{id}')
+  @response(200, {
+    description: 'Product model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(Product, {includeRelations: true}),
+      },
+    },
+  })
+  async BannedById(
+    @param.path.string('id') id: string,
+  ): Promise<any> {
+    await this.productRepository.updateById(id, {status: 'banned'});
+    return {
+      code:200,
+      message: 'Banned success',
+    }
+  }
+
+
+  @post('/products/unbanned/{id}')
+  @response(200, {
+    description: 'Product model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(Product, {includeRelations: true}),
+      },
+    },
+  })
+  async unbannedById(
+    @param.path.string('id') id: string,
+  ): Promise<any> {
+    await this.productRepository.updateById(id, {status: 'active'});
+    return {
+      code:200,
+      message: 'unbanned success',
+    }
+  }
+
+
+  @post('/products/inActive/{id}')
+  @response(200, {
+    description: 'Product model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(Product, {includeRelations: true}),
+      },
+    },
+  })
+  async inActiveById(
+    @param.path.string('id') id: string,
+  ): Promise<any> {
+    await this.productRepository.updateById(id, {status: 'inActive'});
+    return {
+      code:200,
+      message: 'inActive success',
+    }
   }
 
   @patch('/products/shop/{idOfShop}/category/{idOfCategory}/{id}')

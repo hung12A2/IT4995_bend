@@ -616,7 +616,7 @@ export class OrderKiotController {
     voters: [basicAuthorization],
     allowedRoles: ['admin', 'order-Managment'],
   })
-  @get('orderSKiotAdmin', {
+  @get('ordersKiotAdmin', {
     responses: {
       '200': {
         description: 'Return order kiot info',
@@ -634,7 +634,65 @@ export class OrderKiotController {
     @param.query.object('filter') filter?: string,
   ): Promise<any> {
     const data = await axios
-      .get(`/orderSKiot`, {params: {filter}})
+      .get(`/ordersKiot`, {params: {filter}})
+      .then(res => res.data)
+      .catch(e => console.log(e));
+
+    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
+    this.response.header('Content-Range', 'orderSKiotAdmin 0-20/20');
+    this.response.status(200).send(data);
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'order-Managment'],
+  })
+  @get('ordersKiotAdmin/count', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async count(@param.query.object('filter') filter?: string): Promise<any> {
+    const data = await axios
+      .get(`/ordersKiot/count`, {params: {filter}})
+      .then(res => res.data)
+      .catch(e => console.log(e));
+
+    return data
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'order-Managment'],
+  })
+  @get('ordersKiotAdmin/{id}', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOne(@param.path.string('id') id: string): Promise<any> {
+    const data = await axios
+      .get(`/ordersKiot/${id}`)
       .then(res => res.data)
       .catch(e => console.log(e));
 

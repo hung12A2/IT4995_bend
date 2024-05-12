@@ -270,7 +270,7 @@ export class RequestCreateProductController {
   async getOne(@param.path.string(`id`) id: string): Promise<any> {
     const data = await storeAxios
       .get(`/request-create-product/${id}`)
-      .then(res => res.data)
+      .then(res => res)
       .catch(e => console.log(e));
 
     return data;

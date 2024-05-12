@@ -11,3 +11,5 @@ export * from './order-kiot.controller';
 export * from './wallet-of-shop.controller';
 export * from './request-create-product.controller';
 export * from './shop-info.controller';
+export * from './products-in-order.controller';
+export * from './products-in-order-kiot.controller';

@@ -62,7 +62,167 @@ export class ProductsController {
           filter,
         },
       })
-      .then(res => res.data)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @get('products/count', {
+    responses: {
+      '200': {
+        description: 'Return all request products',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'PRODUCT',
+            },
+          },
+        },
+      },
+    },
+  })
+  async count(@param.query.object('filter') filter: string): Promise<any> {
+    const data = await storeAxios
+      .get(`/products/count`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @get('products/{id}', {
+    responses: {
+      '200': {
+        description: 'Return all request products',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'PRODUCT',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOne(
+    @param.path.string('id') id: string,
+    @param.query.object('filter') filter: string): Promise<any> {
+    const data = await storeAxios
+      .get(`/products/${id}`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @post('products/banned/{id}', {
+    responses: {
+      '200': {
+        description: 'Return all request products',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'PRODUCT',
+            },
+          },
+        },
+      },
+    },
+  })
+  async Banned(
+    @param.path.string('id') id: string,
+    @param.query.object('filter') filter: string): Promise<any> {
+    const data = await storeAxios
+      .post(`/products/banned/${id}`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+
+  @post('products/unbanned/{id}', {
+    responses: {
+      '200': {
+        description: 'Return all request products',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'PRODUCT',
+            },
+          },
+        },
+      },
+    },
+  })
+  async unbanned(
+    @param.path.string('id') id: string,
+    @param.query.object('filter') filter: string): Promise<any> {
+    const data = await storeAxios
+      .post(`/products/unbanned/${id}`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+
+  @post('products/inActive/{id}', {
+    responses: {
+      '200': {
+        description: 'Return all request products',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'PRODUCT',
+            },
+          },
+        },
+      },
+    },
+  })
+  async inActive(
+    @param.path.string('id') id: string,
+    @param.query.object('filter') filter: string): Promise<any> {
+    const data = await storeAxios
+      .post(`/products/inActive/${id}`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
       .catch(e => console.log(e));
 
     return data;

@@ -65,7 +65,49 @@ export class NotificationController {
     const data = await this.notificationRepository.find(filter);
     return {
       code: 200,
-      data
-    }
+      data,
+    };
+  }
+
+  @get('/notifications/count')
+  @response(200, {
+    description: 'Array of Notification model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Notification, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async count(
+    @param.filter(Notification) filter?: Filter<Notification>,
+  ): Promise<any> {
+    const data = await this.notificationRepository.count(filter);
+    return {
+      code: 200,
+      data,
+    };
+  }
+
+  @get('/notifications/{id}')
+  @response(200, {
+    description: 'Array of Notification model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Notification, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async getOne(@param.path.string('id') id: string): Promise<any> {
+    const data = await this.notificationRepository.findById(id);
+    return {
+      code: 200,
+      data,
+    };
   }
 }

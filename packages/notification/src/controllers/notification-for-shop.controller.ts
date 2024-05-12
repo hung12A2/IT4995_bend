@@ -48,6 +48,50 @@ export class NotificationForShopController {
     }
   }
 
+  @get('/notification-for-shops/count')
+  @response(200, {
+    description: 'Array of NotificationForShop model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(NotificationForShop, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async count(
+    @param.filter(NotificationForShop) filter?: Filter<NotificationForShop>,
+  ): Promise<any> {
+    const data = await this.notificationForShopRepository.count(filter);
+    return {
+      code: 200,
+      data
+    }
+  }
+
+  @get('/notification-for-shops/{id}')
+  @response(200, {
+    description: 'Array of NotificationForShop model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(NotificationForShop, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async getOne(
+    @param.path.string('id') id: string,
+  ): Promise<any> {
+    const data = await this.notificationForShopRepository.findById(id)
+    return {
+      code: 200,
+      data
+    }
+  }
+
 
   @del('/notification-for-shops/{id}')
   @response(204, {

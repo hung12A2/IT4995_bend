@@ -39,6 +39,7 @@ import {inject, service} from '@loopback/core';
 import {uploadFile, deleteRemoteFile} from '../config/firebaseConfig';
 import multer from 'multer';
 import {RabbitMQService} from '../services/rabbitMqServices';
+import path from 'path';
 
 const storage = multer.memoryStorage();
 const upload = multer({storage});
@@ -1055,10 +1056,41 @@ export class OrderController {
   })
   async find(@param.filter(Order) filter?: Filter<Order>): Promise<any> {
     const data = await this.orderRepository.find(filter);
-    return {
-      code: 200,
-      data,
-    };
+    return data
+  }
+
+  @get('/orders/{id}')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async getOne(@param.path.string('id') id: string): Promise<any> {
+    const data = await this.orderRepository.findById(id);
+    return data
+  }
+
+  @get('/orders/count')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async count(@param.filter(Order) filter?: Filter<Order>): Promise<any> {
+    const data = await this.orderRepository.count(filter);
+    return data
   }
 
   //get All for user

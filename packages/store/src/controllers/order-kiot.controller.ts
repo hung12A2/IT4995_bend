@@ -1118,7 +1118,47 @@ export class OrderKiotController {
     };
   }
 
-  @get('/ordersKiot/{idOfUser}')
+  @get('/ordersKiot/count')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async count(@param.filter(Order) filter?: Filter<Order>): Promise<any> {
+    const data = await this.orderKiotRepository.find(filter);
+    return {
+      code: 200,
+      data,
+    };
+  }
+
+  @get('/ordersKiot/{id}')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async getOne(@param.path.string('id') id: string ): Promise<any> {
+    const data = await this.orderKiotRepository.findById (id)
+    return {
+      code: 200,
+      data,
+    };
+  }
+
+  @get('/ordersKiot/user/{idOfUser}')
   @response(200, {
     description: 'Array of Order model instances',
     content: {
@@ -1140,7 +1180,7 @@ export class OrderKiotController {
     };
   }
 
-  @get('/ordersKiot/{idOfShop}')
+  @get('/ordersKiot/shop/{idOfShop}')
   @response(200, {
     description: 'Array of Order model instances',
     content: {

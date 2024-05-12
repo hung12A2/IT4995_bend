@@ -548,7 +548,69 @@ export class OrderController {
   ): Promise<any> {
     const data = await axios
       .get(`/orders`, {params: {filter}})
-      .then(res => res.data)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
+    this.response.header('Content-Range', 'OrdersAdmin 0-20/20');
+    this.response.status(200).send(data);
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'order-Managment'],
+  })
+  @get('ordersAdmin/{id}', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOne(
+    @param.path.string('id') id: string,  
+  ): Promise<any> {
+    const data = await axios
+      .get(`/orders/${id}`)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'order-Managment'],
+  })
+  @get('ordersAdmin/count', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async count(
+    @param.query.object('filter') filter?: string,
+  ): Promise<any> {
+    const data = await axios
+      .get(`/orders/count`, {params: {filter}})
+      .then(res => res)
       .catch(e => console.log(e));
 
     this.response.header('Access-Control-Expose-Headers', 'Content-Range');
