@@ -16,6 +16,13 @@ export class TransactionShop extends Entity {
   idOfShop: string;
 
   @property({
+    type: 'string',
+    required: false,
+    default: 'online'
+  })
+  typeOrder: string;
+
+  @property({
     type: 'number',
     required: true,
   })

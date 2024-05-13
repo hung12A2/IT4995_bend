@@ -29,6 +29,14 @@ export class Transaction extends Entity {
 
 
   @property({
+    type: 'string',
+    required: false,
+    default: 'online'
+  })
+  typeOrder: string;
+
+
+  @property({
     type: 'date',
     required: true,
   })

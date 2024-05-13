@@ -31,7 +31,7 @@ export class TransactionController {
   async count(@param.query.object('filter') filter: string): Promise<any> {
     const data = notificationAxios
       .get('/transactions/count', {params: filter})
-      .then(res => res.data)
+      .then(res => res)
       .catch(err => console.log(err));
     return data;
   }
@@ -44,7 +44,7 @@ export class TransactionController {
   async getAll(@param.query.object('filter') filter: string): Promise<any> {
     const data = notificationAxios
       .get('/transactions', {params: filter})
-      .then(res => res.data)
+      .then(res => res)
       .catch(err => console.log(err));
     return data;
   }
@@ -57,7 +57,7 @@ export class TransactionController {
   async getOne(@param.path.string('id') id: string): Promise<any> {
     const data = notificationAxios
       .get(`/transactions/${id}`)
-      .then(res => res.data)
+      .then(res => res)
       .catch(err => console.log(err));
 
     return data;
