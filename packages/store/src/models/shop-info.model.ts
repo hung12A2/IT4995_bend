@@ -47,6 +47,41 @@ export class ShopInfo extends Entity {
   })
   numberOfSold: number;
 
+  @property({
+    type: 'number',
+    required: false,
+    default: 0,
+  })
+  numberOfOrder: number;
+
+  @property({
+    type: 'number',
+    required: false,
+    default: 0,
+  })
+  numberOfSuccesOrder: number;
+
+  @property({
+    type: 'number',
+    required: false,
+    default: 0,
+  })
+  numberOfRejectOrder: number;
+
+  @property({
+    type: 'number',
+    required: false,
+    default: 0,
+  })
+  numberOfReturnOrder: number;
+
+  @property({
+    type: 'number',
+    required: false,
+    default: 0,
+  })
+  numberOfFailedOrder: number;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

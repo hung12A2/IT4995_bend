@@ -1,3 +1,8 @@
+// Uncomment these imports to begin using these cool features!
+
+// import {inject} from '@loopback/core';
+
+
 import {
   Count,
   CountSchema,
@@ -20,23 +25,23 @@ import {
 
 import notificationAxios from '../services/notificationAxios.service';
 
-export class TransactionController {
+export class transactionShopsController {
   constructor() {}
 
-  @get('/transactions/count')
+  @get('/transaction-shops/count')
   @response(200, {
     description: 'Transaction model count',
     content: {'application/json': {schema: CountSchema}},
   })
   async count(@param.query.object('filter') filter: string): Promise<any> {
     const data = notificationAxios
-      .get('/transactions/count', {params: {filter}})
+      .get('/transaction-shops/count', {params: {filter}})
       .then(res => res)
       .catch(err => console.log(err));
     return data;
   }
 
-  @get('/transactions')
+  @get('/transaction-shops')
   @response(200, {
     description: 'Transaction model count',
     content: {'application/json': {schema: CountSchema}},
@@ -44,20 +49,20 @@ export class TransactionController {
   async getAll(@param.query.object('filter') filter: string): Promise<any> {
     console.log(filter);
     const data = notificationAxios
-      .get('/transactions', {params: {filter}})
+      .get('/transaction-shops', {params: {filter}})
       .then(res => res)
       .catch(err => console.log(err));
     return data;
   }
 
-  @get('/transactions/{id}')
+  @get('/transaction-shops/{id}')
   @response(200, {
     description: 'Transaction model count',
     content: {'application/json': {schema: CountSchema}},
   })
   async getOne(@param.path.string('id') id: string): Promise<any> {
     const data = notificationAxios
-      .get(`/transactions/${id}`)
+      .get(`/transaction-shops/${id}`)
       .then(res => res)
       .catch(err => console.log(err));
 

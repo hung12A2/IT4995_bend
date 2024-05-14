@@ -29,6 +29,7 @@ import {
   ProductsInOrderRepository,
   ReturnOrderRepository,
   ShopInfoRepository,
+  UserInfoRepository,
   WalletOfShopRepository,
   WalletRepository,
 } from '../repositories';
@@ -82,6 +83,8 @@ export class OrderController {
     public returnOrderRepository: ReturnOrderRepository,
     @repository(ShopInfoRepository)
     public shopInfoRepository: ShopInfoRepository,
+    @repository(UserInfoRepository)
+    public userInfoRepository: UserInfoRepository,
   ) {}
 
   newRabbitMQService = RabbitMQService.getInstance();
@@ -285,6 +288,12 @@ export class OrderController {
         await this.orderRepository.updateById(id, {
           status: 'rejected',
           updatedAt: new Date().toLocaleString(),
+        });
+
+        const oldShopInfo: any =
+          await this.shopInfoRepository.findById(idOfShop);
+        await this.shopInfoRepository.updateById(idOfShop, {
+          numberOfRejected: oldShopInfo.numberOfRejected + 1,
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -499,9 +508,19 @@ export class OrderController {
             });
 
             await this.shopInfoRepository.updateAll(
-              {numberOfSold: oldShopInfo.numberOfSold + quantity},
+              {
+                numberOfSold: oldShopInfo.numberOfSold + quantity,
+                numberOfSuccesOrder: oldShopInfo.numberOfSuccesOrder + 1,
+              },
               {idOfShop: order.idOfShop},
             );
+
+            const oldUserInfo: any =
+              await this.userInfoRepository.findById(idOfUser);
+
+            await this.userInfoRepository.updateById(idOfUser, {
+              numberOfSuccesOrder: oldUserInfo.numberOfSuccesOrder + 1,
+            });
 
             const oldProduct: any = await this.productRepository.findOne({
               where: {id: idOfProduct},
@@ -558,6 +577,17 @@ export class OrderController {
         where: {id, idOfUser},
       });
       const idOfShop = order[0].idOfShop;
+
+      const oldShopInfo: any = await this.shopInfoRepository.findById(idOfShop);
+      await this.shopInfoRepository.updateById(idOfShop, {
+        numberOfReturnOrder: oldShopInfo.numberOfReturnOrder + 1,
+      });
+
+      const oldUserInfo: any = await this.userInfoRepository.findById(idOfUser);
+      await this.userInfoRepository.updateById(idOfUser, {
+        numberOfReturnOrder: oldUserInfo.numberOfReturnOrder + 1,
+      });
+
       if (order.length == 1) {
         await this.orderRepository.updateById(id, {
           status: 'returned',
@@ -832,6 +862,17 @@ export class OrderController {
     };
 
     const dataOrder = await this.orderRepository.create(NewOrder);
+
+    const oldShopInfo: any = await this.shopInfoRepository.findById(idOfShop);
+    await this.shopInfoRepository.updateById(idOfShop, {
+      numberOfOrder: oldShopInfo.numberOfOrder + 1,
+    });
+
+    const oldUserInfo: any = await this.userInfoRepository.findById(idOfUser);
+    await this.userInfoRepository.updateById(idOfUser, {
+      numberOfOrder: oldUserInfo.numberOfOrder + 1,
+    });
+
     const oldWallet: any = await this.walletRepository.findOne({
       where: {idOfUser},
     });
@@ -1056,7 +1097,7 @@ export class OrderController {
   })
   async find(@param.filter(Order) filter?: Filter<Order>): Promise<any> {
     const data = await this.orderRepository.find(filter);
-    return data
+    return data;
   }
 
   @get('/orders/{id}')
@@ -1073,7 +1114,7 @@ export class OrderController {
   })
   async getOne(@param.path.string('id') id: string): Promise<any> {
     const data = await this.orderRepository.findById(id);
-    return data
+    return data;
   }
 
   @get('/orders/count')
@@ -1090,7 +1131,7 @@ export class OrderController {
   })
   async count(@param.filter(Order) filter?: Filter<Order>): Promise<any> {
     const data = await this.orderRepository.count(filter);
-    return data
+    return data;
   }
 
   //get All for user

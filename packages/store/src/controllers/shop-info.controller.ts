@@ -32,19 +32,9 @@ export class ShopInfoController {
     content: {'application/json': {schema: getModelSchemaRef(ShopInfo)}},
   })
   async create(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(ShopInfo, {
-            title: 'NewShopInfo',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
-    shopInfo: Omit<ShopInfo, 'id'>,
+    @param.path.string('idOfShop') idOfShop: string,
   ): Promise<ShopInfo> {
-    return this.shopInfoRepository.create(shopInfo);
+    return this.shopInfoRepository.create({idOfShop});
   }
 
   @get('/shop-infos/count')

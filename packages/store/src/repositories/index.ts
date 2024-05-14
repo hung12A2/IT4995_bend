@@ -13,3 +13,4 @@ export * from './products-in-order-kiot.repository';
 export * from './wallet-of-shop.repository';
 export * from './request-creat-product.repository';
 export * from './shop-info.repository';
+export * from './user-info.repository';

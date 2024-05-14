@@ -20,3 +20,7 @@ export * from './stores.controller';
 export * from './products-in-order.controller';
 export * from './products-in-order-kiot.controller';
 export * from './transaction.controller';
+export * from './transaction-shops.controller';
+export * from './user-info.controller';
+export * from './shop-info.controller';
+export * from './return-order.controller';

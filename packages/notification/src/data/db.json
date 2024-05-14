@@ -1,23 +1,28 @@
 {
   "ids": {
     "Notification": 2,
-    "Transaction": 2,
-    "NotificationForShop": 3,
-    "TransactionShop": 2
+    "Transaction": 4,
+    "NotificationForShop": 7,
+    "TransactionShop": 4
   },
   "models": {
     "Notification": {
       "1": "{\"idOfUser\":\"1\",\"content\":\"Don hang 4 da bi hoan tra, nhan lai 93000\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"isViewed\":false,\"createdAt\":\"2024-04-20T12:59:33.606Z\",\"id\":\"1\"}"
     },
     "Transaction": {
-      "1": "{\"idOfUser\":\"1\",\"amountMoney\":93000,\"type\":\"receive\",\"createdAt\":\"2024-04-20T12:59:33.607Z\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"idOfOrder\":\"4\",\"id\":\"1\"}"
+      "2": "{\"idOfUser\":\"1\",\"amountMoney\":13110,\"type\":\"send\",\"typeOrder\":\"kiot\",\"createdAt\":\"2024-05-13T09:26:47.000Z\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-27T07:26:17.516ZScreenshot%20from%202024-04-26%2016-33-04.png?alt=media\",\"filename\":\"2024-04-27T07:26:17.516ZScreenshot from 2024-04-26 16-33-04.png\"}],\"idOfOrder\":\"18c10e26-e776-4dc7-ac07-e9f86fb7213f\",\"id\":\"2\"}",
+      "3": "{\"idOfUser\":\"1\",\"amountMoney\":13110,\"type\":\"send\",\"typeOrder\":\"kiot\",\"createdAt\":\"2024-05-13T09:45:16.000Z\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-27T07:26:17.516ZScreenshot%20from%202024-04-26%2016-33-04.png?alt=media\",\"filename\":\"2024-04-27T07:26:17.516ZScreenshot from 2024-04-26 16-33-04.png\"}],\"idOfOrder\":\"a27e5214-d5f1-4c98-90d0-167b77ec6a59\",\"id\":\"3\"}"
     },
     "NotificationForShop": {
-      "1": "{\"idOfShop\":\"3\",\"content\":\"Don hang 4 da bi hoan tra\",\"image\":{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-19T07:48:57.531ZSum.jpg?alt=media\",\"filename\":\"2024-04-19T07:48:57.531ZSum.jpg\"},\"isViewed\":false,\"createdAt\":\"2024-04-20T12:59:33.607Z\",\"id\":\"1\"}",
-      "2": "{\"idOfShop\":\"6\",\"content\":\"Don hang 8 da duoc nhan, nhan duoc 93000\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:28:32.665ZSum.jpg?alt=media\",\"filename\":\"2024-04-25T02:28:32.665ZSum.jpg\"}],\"isViewed\":false,\"createdAt\":\"2024-05-02T16:54:37.000Z\",\"id\":\"2\"}"
+      "2": "{\"idOfShop\":\"6\",\"content\":\"Don hang 8 da duoc nhan, nhan duoc 93000\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:28:32.665ZSum.jpg?alt=media\",\"filename\":\"2024-04-25T02:28:32.665ZSum.jpg\"}],\"isViewed\":false,\"createdAt\":\"2024-05-02T16:54:37.000Z\",\"id\":\"2\"}",
+      "3": "{\"idOfShop\":\"6\",\"content\":\"Đơn hàng 18c10e26-e776-4dc7-ac07-e9f86fb7213f đã được tạo thành công voi gia tien 13110\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-27T07:26:17.516ZScreenshot%20from%202024-04-26%2016-33-04.png?alt=media\",\"filename\":\"2024-04-27T07:26:17.516ZScreenshot from 2024-04-26 16-33-04.png\"}],\"isViewed\":false,\"createdAt\":\"2024-05-13T09:26:47.000Z\",\"id\":\"3\"}",
+      "4": "{\"idOfShop\":\"6\",\"content\":\"Don hang 18c10e26-e776-4dc7-ac07-e9f86fb7213f da duoc nhan, nhan duoc 13110\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-27T07:26:17.516ZScreenshot%20from%202024-04-26%2016-33-04.png?alt=media\",\"filename\":\"2024-04-27T07:26:17.516ZScreenshot from 2024-04-26 16-33-04.png\"}],\"isViewed\":false,\"createdAt\":\"2024-05-13T09:29:49.000Z\",\"id\":\"4\"}",
+      "5": "{\"idOfShop\":\"6\",\"content\":\"Don hang 18c10e26-e776-4dc7-ac07-e9f86fb7213f da duoc nhan, nhan duoc 13110\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-27T07:26:17.516ZScreenshot%20from%202024-04-26%2016-33-04.png?alt=media\",\"filename\":\"2024-04-27T07:26:17.516ZScreenshot from 2024-04-26 16-33-04.png\"}],\"isViewed\":false,\"createdAt\":\"2024-05-13T09:35:45.000Z\",\"id\":\"5\"}",
+      "6": "{\"idOfShop\":\"6\",\"content\":\"Đơn hàng a27e5214-d5f1-4c98-90d0-167b77ec6a59 đã được tạo thành công voi gia tien 13110\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-27T07:26:17.516ZScreenshot%20from%202024-04-26%2016-33-04.png?alt=media\",\"filename\":\"2024-04-27T07:26:17.516ZScreenshot from 2024-04-26 16-33-04.png\"}],\"isViewed\":false,\"createdAt\":\"2024-05-13T09:45:16.000Z\",\"id\":\"6\"}"
     },
     "TransactionShop": {
-      "1": "{\"idOfShop\":\"6\",\"amountMoney\":93000,\"type\":\"receive\",\"createdAt\":\"2024-05-02T16:54:37.000Z\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-25T02:28:32.665ZSum.jpg?alt=media\",\"filename\":\"2024-04-25T02:28:32.665ZSum.jpg\"}],\"idOfOrder\":\"8\",\"id\":\"1\"}"
+      "2": "{\"idOfShop\":\"6\",\"typeOrder\":\"kiot\",\"amountMoney\":13110,\"type\":\"receive\",\"createdAt\":\"2024-05-13T09:29:49.000Z\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-27T07:26:17.516ZScreenshot%20from%202024-04-26%2016-33-04.png?alt=media\",\"filename\":\"2024-04-27T07:26:17.516ZScreenshot from 2024-04-26 16-33-04.png\"}],\"idOfOrder\":\"18c10e26-e776-4dc7-ac07-e9f86fb7213f\",\"id\":\"2\"}",
+      "3": "{\"idOfShop\":\"6\",\"typeOrder\":\"kiot\",\"amountMoney\":13110,\"type\":\"receive\",\"createdAt\":\"2024-05-13T09:35:45.000Z\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-04-27T07:26:17.516ZScreenshot%20from%202024-04-26%2016-33-04.png?alt=media\",\"filename\":\"2024-04-27T07:26:17.516ZScreenshot from 2024-04-26 16-33-04.png\"}],\"idOfOrder\":\"18c10e26-e776-4dc7-ac07-e9f86fb7213f\",\"id\":\"3\"}"
     }
   }
 }

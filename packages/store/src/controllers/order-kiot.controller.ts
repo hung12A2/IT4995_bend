@@ -32,6 +32,7 @@ import {
   ProductsInOrderRepository,
   ReturnOrderRepository,
   ShopInfoRepository,
+  UserInfoRepository,
   WalletOfShopRepository,
   WalletRepository,
 } from '../repositories';
@@ -86,6 +87,8 @@ export class OrderKiotController {
     public returnOrderRepository: ReturnOrderRepository,
     @repository(WalletOfShopRepository)
     public walletOfShopRepository: WalletOfShopRepository,
+    @repository(UserInfoRepository)
+    public userInfoRepository: UserInfoRepository,
   ) {}
 
   newRabbitMQService = RabbitMQService.getInstance();
@@ -292,6 +295,11 @@ export class OrderKiotController {
           updatedAt: new Date().toLocaleString(),
         });
 
+        const oldShopInfo = await this.shopInfoRepository.findById(idOfShop);
+        await this.shopInfoRepository.updateById(idOfShop, {
+          numberOfRejectedOrder: oldShopInfo.numberOfRejectedOrder + 1,
+        });
+
         if (order[0].paymentMethod == 'payOnline') {
           const oldWallet: any = await this.walletRepository.findOne({
             where: {idOfUser},
@@ -458,6 +466,20 @@ export class OrderKiotController {
           status: 'received',
           updatedAt: new Date().toLocaleString(),
         });
+
+        const oldShopInfo: any = await this.shopInfoRepository.findById(
+          order.idOfShop,
+        );
+        await this.shopInfoRepository.updateById(order.idOfShop, {
+          numberOfSuccesOrder: oldShopInfo.numberOfSuccesOrder + 1,
+        });
+
+        const oldUserInfo: any =
+          await this.userInfoRepository.findById(idOfUser);
+        await this.userInfoRepository.updateById(idOfUser, {
+          numberOfSuccesOrder: oldUserInfo.numberOfSuccesOrder + 1,
+        });
+
         const oldWallet = await this.walletOfShopRepository.findOne({
           where: {idOfShop: order.idOfShop},
         });
@@ -588,6 +610,18 @@ export class OrderKiotController {
         await this.orderKiotRepository.updateById(id, {
           status: 'returned',
           updatedAt: new Date().toLocaleString(),
+        });
+
+        const oldShopInfo: any =
+          await this.shopInfoRepository.findById(idOfShop);
+        await this.shopInfoRepository.updateById(idOfShop, {
+          numberOfReturnOrder: oldShopInfo.numberOfReturnOrder + 1,
+        });
+
+        const oldUserInfo: any =
+          await this.userInfoRepository.findById(idOfUser);
+        await this.userInfoRepository.updateById(idOfUser, {
+          numberOfReturnOrder: oldUserInfo.numberOfReturnOrder + 1,
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -929,6 +963,16 @@ export class OrderKiotController {
     }
     const dataOrder = await this.orderKiotRepository.create(NewOrder);
 
+    const oldShopInfo: any = await this.shopInfoRepository.findById(idOfShop);
+    await this.shopInfoRepository.updateById(idOfShop, {
+      numberOfOrder: oldShopInfo.numberOfOrder + 1,
+    });
+
+    const oldUserInfo: any = await this.userInfoRepository.findById(idOfUser);
+    await this.userInfoRepository.updateById(idOfUser, {
+      numberOfOrder: oldUserInfo.numberOfOrder + 1,
+    });
+
     const idOrder = dataOrder.id;
     await Promise.all(
       await items.map(async (item: any) => {
@@ -1072,6 +1116,9 @@ export class OrderKiotController {
     const estimateTime =
       +distanceData.rows[0].elements[0].duration.text.split(' ')[0];
 
+    if (distance > 100) {
+      distance = distance / 1000;
+    }
     if (distance > 2.5) {
       totalFee = totalFee + (distance - 2.5) * 1500;
     }
@@ -1090,7 +1137,7 @@ export class OrderKiotController {
 
     const dataReturn = {
       distance,
-      totalFee,
+      totalFee: Math.round(totalFee),
       weight: Math.round(weightBox),
       dimension: `${lengthBox}|${widthBox}|${heightBox}`,
       insuranceValue,
@@ -1155,8 +1202,8 @@ export class OrderKiotController {
       },
     },
   })
-  async getOne(@param.path.string('id') id: string ): Promise<any> {
-    const data = await this.orderKiotRepository.findById (id)
+  async getOne(@param.path.string('id') id: string): Promise<any> {
+    const data = await this.orderKiotRepository.findById(id);
     return {
       code: 200,
       data,
