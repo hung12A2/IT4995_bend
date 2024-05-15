@@ -23,7 +23,7 @@ export class Notification extends Entity {
 
   @property({
     type: 'object',
-    required: true,
+    required: false,
   })
   image: object;
 

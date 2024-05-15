@@ -364,7 +364,18 @@ export class ReqCreateShopController {
     @param.filter(RequestCreateShop) filter?: Filter<RequestCreateShop>,
   ): Promise<any> {
     const data = await this.requestCreateShopRepository.find(filter);
-    return data;
+    const dataReturn = await Promise.all(
+      data.map(async item => {
+        const user = await this.userRepository.findById(item.idOfUser);
+        return {
+          ...item,
+          nameOfUser: user.fullName,
+          avatarOfUser: user.avatar,
+        };
+      }),
+    );
+
+    return dataReturn
   }
 
   @get('/request-create-shops/{id}')

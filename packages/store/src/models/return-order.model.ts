@@ -48,6 +48,14 @@ export class ReturnOrder extends Entity {
   })
   isKiot: boolean;
 
+
+  @property({
+    type: 'date',
+    required: false,
+    default: () => new Date().toLocaleString(),
+  })
+  createdAt: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

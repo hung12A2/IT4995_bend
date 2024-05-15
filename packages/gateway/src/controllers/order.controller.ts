@@ -561,6 +561,38 @@ export class OrderController {
     voters: [basicAuthorization],
     allowedRoles: ['admin', 'order-Managment'],
   })
+  @get('ordersAdmin/days/{numberOfDay}', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getDays(
+    @param.path.number('numberOfDay') numberOfDay: number,
+  ): Promise<any> {
+    const data = await axios
+      .get(`/orders/days/${numberOfDay}`)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
+    this.response.header('Content-Range', 'OrdersAdmin 0-20/20');
+    this.response.status(200).send(data);
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin', 'order-Managment'],
+  })
   @get('ordersAdmin/{id}', {
     responses: {
       '200': {

@@ -71,8 +71,6 @@ export class OrderKiotController {
     public shopInfoRepository: ShopInfoRepository,
     @repository(OrderKiotRepository)
     public orderKiotRepository: OrderKiotRepository,
-    @repository(OrderRepository)
-    public orderRepository: OrderRepository,
     @repository(ProductsInCartRepository)
     public productsInCartRepository: ProductsInCartRepository,
     @repository(ProductRepository)
@@ -295,10 +293,12 @@ export class OrderKiotController {
           updatedAt: new Date().toLocaleString(),
         });
 
-        const oldShopInfo = await this.shopInfoRepository.findById(idOfShop);
-        await this.shopInfoRepository.updateById(idOfShop, {
-          numberOfRejectedOrder: oldShopInfo.numberOfRejectedOrder + 1,
+        const oldShopInfo: any = await this.shopInfoRepository.findOne({
+          where: {idOfUser},
         });
+        await this.shopInfoRepository.updateAll({
+          numberOfRejectedOrder: oldShopInfo.numberOfRejectedOrder + 1,
+        }, {idOfShop});
 
         if (order[0].paymentMethod == 'payOnline') {
           const oldWallet: any = await this.walletRepository.findOne({
@@ -470,15 +470,22 @@ export class OrderKiotController {
         const oldShopInfo: any = await this.shopInfoRepository.findById(
           order.idOfShop,
         );
-        await this.shopInfoRepository.updateById(order.idOfShop, {
-          numberOfSuccesOrder: oldShopInfo.numberOfSuccesOrder + 1,
-        });
+        await this.shopInfoRepository.updateAll(
+          {
+            numberOfSuccesOrder: oldShopInfo.numberOfSuccesOrder + 1,
+          },
+          {idOfShop: order.idOfShop},
+        );
 
-        const oldUserInfo: any =
-          await this.userInfoRepository.findById(idOfUser);
-        await this.userInfoRepository.updateById(idOfUser, {
-          numberOfSuccesOrder: oldUserInfo.numberOfSuccesOrder + 1,
+        const oldUserInfo: any = await this.userInfoRepository.findOne({
+          where: {idOfUser},
         });
+        await this.userInfoRepository.updateAll(
+          {
+            numberOfSuccesOrder: oldUserInfo.numberOfSuccesOrder + 1,
+          },
+          {idOfUser},
+        );
 
         const oldWallet = await this.walletOfShopRepository.findOne({
           where: {idOfShop: order.idOfShop},
@@ -612,17 +619,25 @@ export class OrderKiotController {
           updatedAt: new Date().toLocaleString(),
         });
 
-        const oldShopInfo: any =
-          await this.shopInfoRepository.findById(idOfShop);
-        await this.shopInfoRepository.updateById(idOfShop, {
-          numberOfReturnOrder: oldShopInfo.numberOfReturnOrder + 1,
+        const oldShopInfo: any = await this.shopInfoRepository.findOne({
+          where: {idOfUser},
         });
+        await this.shopInfoRepository.updateAll(
+          {
+            numberOfReturnOrder: oldShopInfo.numberOfReturnOrder + 1,
+          },
+          {idOfShop},
+        );
 
-        const oldUserInfo: any =
-          await this.userInfoRepository.findById(idOfUser);
-        await this.userInfoRepository.updateById(idOfUser, {
-          numberOfReturnOrder: oldUserInfo.numberOfReturnOrder + 1,
+        const oldUserInfo: any = await this.userInfoRepository.findOne({
+          where: {idOfUser},
         });
+        await this.userInfoRepository.updateAll(
+          {
+            numberOfReturnOrder: oldUserInfo.numberOfReturnOrder + 1,
+          },
+          {idOfUser},
+        );
 
         if (order[0].paymentMethod == 'payOnline') {
           const oldWallet: any = await this.walletRepository.findOne({
@@ -963,15 +978,25 @@ export class OrderKiotController {
     }
     const dataOrder = await this.orderKiotRepository.create(NewOrder);
 
-    const oldShopInfo: any = await this.shopInfoRepository.findById(idOfShop);
-    await this.shopInfoRepository.updateById(idOfShop, {
-      numberOfOrder: oldShopInfo.numberOfOrder + 1,
+    const oldShopInfo: any = await this.shopInfoRepository.findOne({
+      where: {idOfUser},
     });
+    await this.shopInfoRepository.updateAll(
+      {
+        numberOfOrder: oldShopInfo.numberOfOrder + 1,
+      },
+      {idOfShop},
+    );
 
-    const oldUserInfo: any = await this.userInfoRepository.findById(idOfUser);
-    await this.userInfoRepository.updateById(idOfUser, {
-      numberOfOrder: oldUserInfo.numberOfOrder + 1,
+    const oldUserInfo: any = await this.userInfoRepository.findOne({
+      where: {idOfUser},
     });
+    await this.userInfoRepository.updateAll(
+      {
+        numberOfOrder: oldUserInfo.numberOfOrder + 1,
+      },
+      {idOfUser},
+    );
 
     const idOrder = dataOrder.id;
     await Promise.all(
@@ -1169,6 +1194,119 @@ export class OrderKiotController {
       data,
     };
   }
+
+  @get('/ordersKiot/days/{numberOfDays}')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async find10day(
+    @param.path.number('numberOfDays') numberOfDays: number,
+  ): Promise<any> {
+    const tenDaysAgo = new Date();
+    tenDaysAgo.setDate(tenDaysAgo.getDate() - numberOfDays);
+
+    const allDays = Array.from({length: numberOfDays}, (_, i) => {
+      const date = new Date(tenDaysAgo);
+      date.setDate(date.getDate() + i);
+      return date.toLocaleString().split(', ')[0];
+    });
+
+    // Lọc các đơn hàng được tạo trong 10 ngày qua
+    const filter = {
+      where: {
+        createdAt: {
+          gte: tenDaysAgo.toLocaleString(), // Sử dụng ISO string cho so sánh ngày
+        },
+      },
+    };
+
+    const filter2 = {
+      where: {
+        status: 'received', // Sử dụng ISO string cho so sánh ngày
+        createdAt: {
+          gte: tenDaysAgo.toLocaleString(), // Sử dụng ISO string cho so sánh ngày
+        },
+      },
+    };
+
+    // Lấy tất cả đơn hàng thỏa mãn điều kiện lọc
+    const orders = await this.orderKiotRepository.find(filter);
+
+    const orders2 = await this.orderKiotRepository.find(filter2);
+
+    // Nhóm và đếm số lượng đơn hàng theo ngày, loại bỏ thời gian
+    const ordersCountByDay: {[key: string]: string} = orders.reduce(
+      (acc: any, order) => {
+        // Chỉ lấy phần ngày, loại bỏ thời gian
+        const day = new Date(order.createdAt).toLocaleDateString('en-US');
+        if (!acc[day]) {
+          acc[day] = 0;
+        }
+        acc[day]++;
+        return acc;
+      },
+      {},
+    );
+
+    const ordersCountByDay2: {[key: string]: string} = orders2.reduce(
+      (acc: any, order) => {
+        // Chỉ lấy phần ngày, loại bỏ thời gian
+        const day = new Date(order.createdAt).toLocaleDateString('en-US');
+        if (!acc[day]) {
+          acc[day] = 0;
+        }
+        acc[day]++;
+        return acc;
+      },
+      {},
+    );
+
+    // Đảm bảo mỗi ngày trong khoảng 10 ngày trước đều có trong kết quả, ngay cả khi không có đơn hàng nào
+    allDays.forEach(day => {
+      // day ở đây cũng phải được định dạng chỉ với ngày, không có thời gian
+      if (!ordersCountByDay[day]) {
+        ordersCountByDay[day] = '0'; // Thêm ngày không có đơn hàng với giá trị '0'
+      }
+
+      if (!ordersCountByDay2[day]) {
+        ordersCountByDay2[day] = '0'; // Thêm ngày không có đơn hàng với giá trị '0'
+      }
+    });
+
+    // Chuyển đổi số lượng đơn hàng thành chuỗi
+    const formattedOrdersCountByDay: {[key: string]: string} = Object.keys(
+      ordersCountByDay,
+    ).reduce((acc: any, day) => {
+      acc[day] = ordersCountByDay[day].toString();
+      return acc;
+    }, {});
+
+    const formattedOrdersCountByDay2: {[key: string]: string} = Object.keys(
+      ordersCountByDay2,
+    ).reduce((acc: any, day) => {
+      acc[day] = ordersCountByDay2[day].toString();
+      return acc;
+    }, {});
+
+    const ordersArray = Object.entries(formattedOrdersCountByDay).map(
+      ([name, order]) => ({
+        name,
+        order,
+        orderSuccess: formattedOrdersCountByDay2[name],
+      }),
+    );
+
+    return ordersArray;
+  }
+
 
   @get('/ordersKiot/count')
   @response(200, {
