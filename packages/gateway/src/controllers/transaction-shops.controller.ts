@@ -2,7 +2,6 @@
 
 // import {inject} from '@loopback/core';
 
-
 import {
   Count,
   CountSchema,
@@ -24,6 +23,11 @@ import {
 } from '@loopback/rest';
 
 import notificationAxios from '../services/notificationAxios.service';
+import {authenticate} from '@loopback/authentication';
+import {authorize} from '@loopback/authorization';
+import {basicAuthorization} from '../services/basicAuthorize';
+import {inject} from '@loopback/core';
+import {SecurityBindings, UserProfile} from '@loopback/security';
 
 export class transactionShopsController {
   constructor() {}
@@ -50,6 +54,71 @@ export class transactionShopsController {
     console.log(filter);
     const data = notificationAxios
       .get('/transaction-shops', {params: {filter}})
+      .then(res => res)
+      .catch(err => console.log(err));
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('/transaction-shopsForShop')
+  @response(200, {
+    description: 'Transaction model count',
+    content: {'application/json': {schema: CountSchema}},
+  })
+  async getAllForShop(
+    @inject(SecurityBindings.USER) currentUser: UserProfile,
+    @param.query.object('filter') filter: any,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    let where: any;
+    if (filter) {
+      where = filter?.where || {};
+      where = {...where, idOfShop};
+      filter.where = where;
+    }
+    const data = notificationAxios
+      .get('/transaction-shops', {params: {filter}})
+      .then(res => res)
+      .catch(err => console.log(err));
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('/transaction-shopsForShop/count')
+  @response(200, {
+    description: 'Transaction model count',
+    content: {'application/json': {schema: CountSchema}},
+  })
+  async countAllForShop(
+    @inject(SecurityBindings.USER) currentUser: UserProfile,
+    @param.query.object('filter') filter: any,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    let where: any;
+    if (filter) {
+      where = filter?.where || {};
+      where = {...where, idOfShop};
+      filter.where = where;
+    }
+    const data = notificationAxios
+      .get('/transaction-shops/count', {params: {filter}})
+      .then(res => res)
+      .catch(err => console.log(err));
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('/transaction-shopsForShop/{id}')
+  @response(200, {
+    description: 'Transaction model count',
+    content: {'application/json': {schema: CountSchema}},
+  })
+  async getOneForShop(@param.path.string('id') id: string): Promise<any> {
+    const data = notificationAxios
+      .get(`/transaction-shops/${id}`)
       .then(res => res)
       .catch(err => console.log(err));
     return data;

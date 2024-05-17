@@ -603,7 +603,7 @@ export class OrderKiotController {
   ): Promise<any> {
     const idOfShop = currentUser.idOfShop;
     const data = await axios
-      .get(`/ordersKiotShop/shop/${idOfShop}`, {
+      .get(`/ordersKiot/shop/${idOfShop}`, {
         params: {
           filter,
         },
@@ -611,9 +611,7 @@ export class OrderKiotController {
       .then(res => res)
       .catch(e => console.log(e));
 
-    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
-    this.response.header('Content-Range', 'orderSKiotAdmin 0-20/20');
-    this.response.status(200).send(data);
+    return data;
   }
 
   @authenticate('jwt')
@@ -642,17 +640,15 @@ export class OrderKiotController {
   ): Promise<any> {
     const idOfShop = currentUser.idOfShop;
     const data = await axios
-      .get(`/ordersKiotShop/shop/${idOfShop}/count`, {
+      .get(`/ordersKiot/shop/${idOfShop}/count`, {
         params: {
-          filter
-        }
+          filter,
+        },
       })
       .then(res => res)
       .catch(e => console.log(e));
 
-    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
-    this.response.header('Content-Range', 'orderSKiotAdmin 0-20/20');
-    this.response.status(200).send(data);
+    return data;
   }
 
   @authenticate('jwt')
@@ -674,18 +670,13 @@ export class OrderKiotController {
       },
     },
   })
-  async getOneByShop(
-    @param.path.string('id') id: string,
- 
-  ): Promise<any> {
+  async getOneByShop(@param.path.string('id') id: string): Promise<any> {
     const data = await axios
       .get(`/ordersKiot/${id}`)
       .then(res => res)
       .catch(e => console.log(e));
 
-    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
-    this.response.header('Content-Range', 'orderSKiotAdmin 0-20/20');
-    this.response.status(200).send(data);
+    return data;
   }
 
   @authenticate('jwt')

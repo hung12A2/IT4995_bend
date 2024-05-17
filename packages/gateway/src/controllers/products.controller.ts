@@ -68,6 +68,119 @@ export class ProductsController {
     return data;
   }
 
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('productsForShop/', {
+    responses: {
+      '200': {
+        description: 'Return all request products',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'PRODUCT',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getAllForShop(
+    @inject(SecurityBindings.USER) currentUser: UserProfile,
+    @param.query.object('filter') filter: any,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    let where: any;
+    if (filter) {
+      where = filter?.where || {};
+      where = {...where, idOfShop};
+      filter.where = where;
+    }
+    const data = await storeAxios
+      .get(`/products`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('productsForShop/count', {
+    responses: {
+      '200': {
+        description: 'Return all request products',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'PRODUCT',
+            },
+          },
+        },
+      },
+    },
+  })
+  async countForShop(
+    @inject(SecurityBindings.USER) currentUser: UserProfile,
+    @param.query.object('filter') filter: any,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    let where: any;
+    if (filter) {
+      where = filter?.where || {};
+      where = {...where, idOfShop};
+      filter.where = where;
+    }
+    const data = await storeAxios
+      .get(`/products/count`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('productsForShop/{id}', {
+    responses: {
+      '200': {
+        description: 'Return all request products',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'PRODUCT',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOneForShop(@param.path.string('id') id: string): Promise<any> {
+    const data = await storeAxios
+      .get(`/products/${id}`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
   @get('products/count', {
     responses: {
       '200': {
@@ -114,7 +227,8 @@ export class ProductsController {
   })
   async getOne(
     @param.path.string('id') id: string,
-    @param.query.object('filter') filter: string): Promise<any> {
+    @param.query.object('filter') filter: string,
+  ): Promise<any> {
     const data = await storeAxios
       .get(`/products/${id}`, {
         headers: {
@@ -146,7 +260,8 @@ export class ProductsController {
   })
   async Banned(
     @param.path.string('id') id: string,
-    @param.query.object('filter') filter: string): Promise<any> {
+    @param.query.object('filter') filter: string,
+  ): Promise<any> {
     const data = await storeAxios
       .post(`/products/banned/${id}`, {
         headers: {
@@ -161,7 +276,6 @@ export class ProductsController {
 
     return data;
   }
-
 
   @post('products/unbanned/{id}', {
     responses: {
@@ -179,7 +293,8 @@ export class ProductsController {
   })
   async unbanned(
     @param.path.string('id') id: string,
-    @param.query.object('filter') filter: string): Promise<any> {
+    @param.query.object('filter') filter: string,
+  ): Promise<any> {
     const data = await storeAxios
       .post(`/products/unbanned/${id}`, {
         headers: {
@@ -194,7 +309,6 @@ export class ProductsController {
 
     return data;
   }
-
 
   @post('products/inActive/{id}', {
     responses: {
@@ -212,7 +326,8 @@ export class ProductsController {
   })
   async inActive(
     @param.path.string('id') id: string,
-    @param.query.object('filter') filter: string): Promise<any> {
+    @param.query.object('filter') filter: string,
+  ): Promise<any> {
     const data = await storeAxios
       .post(`/products/inActive/${id}`, {
         headers: {

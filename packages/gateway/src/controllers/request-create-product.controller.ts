@@ -216,7 +216,7 @@ export class RequestCreateProductController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'product-Managment'],
+    allowedRoles: ['admin'],
   })
   @get('request-create-products/', {
     responses: {
@@ -249,9 +249,122 @@ export class RequestCreateProductController {
   }
 
   @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('request-create-products-for-shop/', {
+    responses: {
+      '200': {
+        description: 'Return all request products',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'PRODUCT',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getAllForShop(
+    @param.query.object('filter') filter: any,
+    @inject(SecurityBindings.USER) currentUser: UserProfile,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    let where: any;
+    if (filter) {
+      where = filter?.where || {};
+      where = {...where, idOfShop};
+      filter.where = where;
+    }
+    const data = await storeAxios
+      .get(`/request-create-product`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('request-create-products-for-shop/count', {
+    responses: {
+      '200': {
+        description: 'Return all request products',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'PRODUCT',
+            },
+          },
+        },
+      },
+    },
+  })
+  async countAllForSho(
+    @param.query.object('filter') filter: any,
+    @inject(SecurityBindings.USER) currentUser: UserProfile,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    let where: any;
+    if (filter) {
+      where = filter?.where || {};
+      where = {...where, idOfShop};
+      filter.where = where;
+    }
+    const data = await storeAxios
+      .get(`/request-create-product/count`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('request-create-products-for-shop/{id}', {
+    responses: {
+      '200': {
+        description: 'Return all request products',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'PRODUCT',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOneForShop(@param.path.string('id') id: string): Promise<any> {
+    const data = await storeAxios
+      .get(`/request-create-product/${id}`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'product-Managment'],
+    allowedRoles: ['admin'],
   })
   @get('request-create-products/{id}', {
     responses: {

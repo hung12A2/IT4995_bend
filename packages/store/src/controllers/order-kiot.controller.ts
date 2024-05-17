@@ -1385,9 +1385,13 @@ export class OrderKiotController {
     @param.path.string('idOfShop') idOfShop: string,
     @param.query.object('filter') filter?: any,
   ): Promise<any> {
-    let {where} = filter;
-    where = {...where, idOfShop};
-    filter.where = where;
+    let where: any;
+    if (filter) {
+      where = filter?.where || {};
+      where = {...where, idOfShop};
+      filter.where = where;
+    }
+
     const data = await this.orderKiotRepository.find(filter);
     return data;
   }
@@ -1408,9 +1412,13 @@ export class OrderKiotController {
     @param.path.string('idOfShop') idOfShop: string,
     @param.query.object('filter') filter?: any,
   ): Promise<any> {
-    let {where} = filter;
-    where = {...where, idOfShop};
-    filter.where = where;
+    let where: any;
+    if (filter) {
+      where = filter?.where || {};
+      where = {...where, idOfShop};
+      filter.where = where;
+    }
+
     const data = await this.orderKiotRepository.count(filter);
     return data;
   }

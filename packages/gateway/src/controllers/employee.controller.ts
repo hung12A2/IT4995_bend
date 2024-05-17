@@ -20,6 +20,7 @@ import axios from '../services/authAxios.service';
 import multer from 'multer';
 import {authorize} from '@loopback/authorization';
 import {basicAuthorization} from '../services/basicAuthorize';
+import {SecurityBindings, UserProfile} from '@loopback/security';
 
 const storage = multer.memoryStorage();
 const upload = multer({storage});
@@ -101,6 +102,109 @@ export class EmployeeController {
     const data = await axios
       .get(`/employees`, {
         params: {filter},
+        headers: {authorization: this.request.headers.authorization},
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('employeesForShop', {
+    responses: {
+      '200': {
+        description: 'Return new area',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getAllEmployeeForShop(
+    @inject(SecurityBindings.USER) currentUser: UserProfile,
+    @param.query.object('filter') filter: any,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    let where: any;
+    if (filter) {
+      where = filter?.where || {};
+      where = {...where, idOfShop};
+      filter.where = where;
+    }
+    const data = await axios
+      .get(`/employees`, {
+        params: {filter},
+        headers: {authorization: this.request.headers.authorization},
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('employeesForShop/count', {
+    responses: {
+      '200': {
+        description: 'Return new area',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async countAllEmployeeForShop(
+    @inject(SecurityBindings.USER) currentUser: UserProfile,
+    @param.query.object('filter') filter: any,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    let where: any;
+    if (filter) {
+      where = filter?.where || {};
+      where = {...where, idOfShop};
+      filter.where = where;
+    }
+    const data = await axios
+      .get(`/employees/count`, {
+        params: {filter},
+        headers: {authorization: this.request.headers.authorization},
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('employeesForShop/{id}', {
+    responses: {
+      '200': {
+        description: 'Return new area',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOneForShop(@param.path.string('id') id: string): Promise<any> {
+    const data = await axios
+      .get(`/employees/${id}`, {
         headers: {authorization: this.request.headers.authorization},
       })
       .then(res => res)
