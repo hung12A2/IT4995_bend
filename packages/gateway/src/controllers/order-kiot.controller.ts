@@ -580,7 +580,7 @@ export class OrderKiotController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'order-Managment'],
+    allowedRoles: ['employee'],
   })
   @get('ordersKiotShop', {
     responses: {
@@ -599,11 +599,16 @@ export class OrderKiotController {
   async getAllOrderByShop(
     @inject(SecurityBindings.USER)
     currentUser: UserProfile,
+    @param.query.object('filter') filter?: string,
   ): Promise<any> {
     const idOfShop = currentUser.idOfShop;
     const data = await axios
-      .get(`/ordersKiotShop/${idOfShop}`)
-      .then(res => res.data)
+      .get(`/ordersKiotShop/shop/${idOfShop}`, {
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
       .catch(e => console.log(e));
 
     this.response.header('Access-Control-Expose-Headers', 'Content-Range');
@@ -614,7 +619,79 @@ export class OrderKiotController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'order-Managment'],
+    allowedRoles: ['employee'],
+  })
+  @get('ordersKiotShop/count', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async countOrderBySHop(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+    @param.query.object('filter') filter?: string,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    const data = await axios
+      .get(`/ordersKiotShop/shop/${idOfShop}/count`, {
+        params: {
+          filter
+        }
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
+    this.response.header('Content-Range', 'orderSKiotAdmin 0-20/20');
+    this.response.status(200).send(data);
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['employee'],
+  })
+  @get('ordersKiotShop/{id}', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOneByShop(
+    @param.path.string('id') id: string,
+ 
+  ): Promise<any> {
+    const data = await axios
+      .get(`/ordersKiot/${id}`)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
+    this.response.header('Content-Range', 'orderSKiotAdmin 0-20/20');
+    this.response.status(200).send(data);
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['admin'],
   })
   @get('ordersKiotAdmin', {
     responses: {
@@ -668,9 +745,8 @@ export class OrderKiotController {
       .then(res => res.data)
       .catch(e => console.log(e));
 
-    return data
+    return data;
   }
-
 
   @authenticate('jwt')
   @authorize({
@@ -703,7 +779,6 @@ export class OrderKiotController {
     this.response.header('Content-Range', 'OrdersAdmin 0-20/20');
     this.response.status(200).send(data);
   }
-
 
   @authenticate('jwt')
   @authorize({

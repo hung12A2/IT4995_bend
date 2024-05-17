@@ -242,7 +242,7 @@ export class OrderController {
     @param.path.string('idOfOrder') idOfOrder: string,
   ): Promise<any> {
     const idOfShop = currentUser.idOfShop;
-    console.log (idOfShop, idOfOrder)
+    console.log(idOfShop, idOfOrder);
     const data = await axios
       .post(`/orders/accepted/${idOfShop}/order-id/${idOfOrder}`)
       .then(res => res)
@@ -495,7 +495,7 @@ export class OrderController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'order-Managment'],
+    allowedRoles: ['employee'],
   })
   @get('ordersShop', {
     responses: {
@@ -514,10 +514,76 @@ export class OrderController {
   async getAllOrderByShop(
     @inject(SecurityBindings.USER)
     currentUser: UserProfile,
+    @param.query.object('filter') filter?: string,
   ): Promise<any> {
     const idOfShop = currentUser.idOfShop;
     const data = await axios
-      .get(`/ordersShop/${idOfShop}`)
+      .get(`/ordersShop/${idOfShop}`, {
+        params: {filter},
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['employee'],
+  })
+  @get('ordersShop/count', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async countAllOrderByShop(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+    @param.query.object('filter') filter?: string,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    const data = await axios
+      .get(`/ordersShop/${idOfShop}/count`, {
+        params: {filter},
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['employee'],
+  })
+  @get('ordersShop/{id}', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOneByShop(@param.path.string('id') id: string): Promise<any> {
+    const data = await axios
+      .get(`/orders/${id}`)
       .then(res => res)
       .catch(e => console.log(e));
 
@@ -607,9 +673,7 @@ export class OrderController {
       },
     },
   })
-  async getOne(
-    @param.path.string('id') id: string,  
-  ): Promise<any> {
+  async getOne(@param.path.string('id') id: string): Promise<any> {
     const data = await axios
       .get(`/orders/${id}`)
       .then(res => res)
@@ -637,9 +701,7 @@ export class OrderController {
       },
     },
   })
-  async count(
-    @param.query.object('filter') filter?: string,
-  ): Promise<any> {
+  async count(@param.query.object('filter') filter?: string): Promise<any> {
     const data = await axios
       .get(`/orders/count`, {params: {filter}})
       .then(res => res)

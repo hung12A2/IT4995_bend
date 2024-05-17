@@ -296,9 +296,12 @@ export class OrderKiotController {
         const oldShopInfo: any = await this.shopInfoRepository.findOne({
           where: {idOfUser},
         });
-        await this.shopInfoRepository.updateAll({
-          numberOfRejectedOrder: oldShopInfo.numberOfRejectedOrder + 1,
-        }, {idOfShop});
+        await this.shopInfoRepository.updateAll(
+          {
+            numberOfRejectedOrder: oldShopInfo.numberOfRejectedOrder + 1,
+          },
+          {idOfShop},
+        );
 
         if (order[0].paymentMethod == 'payOnline') {
           const oldWallet: any = await this.walletRepository.findOne({
@@ -1307,7 +1310,6 @@ export class OrderKiotController {
     return ordersArray;
   }
 
-
   @get('/ordersKiot/count')
   @response(200, {
     description: 'Array of Order model instances',
@@ -1342,10 +1344,7 @@ export class OrderKiotController {
   })
   async getOne(@param.path.string('id') id: string): Promise<any> {
     const data = await this.orderKiotRepository.findById(id);
-    return {
-      code: 200,
-      data,
-    };
+    return data;
   }
 
   @get('/ordersKiot/user/{idOfUser}')
@@ -1384,12 +1383,36 @@ export class OrderKiotController {
   })
   async findByShop(
     @param.path.string('idOfShop') idOfShop: string,
+    @param.query.object('filter') filter?: any,
   ): Promise<any> {
-    const data = await this.orderKiotRepository.find({where: {idOfShop}});
-    return {
-      code: 200,
-      data,
-    };
+    let {where} = filter;
+    where = {...where, idOfShop};
+    filter.where = where;
+    const data = await this.orderKiotRepository.find(filter);
+    return data;
+  }
+
+  @get('/ordersKiot/shop/{idOfShop}/count')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async countByShop(
+    @param.path.string('idOfShop') idOfShop: string,
+    @param.query.object('filter') filter?: any,
+  ): Promise<any> {
+    let {where} = filter;
+    where = {...where, idOfShop};
+    filter.where = where;
+    const data = await this.orderKiotRepository.count(filter);
+    return data;
   }
 
   //

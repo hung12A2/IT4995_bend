@@ -34,6 +34,7 @@ import nodemailer from 'nodemailer';
 import {promisify} from 'util';
 import {basicAuthorization} from '../services/basicAuthorize';
 import { generateRandomString } from '../utils/genString';
+import { sendEmail } from '../utils/sendMail';
 
 const jwt = require('jsonwebtoken');
 const signAsync = promisify(jwt.sign);
@@ -890,22 +891,8 @@ export class UserManagementController {
 
     this.adminrepository.updateById(user.id, {resetToken});
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'hung1311197820022@gmail.com',
-        pass: 'mvza fmtv fbsc gsig',
-      },
-    });
-
-    const mailOptions = {
-      from: 'hung1311197820022@gmail.com',
-      to: email,
-      subject: 'Sending Email using Node.js',
-      text: 'Token: ' + resetToken,
-    };
-
-    const data = await transporter.sendMail(mailOptions);
+    const data = await sendEmail(email, 'Reset Password', `http://localhost:3000/resetPassword?token=${resetToken}`);
+    
     return {
       code: 200,
       message: 'Email sent',

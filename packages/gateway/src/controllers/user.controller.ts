@@ -331,6 +331,84 @@ export class UserController {
     return data;
   }
 
+  @post('/forgotPassword/admin', {
+    responses: {
+      '200': {
+        description: 'send mail to reset password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async forgotPasswordAdmin(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              email: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req: any,
+  ): Promise<any> {
+    const data = await axios
+      .post('/forgotPassword/Admin', req)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @post('/forgotPassword/employee', {
+    responses: {
+      '200': {
+        description: 'send mail to reset password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async forgotPasswordEmployee(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              email: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    req: any,
+  ): Promise<any> {
+    const data = await axios
+      .post('/forgotPassword/Employee', req)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
   @post('/resetPassword/customer', {
     responses: {
       '200': {
@@ -368,6 +446,92 @@ export class UserController {
   ): Promise<any> {
     const data = await axios
       .post('/resetPassword/Customer', {token, newPassword})
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @post('/resetPassword/admin', {
+    responses: {
+      '200': {
+        description: 'Change Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async resetPasswordAdmin(
+    @requestBody({
+      description: 'Change Password',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              token: {
+                type: 'string',
+              },
+              newPassword: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    {token, newPassword}: {token: string; newPassword: string},
+  ): Promise<any> {
+    const data = await axios
+      .post('/resetPassword/Admin', {token, newPassword})
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @post('/resetPassword/Employee', {
+    responses: {
+      '200': {
+        description: 'Change Password',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async resetPasswordEmpl(
+    @requestBody({
+      description: 'Change Password',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              token: {
+                type: 'string',
+              },
+              newPassword: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      },
+    })
+    {token, newPassword}: {token: string; newPassword: string},
+  ): Promise<any> {
+    const data = await axios
+      .post('/resetPassword/Employee', {token, newPassword})
       .then(res => res)
       .catch(e => console.log(e));
 
@@ -433,7 +597,7 @@ export class UserController {
   }
 
   @authenticate('jwt')
-  @post('/changePassword/customer', {
+  @post('/changePassword/admin', {
     responses: {
       '200': {
         description: 'Change Password',
@@ -641,7 +805,7 @@ export class UserController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'user-Managment'],
+    allowedRoles: ['admin'],
   })
   @get('getAllUser', {
     responses: {
@@ -675,7 +839,7 @@ export class UserController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'user-Managment'],
+    allowedRoles: ['admin'],
   })
   @get('getAllUser/count', {
     responses: {

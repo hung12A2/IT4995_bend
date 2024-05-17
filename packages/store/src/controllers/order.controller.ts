@@ -36,7 +36,7 @@ import {
 import axios from 'axios';
 
 //
-import {inject, service} from '@loopback/core';
+import {filterByKey, inject, service} from '@loopback/core';
 import {uploadFile, deleteRemoteFile} from '../config/firebaseConfig';
 import multer from 'multer';
 import {RabbitMQService} from '../services/rabbitMqServices';
@@ -1311,12 +1311,36 @@ export class OrderController {
   })
   async findByShop(
     @param.path.string('idOfShop') idOfShop: string,
+    @param.query.object('filter') filter: any,
   ): Promise<any> {
-    const data = await this.orderRepository.find({where: {idOfShop}});
-    return {
-      code: 200,
-      data,
-    };
+    let {where} = filter;
+    where = {...where, idOfShop};
+    filter.where = where;
+    const data = await this.orderRepository.find(filter);
+    return data;
+  }
+
+  @get('/ordersShop/{idOfShop}/count')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async countByShop(
+    @param.path.string('idOfShop') idOfShop: string,
+    @param.query.object('filter') filter: any,
+  ): Promise<any> {
+    let {where} = filter;
+    where = {...where, idOfShop};
+    filter.where = where;
+    const data = await this.orderRepository.count(filter);
+    return data;
   }
 
   @get('/orders/{id}')
