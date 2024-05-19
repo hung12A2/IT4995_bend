@@ -346,7 +346,7 @@ export class ProductsController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'product-Managment'],
+    allowedRoles: ['employee'],
   })
   @post('products/update/category/{idOfCategory}/{id}', {
     responses: {
@@ -362,7 +362,7 @@ export class ProductsController {
       },
     },
   })
-  async requestCreateProduct(
+  async productUpdate(
     @param.path.string('id') id: string,
     @param.path.string('idOfCategory') idOfCategory: string,
     @inject(SecurityBindings.USER) currentUser: UserProfile,
@@ -370,50 +370,93 @@ export class ProductsController {
       description: 'multipart/form-data value.',
       required: true,
       content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              price: {type: 'number'},
-              countInStock: {type: 'number'},
-              isBestSeller: {type: 'boolean'},
-              weight: {type: 'number'},
-              dimension: {type: 'string'},
-              status: {type: 'string'},
-              isKiotProduct: {type: 'boolean'},
-              isOnlineProduct: {type: 'boolean'},
-            },
-          },
+        'multipart/form-data': {
+          // Skip body parsing
+          'x-parser': 'stream',
+          schema: {type: 'object'},
         },
       },
     })
-    request: any,
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<any> {
-    const {isKiotProduct} = request;
-    const idOfKiot = currentUser.idOfKiot;
-    if (!idOfKiot && isKiotProduct) {
+    const data: any = await new Promise<object>((resolve, reject) => {
+      cpUpload(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          resolve({
+            files: request.files,
+            body: request.body,
+          });
+        }
+      });
+    });
+
+
+    const idOfShop = currentUser.idOfShop;
+    let formData = new FormData();
+    if (data.files.images?.length > 0) {
+      data.files.images?.forEach((image: any) => {
+        formData.append('images', image.buffer, {
+          filename: image.originalname,
+        });
+      });
+    }
+
+    if (currentUser.idOfKiot) {
+      formData.append('idOfKiot', currentUser.idOfKiot);
+    }
+
+    if (!currentUser.idOfKiot && data.body.isKiotProduct) {
       return {
         code: 400,
-        message: 'idOfKiot is required',
+        message: 'You are not allowed to create kiot product',
       };
     }
 
-    if (isKiotProduct && idOfKiot) {
-      request.idOfKiot = idOfKiot;
+    formData.append('isOnlineProduct', data.body.isOnlineProduct);
+    formData.append('isKiotProduct', data.body.isKiotProduct);
+    formData.append('price', data.body?.price);
+    formData.append('productDetails', data.body.productDetails);
+    formData.append('countInStock', data.body.countInStock);
+    formData.append('isBestSeller', data.body.isBestSeller);
+    formData.append('weight', data.body.weight);
+    formData.append('dimension', data.body.dimension);
+
+    let array = [];
+
+    if (data.body.oldImages) {
+      if (Array.isArray(data.body.oldImages)) {
+        if (data.body.oldImages.length > 0) {
+          data.body.oldImages.forEach((image: any, index: number) => {
+            formData.append(`oldImages`, image);
+          });
+        } else {
+          array.push(data.body.oldImages);
+          formData.append('oldImages', JSON.stringify(array));
+        }
+      } else {
+        // If it's not an array, append it directly (or handle as error if expected to always be an array)
+        array.push(data.body.oldImages);
+        formData.append('oldImages', JSON.stringify(array));
+      }
     }
 
-    const idOfShop = currentUser.idOfShop;
-
-    const data = await storeAxios.patch(
-      `products/shop/${idOfShop}/category/${idOfCategory}/${id}`,
-      request,
-      {
-        headers: {
-          authorization: `${this.request.headers.authorization}`,
+    const dataReturn = await storeAxios
+      .patch(
+        `/products/shop/${idOfShop}/category/${idOfCategory}/${id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': `multipart/form-data`,
+            authorization: `${this.request.headers.authorization}`,
+          },
         },
-      },
-    );
+      )
+      .then(res => res)
+      .catch(e => console.log(e));
 
-    return data;
+
+    return dataReturn;
   }
 }

@@ -1422,10 +1422,6 @@ export class UserManagementController {
   }
 
   @authenticate('jwt')
-  @authorize({
-    voters: [basicAuthorization],
-    allowedRoles: ['admin', 'user-Managment'],
-  })
   @get('getAllUser', {
     responses: {
       '200': {
@@ -1452,10 +1448,6 @@ export class UserManagementController {
   }
 
   @authenticate('jwt')
-  @authorize({
-    voters: [basicAuthorization],
-    allowedRoles: ['admin', 'user-Managment'],
-  })
   @get('getAllUser/count', {
     responses: {
       '200': {

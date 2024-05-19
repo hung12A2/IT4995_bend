@@ -35,6 +35,7 @@ import {
 import {uploadFile, deleteRemoteFile} from '../config/firebaseConfig';
 import multer from 'multer';
 import {inject} from '@loopback/core';
+import {url} from 'inspector';
 
 const storage = multer.memoryStorage();
 const upload = multer({storage});
@@ -338,7 +339,7 @@ export class RequestCreateProductController {
     @param.filter(RequestCreateProduct) filter?: Filter<RequestCreateProduct>,
   ): Promise<any> {
     const data = await this.requestCreatProductRepository.find(filter);
-    return data
+    return data;
   }
 
   @get('/request-create-product/count')
@@ -356,10 +357,8 @@ export class RequestCreateProductController {
     @param.filter(RequestCreateProduct) filter?: Filter<RequestCreateProduct>,
   ): Promise<any> {
     const data = await this.requestCreatProductRepository.count(filter);
-    return data
+    return data;
   }
-
-
 
   @get('/request-create-product/{id}')
   @response(200, {
@@ -411,7 +410,8 @@ export class RequestCreateProductController {
         }
       });
     });
-    const {
+
+    let {
       name,
       productDescription,
       price,
@@ -423,7 +423,25 @@ export class RequestCreateProductController {
       isKiotProduct,
       isOnlineProduct,
       idOfKiot,
+      oldImages,
     } = data.body;
+
+    oldImages = oldImages ? oldImages : [];
+
+    if (!Array.isArray(oldImages)) {
+      oldImages = [oldImages];
+    }
+
+
+    if (oldImages) {
+      oldImages = oldImages.map((img: any) => {
+        img = JSON.parse(img);
+        return {
+          url: img.url,
+          filename: img.filename,
+        };
+      });
+    }
 
     if (!idOfKiot && isKiotProduct) {
       return {
@@ -433,9 +451,10 @@ export class RequestCreateProductController {
     }
 
     const category = await this.categoryRepository.findById(idOfCategory);
-    const oldImage: any = (
-      await this.requestCreatProductRepository.findById(id)
-    ).image;
+    let oldImage: any = (await this.requestCreatProductRepository.findById(id))
+      .image;
+
+    oldImage = oldImage ? oldImage : [];
 
     if (!category) {
       return {
@@ -447,7 +466,7 @@ export class RequestCreateProductController {
     const cateName = category.cateName;
 
     if (data.files.images?.length > 0) {
-      const image = await Promise.all(
+      let image = await Promise.all(
         data.files.images.map(async (image: any) => {
           const dataImg: any = await uploadFile(image);
           return {
@@ -456,6 +475,9 @@ export class RequestCreateProductController {
           };
         }),
       );
+
+      image = [...image, ...oldImages];
+
       const time = new Date().toLocaleString();
       let product: any = {
         name,
@@ -506,6 +528,7 @@ export class RequestCreateProductController {
         dimension,
         updatedAt: time,
         updatedBy: `shop-${idOfShop}`,
+        image: oldImages,
       };
       if (idOfKiot) product.idOfKiot = idOfKiot;
 

@@ -802,11 +802,7 @@ export class UserController {
     return data;
   }
 
-  @authenticate('jwt')
-  @authorize({
-    voters: [basicAuthorization],
-    allowedRoles: ['admin'],
-  })
+
   @get('getAllUser', {
     responses: {
       '200': {
@@ -836,11 +832,7 @@ export class UserController {
     return data;
   }
 
-  @authenticate('jwt')
-  @authorize({
-    voters: [basicAuthorization],
-    allowedRoles: ['admin'],
-  })
+
   @get('getAllUser/count', {
     responses: {
       '200': {

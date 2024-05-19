@@ -41,7 +41,7 @@ export class RequestCreateProductController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'product-Managment'],
+    allowedRoles: ['employee'],
   })
   @post('request-create-products/create/category/{idOfCategory}', {
     responses: {
@@ -88,6 +88,7 @@ export class RequestCreateProductController {
 
     const idOfShop = currentUser.idOfShop;
     let formData = new FormData();
+
     data.files.images.forEach((image: any) => {
       formData.append('images', image.buffer, {
         filename: image.originalname,
@@ -119,6 +120,126 @@ export class RequestCreateProductController {
     const dataReturn = await storeAxios
       .post(
         `/request-create-product/shop/${idOfShop}/category/${idOfCategory}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': `multipart/form-data`,
+            authorization: `${this.request.headers.authorization}`,
+          },
+        },
+      )
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return dataReturn;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['employee'],
+  })
+  @post('request-create-products/update/category/{idOfCategory}/{id}', {
+    responses: {
+      '200': {
+        description: 'Return new request products',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'PRODUCT',
+            },
+          },
+        },
+      },
+    },
+  })
+  async requestCreateProductupdate(
+    @param.path.string('id') id: string,
+    @param.path.string('idOfCategory') idOfCategory: string,
+    @inject(SecurityBindings.USER) currentUser: UserProfile,
+    @requestBody({
+      description: 'multipart/form-data value.',
+      required: true,
+      content: {
+        'multipart/form-data': {
+          // Skip body parsing
+          'x-parser': 'stream',
+          schema: {type: 'object'},
+        },
+      },
+    })
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<any> {
+    const data: any = await new Promise<object>((resolve, reject) => {
+      cpUpload(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          resolve({
+            files: request.files,
+            body: request.body,
+          });
+        }
+      });
+    });
+
+    const idOfShop = currentUser.idOfShop;
+    let formData = new FormData();
+    if (data.files.images?.length > 0) {
+      data.files.images?.forEach((image: any) => {
+        formData.append('images', image.buffer, {
+          filename: image.originalname,
+        });
+      });
+    }
+
+    if (currentUser.idOfKiot) {
+      formData.append('idOfKiot', currentUser.idOfKiot);
+    }
+
+    if (!currentUser.idOfKiot && data.body.isKiotProduct) {
+      return {
+        code: 400,
+        message: 'You are not allowed to create kiot product',
+      };
+    }
+
+    formData.append('isOnlineProduct', data.body.isOnlineProduct);
+    formData.append('isKiotProduct', data.body.isKiotProduct);
+
+    formData.append('name', data.body?.name);
+
+    formData.append('price', data.body?.price);
+
+    formData.append('productDescription', data.body.productDescription);
+    formData.append('productDetails', data.body.productDetails);
+    formData.append('countInStock', data.body.countInStock);
+    formData.append('isBestSeller', data.body.isBestSeller);
+    formData.append('weight', data.body.weight);
+    formData.append('dimension', data.body.dimension);
+
+    let array = [];
+
+    if (data.body.oldImages) {
+      if (Array.isArray(data.body.oldImages)) {
+        if (data.body.oldImages.length > 0) {
+          data.body.oldImages.forEach((image: any, index: number) => {
+            formData.append(`oldImages`, image);
+          });
+        } else {
+          array.push(data.body.oldImages);
+          formData.append('oldImages', JSON.stringify(array));
+        }
+      } else {
+        // If it's not an array, append it directly (or handle as error if expected to always be an array)
+        array.push(data.body.oldImages);
+        formData.append('oldImages', JSON.stringify(array));
+      }
+    }
+
+    const dataReturn = await storeAxios
+      .patch(
+        `/request-create-product/shop/${idOfShop}/category/${idOfCategory}/${id}`,
         formData,
         {
           headers: {

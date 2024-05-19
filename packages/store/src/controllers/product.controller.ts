@@ -30,7 +30,7 @@ import {inject} from '@loopback/core';
 const storage = multer.memoryStorage();
 const upload = multer({storage});
 
-var cpUpload = upload.fields([{name: 'image'}]);
+var cpUpload = upload.fields([{name: 'images'}]);
 
 export class ProductController {
   constructor(
@@ -162,35 +162,70 @@ export class ProductController {
       description: 'multipart/form-data value.',
       required: true,
       content: {
-        'application/json': {
+        'multipart/form-data': {
           // Skip body parsing
+          'x-parser': 'stream',
           schema: {type: 'object'},
         },
       },
     })
-    request: any,
+    request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<any> {
-    const {
+    const data: any = await new Promise<object>((resolve, reject) => {
+      cpUpload(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          resolve({
+            files: request.files,
+            body: request.body,
+          });
+        }
+      });
+    });
+
+    let {
       price,
+      productDetails,
       countInStock,
       isBestSeller,
       weight,
       dimension,
-      status,
       isKiotProduct,
       isOnlineProduct,
       idOfKiot,
-    } = request;
+      oldImages,
+    } = data.body;
 
-    if (isKiotProduct && !idOfKiot) {
+    oldImages = oldImages ? oldImages : [];
+
+    if (!Array.isArray(oldImages)) {
+      oldImages = [oldImages];
+    }
+
+
+    if (oldImages) {
+      oldImages = oldImages.map((img: any) => {
+        img = JSON.parse(img);
+        return {
+          url: img.url,
+          filename: img.filename,
+        };
+      });
+    }
+
+    if (!idOfKiot && isKiotProduct) {
       return {
         code: 400,
-        message: 'idOfKiot is required',
+        message: 'Missing idOfKiot',
       };
     }
 
     const category = await this.categoryRepository.findById(idOfCategory);
+    let oldImage: any = (await this.productRepository.findById(id))
+      .image;
+
+    oldImage = oldImage ? oldImage : [];
 
     if (!category) {
       return {
@@ -201,26 +236,78 @@ export class ProductController {
 
     const cateName = category.cateName;
 
-    const time = new Date().toLocaleString();
-    const product = new Product({
-      idOfCategory,
-      idOfShop,
-      isKiotProduct,
-      isOnlineProduct,
-      price,
-      countInStock,
-      isBestSeller,
-      cateName,
-      status,
-      weight,
-      dimension,
-      updatedAt: time,
-      updatedBy: `shop-${idOfShop}`,
-    });
+    if (data.files.images?.length > 0) {
+      let image = await Promise.all(
+        data.files.images.map(async (image: any) => {
+          const dataImg: any = await uploadFile(image);
+          return {
+            url: dataImg.url,
+            filename: dataImg.filename,
+          };
+        }),
+      );
 
-    await this.productRepository.updateById(id, product);
+      image = [...image, ...oldImages];
 
-    return this.productRepository.findById(id);
+      const time = new Date().toLocaleString();
+      let product: any = {
+        image,
+        idOfCategory,
+        idOfShop,
+        isKiotProduct,
+        isOnlineProduct,
+        productDetails,
+        price,
+        countInStock,
+        isBestSeller,
+        cateName,
+        weight,
+        dimension,
+        updatedAt: time,
+        updatedBy: `shop-${idOfShop}`,
+      };
+
+      if (idOfKiot) product.idOfKiot = idOfKiot;
+
+      await this.productRepository.updateById(id, product);
+
+      if (oldImage.length > 0) {
+        await Promise.all(
+          oldImage.map(async (img: any) => {
+            await deleteRemoteFile(img.filename);
+          }),
+        );
+      }
+    } else {
+      const time = new Date().toLocaleString();
+      const product = {
+        idOfCategory,
+        idOfShop,
+        isKiotProduct,
+        isOnlineProduct,
+        idOfKiot: isKiotProduct ? idOfKiot : null,
+        productDetails,
+        price,
+        countInStock,
+        isBestSeller,
+        cateName,
+        weight,
+        dimension,
+        updatedAt: time,
+        updatedBy: `shop-${idOfShop}`,
+        image: oldImages,
+      };
+      if (idOfKiot) product.idOfKiot = idOfKiot;
+
+      await this.productRepository.updateById(id, product);
+    }
+
+    const dataReturn = await this.productRepository.findById(id);
+
+    return {
+      code: 200,
+      data: dataReturn,
+    };
   }
 
   @del('/products/{id}')
