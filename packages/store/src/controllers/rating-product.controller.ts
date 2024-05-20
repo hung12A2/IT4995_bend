@@ -336,6 +336,40 @@ export class RatingProductController {
     return this.ratingProductRepository.find(filter);
   }
 
+  @get('/rating-products/count')
+  @response(200, {
+    description: 'Array of RatingProduct model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(RatingProduct, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async count(
+    @param.filter(RatingProduct) filter?: Filter<RatingProduct>,
+  ): Promise<any> {
+    return this.ratingProductRepository.count(filter);
+  }
+
+  @get('/rating-products/{id}')
+  @response(200, {
+    description: 'Array of RatingProduct model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(RatingProduct, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async getOne(@param.path.string('id') id: string): Promise<any> {
+    return this.ratingProductRepository.findById(id);
+  }
+
   @del('/rating-products/{id}')
   @response(204, {
     description: 'RatingProduct DELETE success',

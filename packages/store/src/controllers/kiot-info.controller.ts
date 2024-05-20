@@ -26,25 +26,19 @@ export class KiotInfoController {
     public kiotInfoRepository : KiotInfoRepository,
   ) {}
 
-  @post('/kiot-infos')
+  @post('/kiot-infos/{idOfShop}/kiot/{idOfKiot}')
   @response(200, {
     description: 'KiotInfo model instance',
     content: {'application/json': {schema: getModelSchemaRef(KiotInfo)}},
   })
   async create(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(KiotInfo, {
-            title: 'NewKiotInfo',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
-    kiotInfo: Omit<KiotInfo, 'id'>,
+   @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('idOfKiot') idOfKiot: string,
   ): Promise<KiotInfo> {
-    return this.kiotInfoRepository.create(kiotInfo);
+    return this.kiotInfoRepository.create({
+      idOfKiot,
+      idOfShop,
+    });
   }
 
   @get('/kiot-infos/count')
@@ -76,25 +70,6 @@ export class KiotInfoController {
     return this.kiotInfoRepository.find(filter);
   }
 
-  @patch('/kiot-infos')
-  @response(200, {
-    description: 'KiotInfo PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(KiotInfo, {partial: true}),
-        },
-      },
-    })
-    kiotInfo: KiotInfo,
-    @param.where(KiotInfo) where?: Where<KiotInfo>,
-  ): Promise<Count> {
-    return this.kiotInfoRepository.updateAll(kiotInfo, where);
-  }
-
   @get('/kiot-infos/{id}')
   @response(200, {
     description: 'KiotInfo model instance',
@@ -111,40 +86,4 @@ export class KiotInfoController {
     return this.kiotInfoRepository.findById(id, filter);
   }
 
-  @patch('/kiot-infos/{id}')
-  @response(204, {
-    description: 'KiotInfo PATCH success',
-  })
-  async updateById(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(KiotInfo, {partial: true}),
-        },
-      },
-    })
-    kiotInfo: KiotInfo,
-  ): Promise<void> {
-    await this.kiotInfoRepository.updateById(id, kiotInfo);
-  }
-
-  @put('/kiot-infos/{id}')
-  @response(204, {
-    description: 'KiotInfo PUT success',
-  })
-  async replaceById(
-    @param.path.string('id') id: string,
-    @requestBody() kiotInfo: KiotInfo,
-  ): Promise<void> {
-    await this.kiotInfoRepository.replaceById(id, kiotInfo);
-  }
-
-  @del('/kiot-infos/{id}')
-  @response(204, {
-    description: 'KiotInfo DELETE success',
-  })
-  async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.kiotInfoRepository.deleteById(id);
-  }
 }

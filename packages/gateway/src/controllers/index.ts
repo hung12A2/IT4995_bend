@@ -24,3 +24,5 @@ export * from './transaction-shops.controller';
 export * from './user-info.controller';
 export * from './shop-info.controller';
 export * from './return-order.controller';
+export * from './rating.controller';
+export * from './kiot-info.controller';
