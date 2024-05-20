@@ -479,6 +479,7 @@ export class OrderController {
         const dataNoti = JSON.stringify({
           idOfShop: order.idOfShop,
           content: `Đơn hàng ${id} đã được nhận ${order.priceOfAll - order.totalFee} đã được chuyển vào tài khoản của bạn`,
+          image: order.image,
           createdAt: new Date().toLocaleString(),
         });
 
@@ -535,7 +536,7 @@ export class OrderController {
             });
 
             await this.productRepository.updateById(idOfProduct, {
-              numberOfSold: oldProduct.numberOfSold + 1,
+              numberOfSold: oldProduct.numberOfSold + quantity,
             });
           }),
         );

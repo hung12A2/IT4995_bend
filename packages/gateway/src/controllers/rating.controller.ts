@@ -25,7 +25,10 @@ import FormData from 'form-data';
 export class RatingController {
   constructor() {}
 
-  @get('ratings/count', {
+
+  @authenticate('jwt')
+  @authorize({voters:[basicAuthorization], allowedRoles: ['employee']})
+  @get('ratingsForShop/count', {
     responses: {
       '200': {
         description: 'Return order kiot info',
@@ -61,7 +64,9 @@ export class RatingController {
     return data;
   }
 
-  @get('ratings/count', {
+  @authenticate('jwt')
+  @authorize({voters:[basicAuthorization], allowedRoles: ['employee']})
+  @get('ratingsForShop', {
     responses: {
       '200': {
         description: 'Return order kiot info',
@@ -97,7 +102,126 @@ export class RatingController {
     return data;
   }
 
-  @get('ratings/{id}', {
+  
+  @get('ratings', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getAll(
+    @param.query.object('filter') filter?: any,
+  ): Promise<any> {
+    const data = await axios
+      .get(`/rating-products/`, {
+        params: {filter},
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @get('ratings/count', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOneFroAll(
+    @param.query.object('filter') filter?: any,
+  ): Promise<any> {
+    const data = await axios
+      .get(`/rating-products/count`, {
+        params: {filter},
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @post('ratings', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async create(
+    @requestBody({
+      description: 'Rating product',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              rating: {type: 'number'},
+              comment: {type: 'string'},
+              idOfProduct: {type: 'string'},
+              isKiot: {type: 'boolean'},
+              idOfOrder: {type: 'string'},
+              idOfKiot: {type: 'string'},
+              idOfShop: {type: 'string'},
+
+            },
+          },
+        },
+      },
+    })
+    request: any,
+  ): Promise<any> {
+    const {
+      rating,
+      comment,
+      idOfProduct,
+      idOfOrder,
+      idOfKiot,
+      isKiot,
+      idOfShop
+    } = request;
+
+    let dataRequest = {
+      rating,
+      comment,
+      isKiot,
+      idOfKiot
+      ,idOfShop
+    };
+
+    const data = await axios
+      .post(`/rating-products/order/${idOfOrder}/product/${idOfProduct}`, dataRequest)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @get('ratingsForShop/{id}', {
     responses: {
       '200': {
         description: 'Return order kiot info',

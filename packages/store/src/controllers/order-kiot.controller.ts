@@ -484,13 +484,17 @@ export class OrderKiotController {
           updatedAt: new Date().toLocaleString(),
         });
 
-        const oldShopInfo: any = await this.shopInfoRepository.findById(
-          order.idOfShop,
-        );
+        const oldShopInfo: any = await this.shopInfoRepository.findOne({
+          where: {
+            idOfShop: order.idOfShop,
+          },
+        });
 
-        const oldKiotInfo: any = await this.kiotInfoRepository.findById(
-          order.idOfShop,
-        );
+        const oldKiotInfo: any = await this.kiotInfoRepository.findOne({
+          where: {
+            idOfShop: order.idOfShop,
+          },
+        });
 
         await this.kiotInfoRepository.updateAll(
           {

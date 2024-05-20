@@ -61,7 +61,8 @@ export class RatingProductController {
               rating: {type: 'number'},
               comment: {type: 'string'},
               isKiot: {type: 'boolean'},
-              idOfKiot: {type: 'boolean'},
+              idOfKiot: {type: 'string'},
+              idOfShop: {type: 'string'},
             },
           },
         },
@@ -69,7 +70,7 @@ export class RatingProductController {
     })
     ratingProduct: any,
   ): Promise<any> {
-    const {rating, comment, isKiot} = ratingProduct;
+    const {rating, comment, isKiot = false, idOfShop} = ratingProduct;
     let idOfKiot = ratingProduct.idOfKiot;
 
     if (isKiot && !idOfKiot) {
@@ -81,7 +82,7 @@ export class RatingProductController {
 
     if (!isKiot) {
       const BoughtProduct: any = await this.boughtProductRepository.findOne({
-        where: {idOfOrder: idOfOrder, idOfProduct: idOfProduct},
+        where: {idOfOrder: idOfOrder, idOfProduct: idOfProduct, isKiot},
       });
       if (!BoughtProduct) {
         return {
@@ -127,6 +128,11 @@ export class RatingProductController {
         await this.productRepository.updateById(idOfProduct, {
           rating: newRating,
         });
+
+        return {
+          code: 200,
+          message: 'Rating updated',
+        }
       } else {
         const isDeleted = false;
         const time = new Date().toLocaleString();
@@ -135,6 +141,7 @@ export class RatingProductController {
           idOfProduct,
           idOfUser,
           rating,
+          idOfShop,
           isDeleted,
           comment,
           createdAt: time,
@@ -187,7 +194,6 @@ export class RatingProductController {
           idOfOrder: idOfOrder,
           idOfProduct: idOfProduct,
           isKiot,
-          idOfKiot,
         },
       });
       if (!BoughtProduct) {
@@ -249,6 +255,11 @@ export class RatingProductController {
         await this.productRepository.updateById(idOfProduct, {
           rating: newRating,
         });
+
+        return {
+          code: 200,
+          message: 'Rating updated',
+        }
       } else {
         const isDeleted = false;
         const time = new Date().toLocaleString();
@@ -259,6 +270,7 @@ export class RatingProductController {
           idOfKiot,
           isKiot,
           rating,
+          idOfShop,
           isDeleted,
           comment,
           createdAt: time,
