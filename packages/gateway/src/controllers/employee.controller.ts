@@ -82,6 +82,54 @@ export class EmployeeController {
   }
 
   @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
+  @patch('employees/{id}', {
+    responses: {
+      '200': {
+        description: 'Return new employee',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async updateEmployee(
+    @param.path.string('id') id: string,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              email: {type: 'string'},
+              name: {type: 'string'},
+              permissions: {type: 'string'},
+              phoneNumber: {type: 'string'},
+            },
+          },
+        },
+      },
+    })
+    employee: any,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<any> {
+    const data = axios
+      .patch(`/employees/${id}`, employee, {
+        headers: {
+          authorization: this.request.headers.authorization,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
   @get('employees', {
     responses: {
       '200': {
@@ -272,7 +320,7 @@ export class EmployeeController {
 
   @authenticate('jwt')
   @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
-  @patch('employees/inActive/{id}', {
+  @post('employees/inActive/{id}', {
     responses: {
       '200': {
         description: 'Return new area',
@@ -290,6 +338,39 @@ export class EmployeeController {
     const data = await axios
       .patch(
         `/employees/inActive/${id}`,
+        {},
+        {
+          headers: {
+            authorization: this.request.headers.authorization,
+          },
+        },
+      )
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
+  @post('employees/active/{id}', {
+    responses: {
+      '200': {
+        description: 'Return new area',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+      },
+    },
+  })
+  async activeEmployees(@param.path.string('id') id: string): Promise<any> {
+    const data = await axios
+      .patch(
+        `/employees/active/${id}`,
         {},
         {
           headers: {

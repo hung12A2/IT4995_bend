@@ -21,7 +21,11 @@ import {
   Request,
 } from '@loopback/rest';
 import {Product} from '../models';
-import {CategoryRepository, ProductRepository} from '../repositories';
+import {
+  CategoryRepository,
+  KiotInfoRepository,
+  ProductRepository,
+} from '../repositories';
 
 import {uploadFile, deleteRemoteFile} from '../config/firebaseConfig';
 import multer from 'multer';
@@ -38,6 +42,8 @@ export class ProductController {
     public productRepository: ProductRepository,
     @repository(CategoryRepository)
     public categoryRepository: CategoryRepository,
+    @repository(KiotInfoRepository)
+    public kiotInfoRepository: KiotInfoRepository,
   ) {}
 
   @get('/products')
@@ -100,16 +106,13 @@ export class ProductController {
       },
     },
   })
-  async BannedById(
-    @param.path.string('id') id: string,
-  ): Promise<any> {
+  async BannedById(@param.path.string('id') id: string): Promise<any> {
     await this.productRepository.updateById(id, {status: 'banned'});
     return {
-      code:200,
+      code: 200,
       message: 'Banned success',
-    }
+    };
   }
-
 
   @post('/products/unbanned/{id}')
   @response(200, {
@@ -120,16 +123,13 @@ export class ProductController {
       },
     },
   })
-  async unbannedById(
-    @param.path.string('id') id: string,
-  ): Promise<any> {
+  async unbannedById(@param.path.string('id') id: string): Promise<any> {
     await this.productRepository.updateById(id, {status: 'active'});
     return {
-      code:200,
+      code: 200,
       message: 'unbanned success',
-    }
+    };
   }
-
 
   @post('/products/inActive/{id}')
   @response(200, {
@@ -140,14 +140,12 @@ export class ProductController {
       },
     },
   })
-  async inActiveById(
-    @param.path.string('id') id: string,
-  ): Promise<any> {
+  async inActiveById(@param.path.string('id') id: string): Promise<any> {
     await this.productRepository.updateById(id, {status: 'inActive'});
     return {
-      code:200,
+      code: 200,
       message: 'inActive success',
-    }
+    };
   }
 
   @patch('/products/shop/{idOfShop}/category/{idOfCategory}/{id}')
@@ -203,7 +201,6 @@ export class ProductController {
       oldImages = [oldImages];
     }
 
-
     if (oldImages) {
       oldImages = oldImages.map((img: any) => {
         img = JSON.parse(img);
@@ -222,8 +219,41 @@ export class ProductController {
     }
 
     const category = await this.categoryRepository.findById(idOfCategory);
-    let oldImage: any = (await this.productRepository.findById(id))
-      .image;
+    let oldProduct: any = await this.productRepository.findById(id);
+
+    let oldIsKiotProduct = oldProduct?.isKiotProduct;
+
+    if (oldIsKiotProduct && !isKiotProduct) {
+      const oldKiotInfo = await this.kiotInfoRepository.findOne({
+        where: {
+          idOfShop,
+          idOfKiot: oldProduct.idOfKiot,
+        },
+      });
+
+      if (oldKiotInfo) {
+        await this.kiotInfoRepository.updateById(oldKiotInfo.id, {
+          numberOfProduct: oldKiotInfo.numberOfProduct - 1,
+        });
+      }
+    }
+
+    if (!oldIsKiotProduct && isKiotProduct) {
+      const oldKiotInfo = await this.kiotInfoRepository.findOne({
+        where: {
+          idOfShop,
+          idOfKiot: oldProduct.idOfKiot,
+        },
+      });
+
+      if (oldKiotInfo) {
+        await this.kiotInfoRepository.updateById(oldKiotInfo.id, {
+          numberOfProduct: oldKiotInfo.numberOfProduct + 1,
+        });
+      }
+    }
+
+    let oldImage = oldProduct?.image;
 
     oldImage = oldImage ? oldImage : [];
 

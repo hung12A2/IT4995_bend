@@ -14,3 +14,4 @@ export * from './wallet-of-shop.model';
 export * from './request-create-product.model';
 export * from './shop-info.model';
 export * from './user-info.model';
+export * from './kiot-info.model';

@@ -205,7 +205,8 @@ export class EmployeeController {
     })
     employee: Employee,
   ): Promise<any> {
-    if (currentUserProfile.idOfShop !== employee.idOfShop) {
+    const oldEmployee = await this.employeeRepository.findById(id);
+    if (currentUserProfile.idOfShop !== oldEmployee.idOfShop) {
       return {
         code: 400,
         message: 'not shop owner',
@@ -213,6 +214,44 @@ export class EmployeeController {
     }
     await this.employeeRepository.updateById(id, {
       status: 'inActive',
+      updatedAt: new Date().toLocaleString(),
+      updatedBy: `shopOwner-${currentUserProfile.id}`,
+    });
+    return {
+      code: 200,
+      data: await this.employeeRepository.findById(id),
+    };
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
+  @patch('/employees/active/{id}')
+  @response(204, {
+    description: 'Employee PATCH success',
+  })
+  async activeById(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+    @param.path.string('id') id: string,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Employee, {partial: true}),
+        },
+      },
+    })
+    employee: Employee,
+  ): Promise<any> {
+    const oldEmployee = await this.employeeRepository.findById(id);
+
+    if (currentUserProfile.idOfShop !== oldEmployee.idOfShop) {
+      return {
+        code: 400,
+        message: 'not shop owner',
+      };
+    }
+    await this.employeeRepository.updateById(id, {
+      status: 'active',
       updatedAt: new Date().toLocaleString(),
       updatedBy: `shopOwner-${currentUserProfile.id}`,
     });

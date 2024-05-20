@@ -1240,6 +1240,124 @@ export class OrderController {
     return ordersArray;
   }
 
+  @get('/orders/days/{numberOfDays}/shop/{idOfShop}')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Order, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async find10dayShop(
+    @param.path.number('numberOfDays') numberOfDays: number,
+    @param.path.string('idOfShop') idOfShop: string,
+  ): Promise<any> {
+
+    console.log('idOfShop', idOfShop);
+
+    const tenDaysAgo = new Date();
+    tenDaysAgo.setDate(tenDaysAgo.getDate() - numberOfDays);
+
+    const allDays = Array.from({length: numberOfDays}, (_, i) => {
+      const date = new Date(tenDaysAgo);
+      date.setDate(date.getDate() + i);
+      return date.toLocaleString().split(', ')[0];
+    });
+
+    // Lọc các đơn hàng được tạo trong 10 ngày qua
+    const filter = {
+      where: {
+        idOfShop,
+        createdAt: {
+          gte: tenDaysAgo.toLocaleString(), // Sử dụng ISO string cho so sánh ngày
+        },
+      },
+    };
+
+    const filter2 = {
+      where: {
+        idOfShop,
+        status: 'received', // Sử dụng ISO string cho so sánh ngày
+        createdAt: {
+          gte: tenDaysAgo.toLocaleString(), // Sử dụng ISO string cho so sánh ngày
+        },
+      },
+    };
+
+    // Lấy tất cả đơn hàng thỏa mãn điều kiện lọc
+    const orders = await this.orderRepository.find(filter);
+
+    const orders2 = await this.orderRepository.find(filter2);
+
+    // Nhóm và đếm số lượng đơn hàng theo ngày, loại bỏ thời gian
+    const ordersCountByDay: {[key: string]: string} = orders.reduce(
+      (acc: any, order) => {
+        // Chỉ lấy phần ngày, loại bỏ thời gian
+        const day = new Date(order.createdAt).toLocaleDateString('en-US');
+        if (!acc[day]) {
+          acc[day] = 0;
+        }
+        acc[day]++;
+        return acc;
+      },
+      {},
+    );
+
+    const ordersCountByDay2: {[key: string]: string} = orders2.reduce(
+      (acc: any, order) => {
+        // Chỉ lấy phần ngày, loại bỏ thời gian
+        const day = new Date(order.createdAt).toLocaleDateString('en-US');
+        if (!acc[day]) {
+          acc[day] = 0;
+        }
+        acc[day]++;
+        return acc;
+      },
+      {},
+    );
+
+    // Đảm bảo mỗi ngày trong khoảng 10 ngày trước đều có trong kết quả, ngay cả khi không có đơn hàng nào
+    allDays.forEach(day => {
+      // day ở đây cũng phải được định dạng chỉ với ngày, không có thời gian
+      if (!ordersCountByDay[day]) {
+        ordersCountByDay[day] = '0'; // Thêm ngày không có đơn hàng với giá trị '0'
+      }
+
+      if (!ordersCountByDay2[day]) {
+        ordersCountByDay2[day] = '0'; // Thêm ngày không có đơn hàng với giá trị '0'
+      }
+    });
+
+    // Chuyển đổi số lượng đơn hàng thành chuỗi
+    const formattedOrdersCountByDay: {[key: string]: string} = Object.keys(
+      ordersCountByDay,
+    ).reduce((acc: any, day) => {
+      acc[day] = ordersCountByDay[day].toString();
+      return acc;
+    }, {});
+
+    const formattedOrdersCountByDay2: {[key: string]: string} = Object.keys(
+      ordersCountByDay2,
+    ).reduce((acc: any, day) => {
+      acc[day] = ordersCountByDay2[day].toString();
+      return acc;
+    }, {});
+
+    const ordersArray = Object.entries(formattedOrdersCountByDay).map(
+      ([name, order]) => ({
+        name,
+        order,
+        orderSuccess: formattedOrdersCountByDay2[name],
+      }),
+    );
+
+    return ordersArray;
+  }
+
   @get('/orders/{id}')
   @response(200, {
     description: 'Array of Order model instances',

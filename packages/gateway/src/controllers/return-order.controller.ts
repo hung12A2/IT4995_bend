@@ -146,7 +146,7 @@ export class ReturnOrderController {
 
   @authenticate('jwt')
   @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
-  @get('/return-ordersForShop')
+  @get('/return-ordersForShop/count')
   @response(200, {
     description: 'Array of ReturnOrder model instances',
     content: {

@@ -20,6 +20,18 @@ export class RatingProduct extends Entity {
     type: 'string',
     required: true,
   })
+  idOfShop: string;
+
+  @property({
+    type: 'string',
+    required: false,
+  })
+  idOfKiot: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
   idOfProduct: string;
 
   @property({
@@ -55,6 +67,18 @@ export class RatingProduct extends Entity {
     default: '',
   })
   comment?: string;
+
+  @property({
+    type: 'date',
+    required: true,
+  })
+  createdAt: string;
+
+  @property({
+    type: 'date',
+    required: true,
+  })
+  updatedAt: string;
 
   // Define well-known properties here
 

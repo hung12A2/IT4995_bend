@@ -774,6 +774,42 @@ export class OrderKiotController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
+    allowedRoles: ['employee'],
+  })
+  @get('ordersKiotShop/days/{numberOfDay}', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getShops(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+    @param.path.number('numberOfDay') numberOfDay: number,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    const data = await axios
+      .get(`/ordersKiotShop/days/${numberOfDay}/shop/${idOfShop}`)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    this.response.header('Access-Control-Expose-Headers', 'Content-Range');
+    this.response.header('Content-Range', 'OrdersAdmin 0-20/20');
+    this.response.status(200).send(data);
+  }
+
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
     allowedRoles: ['admin', 'order-Managment'],
   })
   @get('ordersKiotAdmin/{id}', {

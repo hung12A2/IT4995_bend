@@ -26,15 +26,15 @@ import {SecurityBindings, UserProfile, securityId} from '@loopback/security';
 import {UserServiceBindings} from '../keys';
 import {Admin, User} from '../models';
 import {Credentials, CredentialsForEmployee} from '../types';
-import {AdminRepository, EmployeeRepository} from '../repositories';
+import {AdminRepository, EmployeeRepository, StoreRepository} from '../repositories';
 import {AdminManagmentService} from '../services/adminManagement.service';
 import multer from 'multer';
 import {deleteRemoteFile, uploadFile} from '../config/firebaseConfig';
 import nodemailer from 'nodemailer';
 import {promisify} from 'util';
 import {basicAuthorization} from '../services/basicAuthorize';
-import { generateRandomString } from '../utils/genString';
-import { sendEmail } from '../utils/sendMail';
+import {generateRandomString} from '../utils/genString';
+import {sendEmail} from '../utils/sendMail';
 
 const jwt = require('jsonwebtoken');
 const signAsync = promisify(jwt.sign);
@@ -64,6 +64,8 @@ export class UserManagementController {
     public employeeService: UserService<Admin, any>,
     @inject(RestBindings.Http.RESPONSE)
     private response: Response,
+    @repository(StoreRepository)
+    public storeRepository: StoreRepository,
   ) {}
 
   //
@@ -259,6 +261,138 @@ export class UserManagementController {
     return this.userRepository.findById(idOfUser);
   }
 
+  @authenticate('jwt')
+  @post('/uploadCoverImage/shop')
+  @response(200, {
+    description: 'RequestCreateShop model instance',
+    content: {
+      'application/json': {schema: getModelSchemaRef(User)},
+    },
+  })
+  async uploadCoverImgShop(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+    @requestBody({
+      description: 'multipart/form-data value.',
+      required: true,
+      content: {
+        'multipart/form-data': {
+          // Skip body parsing
+          'x-parser': 'stream',
+          schema: {type: 'object'},
+        },
+      },
+    })
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<any> {
+    const idOfShop = currentUserProfile.idOfShop;
+    const role = currentUserProfile.role;
+
+    const oldUser: any = await this.storeRepository.findById(idOfShop);
+
+    const data: any = await new Promise<object>((resolve, reject) => {
+      cpUpload(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          resolve({
+            files: request.files,
+            body: request.body,
+          });
+        }
+      });
+    });
+
+    const coverImage = data.files.coverImage;
+
+    if (coverImage.length > 1) {
+      return response.status(400).send('Chỉ được upload 1 bia');
+    }
+
+    if (role == 'customer') {
+      const dataCoverImage: any = await uploadFile(coverImage[0]);
+
+      if (oldUser.coverImage.url) {
+        deleteRemoteFile(oldUser.coverImage.filename);
+      }
+
+      await this.storeRepository.updateById(idOfShop, {
+        coverImage: {
+          filename: dataCoverImage.filename,
+          url: dataCoverImage.url,
+        },
+      });
+    }
+
+    return this.storeRepository.findById(idOfShop);
+  }
+
+  @authenticate('jwt')
+  @post('/uploadAvatar/shop')
+  @response(200, {
+    description: 'RequestCreateShop model instance',
+    content: {
+      'application/json': {schema: getModelSchemaRef(User)},
+    },
+  })
+  async uploadAvatarShop (
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+    @requestBody({
+      description: 'multipart/form-data value.',
+      required: true,
+      content: {
+        'multipart/form-data': {
+          // Skip body parsing
+          'x-parser': 'stream',
+          schema: {type: 'object'},
+        },
+      },
+    })
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<any> {
+    const idOfShop = currentUserProfile.idOfShop;
+    const role = currentUserProfile.role;
+
+    const oldUser: any = await this.storeRepository.findById(idOfShop);
+
+    const data: any = await new Promise<object>((resolve, reject) => {
+      cpUpload(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          resolve({
+            files: request.files,
+            body: request.body,
+          });
+        }
+      });
+    });
+
+    const avatar = data.files.avatar;
+
+    if (avatar.length > 1) {
+      return response.status(400).send('Chỉ được upload 1 bia');
+    }
+
+    if (role == 'customer') {
+      const dataavatar: any = await uploadFile(avatar[0]);
+
+      if (oldUser.avatar.url) {
+        deleteRemoteFile(oldUser.avatar.filename);
+      }
+
+      await this.storeRepository.updateById(idOfShop, {
+        avatar: {
+          filename: dataavatar.filename,
+          url: dataavatar.url,
+        },
+      });
+    }
+
+    return this.storeRepository.findById(idOfShop);
+  }
+
   //
   @post('/register/customer', {
     responses: {
@@ -334,7 +468,7 @@ export class UserManagementController {
       content: {
         'application/json': {
           schema: {
-            type: 'object', 
+            type: 'object',
             properties: {
               email: {
                 type: 'string',
@@ -348,7 +482,7 @@ export class UserManagementController {
               phoneNumber: {
                 type: 'string',
               },
-            }
+            },
           },
         },
       },
@@ -388,7 +522,7 @@ export class UserManagementController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'admin-Managment'],
+    allowedRoles: ['admin'],
   })
   @post('/update/admin', {
     responses: {
@@ -467,7 +601,7 @@ export class UserManagementController {
   ): Promise<any> {
     const time = new Date().toLocaleString();
     newUserRequest.updatedAt = time;
-    newUserRequest.updatedBy = `user-${currentUser.id}`;
+    newUserRequest.updatedBy = `empl-${currentUser.id}`;
     try {
       const data = await this.employeeRepository.updateById(
         newUserRequest.id,
@@ -608,7 +742,6 @@ export class UserManagementController {
       throw error;
     }
   }
-
 
   @post('/login/Customer', {
     responses: {
@@ -816,22 +949,12 @@ export class UserManagementController {
 
     this.userRepository.updateById(user.id, {resetToken});
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'hung1311197820022@gmail.com',
-        pass: 'mvza fmtv fbsc gsig',
-      },
-    });
+    const data = await sendEmail(
+      email,
+      'Reset Password',
+      `http://localhost:3000/resetPassword?token=${resetToken}`,
+    );
 
-    const mailOptions = {
-      from: 'hung1311197820022@gmail.com',
-      to: email,
-      subject: 'Sending Email using Node.js',
-      text: 'Token: ' + resetToken,
-    };
-
-    const data = await transporter.sendMail(mailOptions);
     return {
       code: 200,
       message: 'Email sent',
@@ -891,15 +1014,19 @@ export class UserManagementController {
 
     this.adminrepository.updateById(user.id, {resetToken});
 
-    const data = await sendEmail(email, 'Reset Password', `http://localhost:3000/resetPassword?token=${resetToken}`);
-    
+    const data = await sendEmail(
+      email,
+      'Reset Password',
+      `http://localhost:3000/resetPassword?token=${resetToken}`,
+    );
+
     return {
       code: 200,
       message: 'Email sent',
     };
   }
 
-  @post('/forgotPassword/Customer', {
+  @post('/forgotPassword/Employee', {
     responses: {
       '200': {
         description: 'send mail to reset password',
@@ -952,22 +1079,12 @@ export class UserManagementController {
 
     this.employeeRepository.updateById(user.id, {resetToken});
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'hung1311197820022@gmail.com',
-        pass: 'mvza fmtv fbsc gsig',
-      },
-    });
-
-    const mailOptions = {
-      from: 'hung1311197820022@gmail.com',
-      to: email,
-      subject: 'Sending Email using Node.js',
-      text: 'Token: ' + resetToken,
-    };
-
-    const data = await transporter.sendMail(mailOptions);
+    const data = await sendEmail(
+      email,
+      'Reset Password',
+      `http://localhost:3000/resetPassword?token=${resetToken}`,
+    );
+    
     return {
       code: 200,
       message: 'Email sent',
@@ -1105,7 +1222,6 @@ export class UserManagementController {
 
     return {code: 200, message: 'Password has been changed'};
   }
-
 
   @post('/resetPassword/Employee', {
     responses: {
@@ -1400,22 +1516,18 @@ export class UserManagementController {
       const data: any = this.adminrepository.findById(
         currentUserProfile[securityId],
       );
-      delete data.password;
 
       return data;
     } else if (currentUserProfile.role == 'customer') {
       const data = await this.userRepository.findById(
         currentUserProfile[securityId],
       );
-      delete data.password;
 
       return data;
     } else {
       const data: any = await this.employeeRepository.findById(
         currentUserProfile[securityId],
       );
-
-      delete data.password;
 
       return data;
     }

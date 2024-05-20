@@ -27,6 +27,7 @@ import {
 import {Product, RequestCreateProduct, ShopInfo} from '../models';
 import {
   CategoryRepository,
+  KiotInfoRepository,
   ProductRepository,
   RequestCreatProductRepository,
   ShopInfoRepository,
@@ -52,6 +53,8 @@ export class RequestCreateProductController {
     public shopInfoRepository: ShopInfoRepository,
     @repository(CategoryRepository)
     public categoryRepository: CategoryRepository,
+    @repository(KiotInfoRepository)
+    public kiotInfoRepository: KiotInfoRepository,
   ) {}
 
   //
@@ -288,6 +291,17 @@ export class RequestCreateProductController {
       {idOfShop},
     );
 
+    if (isKiotProduct) {
+      const oldKiotInfo: any = await this.kiotInfoRepository.findOne({
+        where: {idOfShop},
+      });
+
+      await this.kiotInfoRepository.updateAll(
+        {numberOfProduct: oldKiotInfo.numberOfProduct + 1},
+        {idOfShop},
+      );
+    }
+
     return {
       code: 200,
       data: dataProduct,
@@ -431,7 +445,6 @@ export class RequestCreateProductController {
     if (!Array.isArray(oldImages)) {
       oldImages = [oldImages];
     }
-
 
     if (oldImages) {
       oldImages = oldImages.map((img: any) => {

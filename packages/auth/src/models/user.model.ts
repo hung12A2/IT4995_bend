@@ -80,6 +80,13 @@ export class User extends Entity {
   @property({
     type: 'string',
     required: false,
+    default: 'all'
+  })
+  permissions: string;
+
+  @property({
+    type: 'string',
+    required: false,
     default: ''
   })
   resetToken: string;

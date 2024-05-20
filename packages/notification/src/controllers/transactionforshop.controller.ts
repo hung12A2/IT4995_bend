@@ -17,14 +17,165 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {TransactionShop} from '../models';
+import {Transaction, TransactionShop} from '../models';
 import {TransactionShopRepository} from '../repositories';
 
 export class TransactionforshopController {
   constructor(
     @repository(TransactionShopRepository)
-    public transactionShopRepository : TransactionShopRepository,
+    public transactionShopRepository: TransactionShopRepository,
   ) {}
+
+  @get('/transaction-shops/days/{numberOfDays}/shop/{idOfShop}')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(TransactionShop, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async find10dayShop(
+    @param.path.number('numberOfDays') numberOfDays: number,
+    @param.path.string('idOfShop') idOfShop: string,
+  ): Promise<any> {
+    console.log('idOfShop', idOfShop);
+
+    const tenDaysAgo = new Date();
+    tenDaysAgo.setDate(tenDaysAgo.getDate() - numberOfDays);
+
+    const allDays = Array.from({length: numberOfDays}, (_, i) => {
+      const date = new Date(tenDaysAgo);
+      date.setDate(date.getDate() + i);
+      return date.toLocaleString().split(', ')[0];
+    });
+
+    // Lọc các đơn hàng được tạo trong 10 ngày qua
+    const filter = {
+      where: {
+        idOfShop,
+        createdAt: {
+          gte: tenDaysAgo.toLocaleString(), // Sử dụng ISO string cho so sánh ngày
+        },
+      },
+    };
+
+    // Lấy tất cả đơn hàng thỏa mãn điều kiện lọc
+    const transactions = await this.transactionShopRepository.find(filter);
+
+    // Nhóm và đếm số lượng đơn hàng theo ngày, loại bỏ thời gian
+    const transactionsCountByDay: {[key: string]: string} = transactions.reduce(
+      (acc: any, transaction) => {
+        // Chỉ lấy phần ngày, loại bỏ thời gian
+        const day = new Date(transaction.createdAt).toLocaleDateString('en-US');
+        if (!acc[day]) {
+          acc[day] = 0;
+        }
+        acc[day] += transaction.amountMoney;
+        return acc;
+      },
+      {},
+    );
+
+    const transactionsCountByDay2: {[key: string]: string} = transactions.reduce(
+      (acc: any, transaction) => {
+        // Chỉ lấy phần ngày, loại bỏ thời gian
+        const day = new Date(transaction.createdAt).toLocaleDateString('en-US');
+        if (!acc[day]) {
+          acc[day] = 0;
+        }
+        acc[day] ++
+        return acc;
+      },
+      {},
+    );
+
+
+    // Đảm bảo mỗi ngày trong khoảng 10 ngày trước đều có trong kết quả, ngay cả khi không có đơn hàng nào
+    allDays.forEach(day => {
+      // day ở đây cũng phải được định dạng chỉ với ngày, không có thời gian
+      if (!transactionsCountByDay[day]) {
+        transactionsCountByDay[day] = '0'; // Thêm ngày không có đơn hàng với giá trị '0'
+      }
+
+      if (!transactionsCountByDay2[day]) {
+        transactionsCountByDay2[day] = '0'; // Thêm ngày không có đơn hàng với giá trị '0'
+      }
+    });
+
+    // Chuyển đổi số lượng đơn hàng thành chuỗi
+    const formattedOrdersCountByDay: {[key: string]: string} = Object.keys(
+      transactionsCountByDay,
+    ).reduce((acc: any, day) => {
+      acc[day] = transactionsCountByDay[day].toString();
+      return acc;
+    }, {});
+
+     // Chuyển đổi số lượng đơn hàng thành chuỗi
+     const formattedOrdersCountByDay2: {[key: string]: string} = Object.keys(
+      transactionsCountByDay2,
+    ).reduce((acc: any, day) => {
+      acc[day] = transactionsCountByDay2[day].toString();
+      return acc;
+    }, {});
+
+    const ordersArray = Object.entries(formattedOrdersCountByDay).map(
+      ([name, order]) => ({
+        name,
+        revenue: order,
+        numberTransaction: formattedOrdersCountByDay2[name],
+      }),
+    );
+
+    return ordersArray;
+  }
+
+  @get('/transaction-shops/sum/{numberOfDays}/shop/{idOfShop}')
+  @response(200, {
+    description: 'Array of Order model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(TransactionShop, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async sum10days(
+    @param.path.number('numberOfDays') numberOfDays: number,
+    @param.path.string('idOfShop') idOfShop: string,
+  ): Promise<any> {
+    console.log('idOfShop', idOfShop);
+
+    const tenDaysAgo = new Date();
+    tenDaysAgo.setDate(tenDaysAgo.getDate() - numberOfDays);
+
+
+    // Lọc các đơn hàng được tạo trong 10 ngày qua
+    const filter = {
+      where: {
+        idOfShop,
+        createdAt: {
+          gte: tenDaysAgo.toLocaleString(), // Sử dụng ISO string cho so sánh ngày
+        },
+      },
+    };
+
+    // Lấy tất cả đơn hàng thỏa mãn điều kiện lọc
+    const transactions = await this.transactionShopRepository.find(filter);
+
+    // Nhóm và đếm số lượng đơn hàng theo ngày, loại bỏ thời gian
+    let sum = 0;
+    transactions.forEach(transaction => {
+      sum += transaction.amountMoney;
+    });
+
+    return sum;
+  }
 
   @post('/transaction-shops')
   @response(200, {
@@ -106,7 +257,8 @@ export class TransactionforshopController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(TransactionShop, {exclude: 'where'}) filter?: FilterExcludingWhere<TransactionShop>
+    @param.filter(TransactionShop, {exclude: 'where'})
+    filter?: FilterExcludingWhere<TransactionShop>,
   ): Promise<TransactionShop> {
     return this.transactionShopRepository.findById(id, filter);
   }

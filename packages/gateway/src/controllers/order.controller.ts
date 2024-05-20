@@ -657,6 +657,39 @@ export class OrderController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
+    allowedRoles: ['employee'],
+  })
+  @get('ordersShop/days/{numberOfDay}', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getDaysShop(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+    @param.path.number('numberOfDay') numberOfDay: number,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    const data = await axios
+      .get(`/orders/days/${numberOfDay}/shop/${idOfShop}`)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
     allowedRoles: ['admin', 'order-Managment'],
   })
   @get('ordersAdmin/{id}', {

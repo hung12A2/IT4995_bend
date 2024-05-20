@@ -22,6 +22,7 @@ import {
 import {RatingProduct} from '../models';
 import {
   BoughtProductRepository,
+  KiotInfoRepository,
   ProductRepository,
   RatingProductRepository,
   ShopInfoRepository,
@@ -39,6 +40,8 @@ export class RatingProductController {
     @inject(RestBindings.Http.RESPONSE) public response: Response,
     @repository(ShopInfoRepository)
     public shopInfoRepository: ShopInfoRepository,
+    @repository(KiotInfoRepository)
+    public kiotInfoRepository: KiotInfoRepository,
   ) {}
 
   @post('/rating-products/order/{idOfOrder}/product/{idOfProduct}')
@@ -57,6 +60,8 @@ export class RatingProductController {
             properties: {
               rating: {type: 'number'},
               comment: {type: 'string'},
+              isKiot: {type: 'boolean'},
+              idOfKiot: {type: 'boolean'},
             },
           },
         },
@@ -64,75 +69,253 @@ export class RatingProductController {
     })
     ratingProduct: any,
   ): Promise<any> {
-    const {rating, comment} = ratingProduct;
-    const BoughtProduct: any = await this.boughtProductRepository.findOne({
-      where: {idOfOrder: idOfOrder, idOfProduct: idOfProduct},
-    });
-    if (!BoughtProduct) {
-      this.response.status(400).send('Product not found');
+    const {rating, comment, isKiot} = ratingProduct;
+    let idOfKiot = ratingProduct.idOfKiot;
+
+    if (isKiot && !idOfKiot) {
+      return {
+        code: 400,
+        message: 'idOfKiot is required',
+      };
     }
-    const idOfUser = BoughtProduct.idOfUser;
 
-    const oldRating: any = await this.ratingProductRepository.findOne({
-      where: {idOfOrder, idOfProduct, idOfUser},
-    });
-    if (oldRating) {
-      const totalRating: any = await this.ratingProductRepository.count({
-        idOfProduct,
+    if (!isKiot) {
+      const BoughtProduct: any = await this.boughtProductRepository.findOne({
+        where: {idOfOrder: idOfOrder, idOfProduct: idOfProduct},
       });
-      const oldProduct = (await this.productRepository.findById(idOfProduct))
-        .rating;
-      const newRating =
-        (oldProduct * totalRating.count + rating - oldRating.rating) /
-        totalRating.count;
+      if (!BoughtProduct) {
+        return {
+          code: 400,
+          message: 'You can not rate this product',
+        };
+      }
+      const idOfUser = BoughtProduct.idOfUser;
 
-      await this.ratingProductRepository.updateById(oldRating.id, {
-        rating,
-        comment,
+      const oldRating: any = await this.ratingProductRepository.findOne({
+        where: {idOfOrder, idOfProduct, idOfUser},
       });
-      await this.productRepository.updateById(idOfProduct, {rating: newRating});
-    }
-    const isDeleted = false;
-    const newRatingProduct = {
-      idOfOrder,
-      idOfProduct,
-      idOfUser,
-      rating,
-      isDeleted,
-      comment,
-    };
+      if (oldRating) {
+        const totalRating: any = await this.ratingProductRepository.count({
+          idOfProduct,
+        });
+        const oldProduct: any = (
+          await this.productRepository.findById(idOfProduct)
+        ).rating;
 
-    const data = await this.ratingProductRepository.create(newRatingProduct);
+        const oldShopInfo: any = await this.shopInfoRepository.findOne({
+          where: {idOfShop: oldProduct.idOfShop},
+        });
+        const newRating =
+          (oldProduct * totalRating.count + rating - oldRating.rating) /
+          totalRating.count;
 
-    if (data.id) {
-      const totalRating: any = await this.ratingProductRepository.count({
-        idOfProduct,
-      });
-      const oldProduct: any = (
-        await this.productRepository.findById(idOfProduct)
-      );
+        const newAvgRating =
+          (oldShopInfo.avgRating * oldShopInfo.numberOfRating +
+            rating -
+            oldRating.rating) /
+          oldShopInfo.numberOfRating;
 
-      const oldShopInfo:any = await this.shopInfoRepository.findOne({where:{idOfShop: oldProduct.idOfShop}})
-      
-      await this.shopInfoRepository.updateById(oldShopInfo.id, {
-        numberOfRating: oldShopInfo.numberOfRating + 1,
-        avgRating: (oldShopInfo.avgRating * (oldShopInfo.numberOfRating) + rating) / (oldShopInfo.numberOfRating + 1),
-      } )
+        await this.shopInfoRepository.updateById(oldShopInfo.id, {
+          avgRating: newAvgRating,
+        });
 
-      const newRating =
-        (oldProduct.rating * (totalRating.count - 1) + rating) / totalRating.count;
+        await this.ratingProductRepository.updateById(oldRating.id, {
+          updatedAt: new Date().toLocaleString(),
+          rating,
+          comment,
+        });
+        await this.productRepository.updateById(idOfProduct, {
+          rating: newRating,
+        });
+      } else {
+        const isDeleted = false;
+        const time = new Date().toLocaleString();
+        const newRatingProduct = {
+          idOfOrder,
+          idOfProduct,
+          idOfUser,
+          rating,
+          isDeleted,
+          comment,
+          createdAt: time,
+          updatedAt: time,
+        };
 
-      await this.productRepository.updateById(idOfProduct, {
-        rating: newRating,
-        numberOfRating: oldProduct.numberOfRating + 1,
-      });
+        const data =
+          await this.ratingProductRepository.create(newRatingProduct);
+
+        if (data.id) {
+          const totalRating: any = await this.ratingProductRepository.count({
+            idOfProduct,
+          });
+          const oldProduct: any =
+            await this.productRepository.findById(idOfProduct);
+
+          const oldShopInfo: any = await this.shopInfoRepository.findOne({
+            where: {idOfShop: oldProduct.idOfShop},
+          });
+
+          await this.shopInfoRepository.updateById(oldShopInfo.id, {
+            numberOfRating: oldShopInfo.numberOfRating + 1,
+            avgRating:
+              (oldShopInfo.avgRating * oldShopInfo.numberOfRating + rating) /
+              (oldShopInfo.numberOfRating + 1),
+          });
+
+          const newRating =
+            (oldProduct.rating * (totalRating.count - 1) + rating) /
+            totalRating.count;
+
+          await this.productRepository.updateById(idOfProduct, {
+            rating: newRating,
+            numberOfRating: oldProduct.numberOfRating + 1,
+          });
+        } else {
+          return {
+            code: 400,
+            message: 'Rating failed',
+          };
+        }
+
+        return this.ratingProductRepository.findOne({
+          where: {idOfOrder, idOfProduct, idOfUser},
+        });
+      }
     } else {
-      return this.response.status(400).send('Rating failed');
-    }
+      const BoughtProduct: any = await this.boughtProductRepository.findOne({
+        where: {
+          idOfOrder: idOfOrder,
+          idOfProduct: idOfProduct,
+          isKiot,
+          idOfKiot,
+        },
+      });
+      if (!BoughtProduct) {
+        return {
+          code: 400,
+          message: 'You can not rate this product',
+        };
+      }
+      const idOfUser = BoughtProduct.idOfUser;
 
-    return this.ratingProductRepository.findOne({
-      where: {idOfOrder, idOfProduct, idOfUser},
-    });
+      const oldRating: any = await this.ratingProductRepository.findOne({
+        where: {idOfOrder, idOfProduct, idOfUser, isKiot, idOfKiot},
+      });
+      if (oldRating) {
+        const totalRating: any = await this.ratingProductRepository.count({
+          idOfProduct,
+        });
+        const oldProduct: any = (
+          await this.productRepository.findById(idOfProduct)
+        ).rating;
+
+        const oldShopInfo: any = await this.shopInfoRepository.findOne({
+          where: {idOfShop: oldProduct.idOfShop},
+        });
+
+        const oldKiotInfo: any = await this.kiotInfoRepository.findOne({
+          where: {idOfShop: oldProduct.idOfShop},
+        });
+
+        const newRating =
+          (oldProduct * totalRating.count + rating - oldRating.rating) /
+          totalRating.count;
+
+        const newAvgRating =
+          (oldShopInfo.avgRating * oldShopInfo.numberOfRating +
+            rating -
+            oldRating.rating) /
+          oldShopInfo.numberOfRating;
+
+        const newAvgRatingKiot =
+          (oldKiotInfo.avgRating * oldKiotInfo.numberOfRating +
+            rating -
+            oldRating.rating) /
+          oldKiotInfo.numberOfRating;
+
+        await this.shopInfoRepository.updateById(oldShopInfo.id, {
+          avgRating: newAvgRating,
+        });
+
+        await this.kiotInfoRepository.updateById(oldKiotInfo.id, {
+          avgRating: newAvgRatingKiot,
+        });
+
+        await this.ratingProductRepository.updateById(oldRating.id, {
+          updatedAt: new Date().toLocaleString(),
+          rating,
+          comment,
+        });
+        await this.productRepository.updateById(idOfProduct, {
+          rating: newRating,
+        });
+      } else {
+        const isDeleted = false;
+        const time = new Date().toLocaleString();
+        const newRatingProduct = {
+          idOfOrder,
+          idOfProduct,
+          idOfUser,
+          idOfKiot,
+          isKiot,
+          rating,
+          isDeleted,
+          comment,
+          createdAt: time,
+          updatedAt: time,
+        };
+
+        const data =
+          await this.ratingProductRepository.create(newRatingProduct);
+
+        if (data.id) {
+          const totalRating: any = await this.ratingProductRepository.count({
+            idOfProduct,
+          });
+          const oldProduct: any =
+            await this.productRepository.findById(idOfProduct);
+
+          const oldShopInfo: any = await this.shopInfoRepository.findOne({
+            where: {idOfShop: oldProduct.idOfShop},
+          });
+
+          const oldKiotInfo: any = await this.kiotInfoRepository.findOne({
+            where: {idOfShop: oldProduct.idOfShop},
+          });
+          await this.kiotInfoRepository.updateById(oldKiotInfo.id, {
+            numberOfRating: oldKiotInfo.numberOfRating + 1,
+            avgRating:
+              (oldKiotInfo.avgRating * oldKiotInfo.numberOfRating + rating) /
+              (oldKiotInfo.numberOfRating + 1),
+          });
+
+          await this.shopInfoRepository.updateById(oldShopInfo.id, {
+            numberOfRating: oldShopInfo.numberOfRating + 1,
+            avgRating:
+              (oldShopInfo.avgRating * oldShopInfo.numberOfRating + rating) /
+              (oldShopInfo.numberOfRating + 1),
+          });
+
+          const newRating =
+            (oldProduct.rating * (totalRating.count - 1) + rating) /
+            totalRating.count;
+
+          await this.productRepository.updateById(idOfProduct, {
+            rating: newRating,
+            numberOfRating: oldProduct.numberOfRating + 1,
+          });
+        } else {
+          return {
+            code: 400,
+            message: 'Rating failed',
+          };
+        }
+
+        return this.ratingProductRepository.findOne({
+          where: {idOfOrder, idOfProduct, idOfUser},
+        });
+      }
+    }
   }
 
   @get('/rating-products')

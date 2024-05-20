@@ -84,6 +84,45 @@ export class transactionShopsController {
     return data;
   }
 
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('/transaction-shopsForShop/days/{days}')
+  @response(200, {
+    description: 'Transaction model count',
+    content: {'application/json': {schema: CountSchema}},
+  })
+  async getDaysForShop(
+    @inject(SecurityBindings.USER) currentUser: UserProfile,
+    @param.path.number('days') days: number,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    const data = notificationAxios
+      .get(`/transaction-shops/days/${days}/shop/${idOfShop}`)
+      .then(res => res)
+      .catch(err => console.log(err));
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('/transaction-shopsForShop/sum/{days}')
+  @response(200, {
+    description: 'Transaction model count',
+    content: {'application/json': {schema: CountSchema}},
+  })
+  async getSumForShop(
+    @inject(SecurityBindings.USER) currentUser: UserProfile,
+    @param.path.number('days') days: number,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    const data = notificationAxios
+      .get(`/transaction-shops/sum/${days}/shop/${idOfShop}`)
+      .then(res => res)
+      .catch(err => console.log(err));
+    return data;
+  }
+
   @authenticate('jwt')
   @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
   @get('/transaction-shopsForShop/count')
