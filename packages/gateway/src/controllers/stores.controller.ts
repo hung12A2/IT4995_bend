@@ -23,9 +23,11 @@ import {
 } from '@loopback/rest';
 
 import axios from '../services/authAxios.service';
+import storeAxios from '../services/storeAxios.service';
 import {authenticate} from '@loopback/authentication';
 import {authorize} from '@loopback/authorization';
 import {basicAuthorization} from '../services/basicAuthorize';
+import {SecurityBindings, UserProfile} from '@loopback/security';
 
 export class StoresController {
   constructor(
@@ -105,32 +107,6 @@ export class StoresController {
 
   // for store owner update store info
   // for admin update permission of store
-  @authenticate('jwt')
-  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
-  @patch('/stores/{id}')
-  @response(204, {
-    description: 'Store PATCH success',
-  })
-  async updateById(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-          },
-        },
-      },
-    })
-    store: any,
-  ): Promise<any> {
-    const data = await axios
-      .patch(`/stores/${id}`, {...store})
-      .then(res => res)
-      .catch(e => console.log(e));
-
-    return data;
-  }
 
   // for store owner
   @authenticate('jwt')
@@ -140,8 +116,10 @@ export class StoresController {
     description: 'Store stopWorking success',
   })
   async deleteById(@param.path.string('id') id: string): Promise<any> {
-    const data = await axios.patch(`/stores/stopWorking/${id}`).then(res => res);
-    return data
+    const data = await axios
+      .patch(`/stores/stopWorking/${id}`)
+      .then(res => res);
+    return data;
   }
 
   // for admin
@@ -153,7 +131,7 @@ export class StoresController {
   })
   async BanedById(@param.path.string('id') id: string): Promise<any> {
     const data = await axios.post(`/stores/banned/${id}`).then(res => res);
-    return data; 
+    return data;
   }
   @authenticate('jwt')
   @authorize({voters: [basicAuthorization], allowedRoles: ['admin']})
@@ -163,6 +141,129 @@ export class StoresController {
   })
   async Unbanned(@param.path.string('id') id: string): Promise<any> {
     const data = await axios.post(`/stores/unbanned/${id}`).then(res => res);
-    return data; 
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('/myStoreInfo')
+  @response(204, {
+    description: 'Store Banned success',
+  })
+  async GetStoreInfo(
+    @inject(SecurityBindings.USER) currentUser: UserProfile,
+  ): Promise<any> {
+    const data1 = await axios
+      .get(`myShop`, {
+        headers: {
+          Authorization: this.request.headers.authorization,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+    const data2 = await storeAxios
+      .get(`shop-infos/${currentUser.idOfShop}`, {
+        headers: {
+          Authorization: this.request.headers.authorization,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return {
+      shop: data1,
+      shopInfo: data2,
+    };
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
+  @get('/myKiotInfo')
+  @response(204, {
+    description: 'Store Banned success',
+  })
+  async GetKiotInfo(
+    @inject(SecurityBindings.USER) currentUser: UserProfile,
+  ): Promise<any> {
+    const data1 = await axios
+      .get(`myKiot`, {
+        headers: {
+          Authorization: this.request.headers.authorization,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+    const data2 = await storeAxios
+      .get(`kiot-infos/${currentUser.idOfKiot}`, {
+        headers: {
+          Authorization: this.request.headers.authorization,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return {
+      kiot: data1,
+      kiotInfo: data2,
+    };
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
+  @patch('/stores')
+  @response(204, {
+    description: 'Store PATCH success',
+  })
+  async updateById(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+          },
+        },
+      },
+    })
+    store: any,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+    const {
+      name,
+      description,
+      pickUpAddress,
+      returnAddress,
+      pickUpProvince,
+      returnProvince,
+      pickUpDistrict,
+      returnDistrict,
+      pickUpWard,
+      returnWard,
+      phoneNumber,
+    } = store;
+
+    const data = await axios
+      .patch(`/storesUpdate`, {
+        name,
+        description,
+        pickUpAddress,
+        returnAddress,
+        pickUpProvince,
+        returnProvince,
+        pickUpDistrict,
+        returnDistrict,
+        pickUpWard,
+        returnWard,
+        phoneNumber,
+      }, {
+        headers: {
+          Authorization: this.request.headers.authorization,
+        }
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
   }
 }

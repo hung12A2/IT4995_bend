@@ -26,7 +26,7 @@ import {SecurityBindings, UserProfile, securityId} from '@loopback/security';
 import {UserServiceBindings} from '../keys';
 import {Admin, User} from '../models';
 import {Credentials, CredentialsForEmployee} from '../types';
-import {AdminRepository, EmployeeRepository, StoreRepository} from '../repositories';
+import {AdminRepository, EmployeeRepository, KiotRepository, StoreRepository} from '../repositories';
 import {AdminManagmentService} from '../services/adminManagement.service';
 import multer from 'multer';
 import {deleteRemoteFile, uploadFile} from '../config/firebaseConfig';
@@ -66,6 +66,8 @@ export class UserManagementController {
     private response: Response,
     @repository(StoreRepository)
     public storeRepository: StoreRepository,
+    @repository(KiotRepository)
+    public kiotRepository: KiotRepository,
   ) {}
 
   //
@@ -327,6 +329,73 @@ export class UserManagementController {
     return this.storeRepository.findById(idOfShop);
   }
 
+
+  @authenticate('jwt')
+  @post('/uploadCoverImage/kiot')
+  @response(200, {
+    description: 'RequestCreateShop model instance',
+    content: {
+      'application/json': {schema: getModelSchemaRef(User)},
+    },
+  })
+  async uploadCoverImgKiot(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+    @requestBody({
+      description: 'multipart/form-data value.',
+      required: true,
+      content: {
+        'multipart/form-data': {
+          // Skip body parsing
+          'x-parser': 'stream',
+          schema: {type: 'object'},
+        },
+      },
+    })
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<any> {
+    const idOfKiot = currentUserProfile.idOfKiot;
+    const role = currentUserProfile.role;
+
+    const oldUser: any = await this.kiotRepository.findById(idOfKiot);
+
+    const data: any = await new Promise<object>((resolve, reject) => {
+      cpUpload(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          resolve({
+            files: request.files,
+            body: request.body,
+          });
+        }
+      });
+    });
+
+    const coverImage = data.files.coverImage;
+
+    if (coverImage.length > 1) {
+      return response.status(400).send('Chỉ được upload 1 bia');
+    }
+
+    if (role == 'customer') {
+      const dataCoverImage: any = await uploadFile(coverImage[0]);
+
+      if (oldUser.coverImage.url) {
+        deleteRemoteFile(oldUser.coverImage.filename);
+      }
+
+      await this.kiotRepository.updateById(idOfKiot, {
+        coverImage: {
+          filename: dataCoverImage.filename,
+          url: dataCoverImage.url,
+        },
+      });
+    }
+
+    return this.kiotRepository.findById(idOfKiot);
+  }
+
   @authenticate('jwt')
   @post('/uploadAvatar/shop')
   @response(200, {
@@ -376,9 +445,10 @@ export class UserManagementController {
     }
 
     if (role == 'customer') {
+      console.log('role', role);
       const dataavatar: any = await uploadFile(avatar[0]);
 
-      if (oldUser.avatar.url) {
+      if (oldUser?.avatar?.url) {
         deleteRemoteFile(oldUser.avatar.filename);
       }
 
@@ -391,6 +461,73 @@ export class UserManagementController {
     }
 
     return this.storeRepository.findById(idOfShop);
+  }
+
+  @authenticate('jwt')
+  @post('/uploadAvatar/kiot')
+  @response(200, {
+    description: 'RequestCreateShop model instance',
+    content: {
+      'application/json': {schema: getModelSchemaRef(User)},
+    },
+  })
+  async uploadAvatarKiot(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+    @requestBody({
+      description: 'multipart/form-data value.',
+      required: true,
+      content: {
+        'multipart/form-data': {
+          // Skip body parsing
+          'x-parser': 'stream',
+          schema: {type: 'object'},
+        },
+      },
+    })
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<any> {
+    const idOfKiot = currentUserProfile.idOfKiot;
+    const role = currentUserProfile.role;
+
+    const oldUser: any = await this.kiotRepository.findById(idOfKiot);
+
+    const data: any = await new Promise<object>((resolve, reject) => {
+      cpUpload(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          resolve({
+            files: request.files,
+            body: request.body,
+          });
+        }
+      });
+    });
+
+    const avatar = data.files.avatar;
+
+    if (avatar.length > 1) {
+      return response.status(400).send('Chỉ được upload 1 bia');
+    }
+
+    if (role == 'customer') {
+      console.log('role', role);
+      const dataavatar: any = await uploadFile(avatar[0]);
+
+      if (oldUser?.avatar?.url) {
+        deleteRemoteFile(oldUser.avatar.filename);
+      }
+
+      await this.kiotRepository.updateById(idOfKiot, {
+        avatar: {
+          filename: dataavatar.filename,
+          url: dataavatar.url,
+        },
+      });
+    }
+
+    return this.kiotRepository.findById(idOfKiot);
   }
 
   //
@@ -1082,7 +1219,7 @@ export class UserManagementController {
     const data = await sendEmail(
       email,
       'Reset Password',
-      `http://localhost:3000/resetPassword?token=${resetToken}`,
+      `http://localhost:3000/forgotPassowrdEmployee?token=${resetToken}`,
     );
     
     return {
@@ -1532,6 +1669,53 @@ export class UserManagementController {
       return data;
     }
   }
+
+  @authenticate('jwt')
+  @get('myShop', {
+    responses: {
+      '200': {
+        description: 'Return current user',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'USER',
+            },
+          },
+        },
+      },
+    },
+  })
+  async myShop(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+  ): Promise<any> {
+    const data: any = await this.storeRepository.findById(currentUserProfile.idOfShop);
+    return data;
+  }
+
+  @authenticate('jwt')
+  @get('myKiot', {
+    responses: {
+      '200': {
+        description: 'Return current user',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'USER',
+            },
+          },
+        },
+      },
+    },
+  })
+  async myKiot(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+  ): Promise<any> {
+    const data: any = await this.kiotRepository.findById(currentUserProfile.idOfKiot);
+    return data;
+  }
+
 
   @authenticate('jwt')
   @get('getAllUser', {

@@ -320,13 +320,17 @@ export class KiotController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Kiot, {partial: true}),
+          schema: {
+            type: 'object'
+          }
         },
       },
     })
-    kiot: Kiot,
+    kiot: any,
   ): Promise<any> {
     const idOfUser = currentUser.id;
+
+    console.log(idOfArea);
 
     const {
       name,

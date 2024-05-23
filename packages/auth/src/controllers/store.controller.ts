@@ -19,6 +19,12 @@ import {
 } from '@loopback/rest';
 import {Store} from '../models';
 import {StoreRepository} from '../repositories';
+import {basicAuthorization} from '../services/basicAuthorize';
+import {authorize} from '@loopback/authorization';
+import {authenticate} from '@loopback/authentication';
+import {inject} from '@loopback/core';
+import {SecurityBindings, UserProfile} from '@loopback/security';
+import {geometry} from '../utils/getGeometry';
 
 export class StoreController {
   constructor(
@@ -26,7 +32,7 @@ export class StoreController {
     public storeRepository: StoreRepository,
   ) {}
 
-  // for admin + user 
+  // for admin + user
   @get('/stores')
   @response(200, {
     description: 'Array of Store model instances',
@@ -59,7 +65,6 @@ export class StoreController {
     return await this.storeRepository.count(filter);
   }
 
-
   // for admin + store owner
   // tim day du thong tin shop cua minh
   // tim thong tin shop nguoi khac bang filter
@@ -82,25 +87,108 @@ export class StoreController {
 
   // for store owner update store info
   // for admin update permission of store
-  @patch('/stores/{id}')
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
+  @patch('/storesUpdate')
   @response(204, {
     description: 'Store PATCH success',
   })
   async updateById(
-    @param.path.string('id') id: string,
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Store, {partial: true}),
+          schema: {
+            type: 'object'
+          }
         },
       },
     })
-    store: Store,
-  ): Promise<void> {
-    await this.storeRepository.updateById(id, store);
-  }
+    store: any,
+  ): Promise<any> {
 
-  
+
+    const idOfUser = currentUser.id;
+
+    const idOfShop = currentUser.idOfShop;
+    const {
+      name,
+      description,
+      pickUpAddress,
+      returnAddress,
+      pickUpProvince,
+      returnProvince,
+      pickUpDistrict,
+      returnDistrict,
+      pickUpWard,
+      returnWard,
+      phoneNumber,
+    } = store;
+
+
+    const pickUpProvinceName = pickUpProvince.split('-')[0].trim();
+    const pickUpProvinceId = pickUpProvince.split('-')[1].trim();
+    const pickUpDistrictName = pickUpDistrict.split('-')[0].trim();
+    const pickUpDistrictId = pickUpDistrict.split('-')[1].trim();
+    const pickUpWardName = pickUpWard.split('-')[0].trim();
+    const pickUpWardId = pickUpWard.split('-')[1].trim();
+
+    const returnProvinceName = returnProvince.split('-')[0].trim();
+    const returnProvinceId = returnProvince.split('-')[1].trim();
+    const returnDistrictName = returnDistrict.split('-')[0].trim();
+    const returnDistrictId = returnDistrict.split('-')[1].trim();
+    const returnWardName = returnWard.split('-')[0].trim();
+    const returnWardId = returnWard.split('-')[1].trim();
+
+
+    const createTime = new Date().toLocaleString();
+    const updatedAt = createTime;
+    const updatedBy = `shopOwner${idOfUser}`;
+
+    const pickUpGeometryName = `${pickUpAddress},${pickUpWardName}, ${pickUpDistrictName}, ${pickUpProvinceName}`;
+    const returnGeometryName = `${returnAddress},${returnWardName}, ${returnDistrictName}, ${returnProvinceName}`;
+
+    const pickUpGeometryData: any = await geometry(pickUpGeometryName);
+    if (pickUpGeometryData.status !== 'OK') {
+      return {code: 400, message: 'Loi he thong'};
+    }
+    const pickUpGeometry = pickUpGeometryData.results[0].geometry.location;
+
+    const returnGeometryData: any = await geometry(returnGeometryName);
+    if (returnGeometryData.status !== 'OK') {
+      return {code: 400, message: 'Loi he thong'};
+    }
+    const returnGeometry = returnGeometryData.results[0].geometry.location;
+
+    const newShop = {
+      pickUpGeometry,
+      returnGeometry,
+      pickUpAddress,
+      returnAddress,
+      pickUpProvinceName,
+      pickUpProvinceId,
+      returnProvinceName,
+      returnProvinceId,
+      pickUpDistrictName,
+      pickUpDistrictId,
+      returnDistrictName,
+      returnDistrictId,
+      pickUpWardName,
+      pickUpWardId,
+      returnWardName,
+      returnWardId,
+      name,
+      description,
+      updatedAt,
+      updatedBy,
+      phoneNumber,
+    };
+
+    await this.storeRepository.updateById(idOfShop, newShop);
+
+    return this.storeRepository.findById(idOfShop);
+  }
 
   // for store owner
   @patch('/stores/stopWorking/{id}')
@@ -124,7 +212,7 @@ export class StoreController {
   @response(204, {
     description: 'Store Banned success',
   })
-  async UnbanedById (@param.path.string('id') id: string): Promise<void> {
+  async UnbanedById(@param.path.string('id') id: string): Promise<void> {
     await this.storeRepository.updateById(id, {status: 'active'});
   }
 }

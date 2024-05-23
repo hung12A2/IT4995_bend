@@ -64,7 +64,7 @@ export class ShopInfoController {
     return this.shopInfoRepository.find(filter);
   }
 
-  @get('/shop-infos/{id}')
+  @get('/shop-infos/{idOfShop}')
   @response(200, {
     description: 'ShopInfo model instance',
     content: {
@@ -74,10 +74,8 @@ export class ShopInfoController {
     },
   })
   async findById(
-    @param.path.string('id') id: string,
-    @param.filter(ShopInfo, {exclude: 'where'})
-    filter?: FilterExcludingWhere<ShopInfo>,
-  ): Promise<ShopInfo> {
-    return this.shopInfoRepository.findById(id, filter);
+    @param.path.string('idOfShop') idOfShop: string,
+  ): Promise<any> {
+    return this.shopInfoRepository.findOne({where: {idOfShop}});
   }
 }

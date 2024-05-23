@@ -13,6 +13,7 @@ import {
   Request,
   response,
   param,
+  patch,
 } from '@loopback/rest';
 import {authenticate} from '@loopback/authentication';
 import axios from '../services/authAxios.service';
@@ -20,6 +21,7 @@ import multer from 'multer';
 import FormData from 'form-data';
 import {authorize} from '@loopback/authorization';
 import {basicAuthorization} from '../services/basicAuthorize';
+import {SecurityBindings, UserProfile} from '@loopback/security';
 
 const storage = multer.memoryStorage();
 const upload = multer({storage});
@@ -131,7 +133,7 @@ export class KiotController {
       },
     },
   })
-  async countKiot (@param.query.object('filter') filter: object): Promise<any> {
+  async countKiot(@param.query.object('filter') filter: object): Promise<any> {
     const data = axios
       .get(`/kiots/count`, {
         params: {
@@ -270,6 +272,83 @@ export class KiotController {
           authorization: this.request.headers.authorization,
         },
       })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
+  @patch('/kiots')
+  @response(204, {
+    description: 'Store PATCH success',
+  })
+  async updateById(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+          },
+        },
+      },
+    })
+    store: any,
+  ): Promise<any> {
+    const {
+      name,
+      description,
+      pickUpAddress,
+      returnAddress,
+      pickUpProvince,
+      returnProvince,
+      pickUpDistrict,
+      returnDistrict,
+      pickUpWard,
+      returnWard,
+      phoneNumber,
+      idOfArea,
+    } = store;
+
+    console.log({
+      name,
+      description,
+      pickUpAddress,
+      returnAddress,
+      pickUpProvince,
+      returnProvince,
+      pickUpDistrict,
+      returnDistrict,
+      pickUpWard,
+      returnWard,
+      phoneNumber,
+    });
+
+    const data = await axios
+      .patch(
+        `/kiots/area/${idOfArea}`,
+        {
+          name,
+          description,
+          pickUpAddress,
+          returnAddress,
+          pickUpProvince,
+          returnProvince,
+          pickUpDistrict,
+          returnDistrict,
+          pickUpWard,
+          returnWard,
+          phoneNumber,
+        },
+        {
+          headers: {
+            Authorization: this.request.headers.authorization,
+          },
+        },
+      )
       .then(res => res)
       .catch(e => console.log(e));
 

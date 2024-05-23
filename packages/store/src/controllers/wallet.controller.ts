@@ -18,10 +18,13 @@ import {
   response,
   RestBindings,
   Response,
+  Request,
 } from '@loopback/rest';
 import {Wallet} from '../models';
 import {WalletRepository} from '../repositories';
 import {inject} from '@loopback/core';
+import {request} from 'http';
+import { genUrlVnPay } from '../config/vnPayConfig';
 
 export class WalletController {
   constructor(
@@ -29,7 +32,35 @@ export class WalletController {
     public walletRepository: WalletRepository,
     @inject(RestBindings.Http.RESPONSE)
     public response: Response,
+    @inject(RestBindings.Http.REQUEST)
+    public request: Request,
   ) {}
+
+  @post('/vnPay')
+  @response(200, {
+    description: 'Wallet model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Wallet)}},
+  })
+  async callVnpay(
+    @requestBody({
+      description: 'vnpay test',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              amount_money: {type: 'string'},
+            },
+          },
+        },
+      },
+    })
+    request: any,
+  ): Promise<any> {
+    const ip = this.request.ip;
+    const {amount_money} = request;
+    return genUrlVnPay(amount_money, ip);
+  }
 
   @post('/wallets/{idOfUser}')
   @response(200, {

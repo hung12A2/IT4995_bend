@@ -495,7 +495,7 @@ export class UserController {
     return data;
   }
 
-  @post('/resetPassword/Employee', {
+  @post('/resetPassword/employee', {
     responses: {
       '200': {
         description: 'Change Password',

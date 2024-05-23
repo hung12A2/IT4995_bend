@@ -23,7 +23,7 @@ import {UserInfoRepository} from '../repositories';
 export class UserInfoController {
   constructor(
     @repository(UserInfoRepository)
-    public userInfoRepository : UserInfoRepository,
+    public userInfoRepository: UserInfoRepository,
   ) {}
 
   @post('/user-infos/{id}')
@@ -31,9 +31,7 @@ export class UserInfoController {
     description: 'UserInfo model instance',
     content: {'application/json': {schema: getModelSchemaRef(UserInfo)}},
   })
-  async create(
-  @param.path.string('id') id: string,
-  ): Promise<UserInfo> {
+  async create(@param.path.string('id') id: string): Promise<UserInfo> {
     return this.userInfoRepository.create({idOfUser: id});
   }
 
@@ -42,9 +40,7 @@ export class UserInfoController {
     description: 'UserInfo model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(UserInfo) where?: Where<UserInfo>,
-  ): Promise<Count> {
+  async count(@param.where(UserInfo) where?: Where<UserInfo>): Promise<Count> {
     return this.userInfoRepository.count(where);
   }
 
@@ -66,7 +62,6 @@ export class UserInfoController {
     return this.userInfoRepository.find(filter);
   }
 
-
   @get('/user-infos/{id}')
   @response(200, {
     description: 'UserInfo model instance',
@@ -78,9 +73,9 @@ export class UserInfoController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(UserInfo, {exclude: 'where'}) filter?: FilterExcludingWhere<UserInfo>
-  ): Promise<UserInfo> {
-    return this.userInfoRepository.findById(id, filter);
+    @param.filter(UserInfo, {exclude: 'where'})
+    filter?: FilterExcludingWhere<UserInfo>,
+  ): Promise<any> {
+    return this.userInfoRepository.findOne({where: {idOfUser: id}});
   }
-
 }

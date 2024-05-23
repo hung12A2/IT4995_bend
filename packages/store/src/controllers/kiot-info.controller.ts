@@ -23,7 +23,7 @@ import {KiotInfoRepository} from '../repositories';
 export class KiotInfoController {
   constructor(
     @repository(KiotInfoRepository)
-    public kiotInfoRepository : KiotInfoRepository,
+    public kiotInfoRepository: KiotInfoRepository,
   ) {}
 
   @post('/kiot-infos/{idOfShop}/kiot/{idOfKiot}')
@@ -32,7 +32,7 @@ export class KiotInfoController {
     content: {'application/json': {schema: getModelSchemaRef(KiotInfo)}},
   })
   async create(
-   @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('idOfShop') idOfShop: string,
     @param.path.string('idOfKiot') idOfKiot: string,
   ): Promise<KiotInfo> {
     return this.kiotInfoRepository.create({
@@ -46,9 +46,7 @@ export class KiotInfoController {
     description: 'KiotInfo model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(KiotInfo) where?: Where<KiotInfo>,
-  ): Promise<Count> {
+  async count(@param.where(KiotInfo) where?: Where<KiotInfo>): Promise<Count> {
     return this.kiotInfoRepository.count(where);
   }
 
@@ -79,11 +77,7 @@ export class KiotInfoController {
       },
     },
   })
-  async findById(
-    @param.path.string('id') id: string,
-    @param.filter(KiotInfo, {exclude: 'where'}) filter?: FilterExcludingWhere<KiotInfo>
-  ): Promise<KiotInfo> {
-    return this.kiotInfoRepository.findById(id, filter);
+  async findById(@param.path.string('id') id: string): Promise<any> {
+    return this.kiotInfoRepository.findOne({where: {idOfKiot: id}});
   }
-
 }

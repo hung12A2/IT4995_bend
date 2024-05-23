@@ -169,7 +169,7 @@ export class LocationController {
         const data = response.data.data;
         const dataReturn = data.map((item: any) => {
           return {
-            wardCode: item.WardCode,
+            wardCode: item.WardCode.trim(),
             wardName: item.WardName,
           };
         });
