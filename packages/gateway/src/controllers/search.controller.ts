@@ -58,7 +58,7 @@ export class SearchController {
     const userId = currentUserProfile.id;
     const keyWord = search.keyWord;
     let shop: any = await authAxios
-      .get(`searchs/${keyWord}`)
+      .get(`searches/${keyWord}`)
       .then(res => res)
       .catch(e => console.log(e));
     if (shop.length > 0) {
@@ -138,46 +138,11 @@ export class SearchController {
     return {shop, products};
   }
 
-  @get('/shop-infos/count')
+  
+  @authenticate('jwt')
+  @get('/searches')
   @response(200, {
-    description: 'ShopInfo model count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async count(@param.query.object('filter') filter: string): Promise<any> {
-    const data = storeAxios
-      .get('/shop-infos/count', {params: {filter}})
-      .then(res => res)
-      .catch(err => console.log(err));
-
-    return data;
-  }
-
-  @get('/shop-infos')
-  @response(200, {
-    description: 'Array of ShopInfo model instances',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'array',
-          items: {
-            type: 'object',
-          },
-        },
-      },
-    },
-  })
-  async find(@param.query.object('filter') filter: string): Promise<any> {
-    const data = storeAxios
-      .get('/shop-infos', {params: {filter}})
-      .then(res => res)
-      .catch(err => console.log(err));
-
-    return data;
-  }
-
-  @get('/shop-infos/{id}')
-  @response(200, {
-    description: 'ShopInfo model instance',
+    description: 'Array of Search model instances',
     content: {
       'application/json': {
         schema: {
@@ -186,12 +151,21 @@ export class SearchController {
       },
     },
   })
-  async findById(@param.path.string('id') id: string): Promise<any> {
-    const data = storeAxios
-      .get(`/shop-infos/${id}`)
+  async findByUser(
+    @inject(SecurityBindings.USER) currentUserProfile: any,
+  ): Promise<any> {
+    let filter = {
+      where: {
+        idOfUser: currentUserProfile.id,
+      },
+    };
+
+    const data = await storeAxios
+      .get(`/searches`, {
+        params: {filter},
+      })
       .then(res => res)
       .catch(err => console.log(err));
-
     return data;
   }
 }

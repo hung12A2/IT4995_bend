@@ -27,6 +27,12 @@ export class Search extends Entity {
   })
   createdAt: string;
 
+  @property({
+    type: 'date',
+    required: true,
+  })
+  updatedAt: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

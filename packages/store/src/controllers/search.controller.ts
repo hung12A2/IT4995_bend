@@ -20,6 +20,84 @@ import {
 import {Search} from '../models';
 import {ProductRepository, SearchRepository} from '../repositories';
 
+function normalizeString(str: string): string {
+  const accentsMap: any = {
+    á: 'a',
+    à: 'a',
+    ả: 'a',
+    ã: 'a',
+    ạ: 'a',
+    ă: 'a',
+    ắ: 'a',
+    ằ: 'a',
+    ẳ: 'a',
+    ẵ: 'a',
+    ặ: 'a',
+    â: 'a',
+    ấ: 'a',
+    ầ: 'a',
+    ẩ: 'a',
+    ẫ: 'a',
+    ậ: 'a',
+    é: 'e',
+    è: 'e',
+    ẻ: 'e',
+    ẽ: 'e',
+    ẹ: 'e',
+    ê: 'e',
+    ế: 'e',
+    ề: 'e',
+    ể: 'e',
+    ễ: 'e',
+    ệ: 'e',
+    í: 'i',
+    ì: 'i',
+    ỉ: 'i',
+    ĩ: 'i',
+    ị: 'i',
+    ó: 'o',
+    ò: 'o',
+    ỏ: 'o',
+    õ: 'o',
+    ọ: 'o',
+    ô: 'o',
+    ố: 'o',
+    ồ: 'o',
+    ổ: 'o',
+    ỗ: 'o',
+    ộ: 'o',
+    ơ: 'o',
+    ớ: 'o',
+    ờ: 'o',
+    ở: 'o',
+    ỡ: 'o',
+    ợ: 'o',
+    ú: 'u',
+    ù: 'u',
+    ủ: 'u',
+    ũ: 'u',
+    ụ: 'u',
+    ư: 'u',
+    ứ: 'u',
+    ừ: 'u',
+    ử: 'u',
+    ữ: 'u',
+    ự: 'u',
+    ý: 'y',
+    ỳ: 'y',
+    ỷ: 'y',
+    ỹ: 'y',
+    ỵ: 'y',
+    đ: 'd',
+  };
+
+  return str
+    .split('')
+    .map(char => accentsMap[char] || char)
+    .join('')
+    .replace(/\s+/g, '');
+}
+
 export class SearchController {
   constructor(
     @repository(SearchRepository)
@@ -49,25 +127,54 @@ export class SearchController {
     })
     search: any,
   ): Promise<any> {
-    await this.searchRepository.create({
-      keyWord: search.keyWord,
-      idOfUser: userId,
-      createdAt: new Date().toLocaleString(),
+    const searchExist = await this.searchRepository.findOne({
+      where: {keyWord: search.keyWord, idOfUser: userId},
     });
 
-    const regex = new RegExp(search.keyWord.replace(/\s+/g, ''), 'i');
+    if (searchExist) {
+      await this.searchRepository.updateAll(
+        {updatedAt: new Date().toLocaleString()},
+        {
+          keyWord: search.keyWord,
+          idOfUser: userId,
+        },
+      );
+    } else {
+      await this.searchRepository.create({
+        keyWord: search.keyWord,
+        idOfUser: userId,
+        createdAt: new Date().toLocaleString(),
+        updatedAt: new Date().toLocaleString(),
+      });
+    }
 
-    const products = await this.productRepository.find({
-      where: {
-        or: [
-          {name: {like: regex}},
-          {productDescription: {like: regex}},
-          {productDetails: {like: regex}},
-        ],
-      },
-    });
+    let productsReturn = [];
 
-    return products;
+    let products = await this.productRepository.find();
+
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      let name = normalizeString(product.name.trim().toLowerCase());
+      let keyWordNormalize = normalizeString(
+        search.keyWord.trim().toLowerCase(),
+      );
+      let productDescription = normalizeString(
+        product.productDescription.trim().toLowerCase(),
+      );
+      let productDetails = normalizeString(
+        product.productDetails.trim().toLowerCase(),
+      );
+
+      if (
+        name.includes(keyWordNormalize) ||
+        productDescription.includes(keyWordNormalize) ||
+        productDetails.includes(keyWordNormalize)
+      ) {
+        productsReturn.push(product);
+      }
+    }
+
+    return productsReturn;
   }
 
   @get('/searches/count')
@@ -79,7 +186,7 @@ export class SearchController {
     return this.searchRepository.count(where);
   }
 
-  @get('/searches/{userId}')
+  @get('/searches')
   @response(200, {
     description: 'Array of Search model instances',
     content: {
@@ -91,8 +198,10 @@ export class SearchController {
       },
     },
   })
-  async find(@param.path.string('userId') userId: string): Promise<any> {
-    return this.searchRepository.findOne({where: {idOfUser: userId}});
+  async findByUser(
+    @param.query.object('filter') filter?: Filter<Search>,
+  ): Promise<any> {
+    return this.searchRepository.find(filter);
   }
 
   @get('/searches/key/{keyWord}')
@@ -110,19 +219,31 @@ export class SearchController {
   async findProductByKey(
     @param.path.string('keyWord') keyWord: string,
   ): Promise<any> {
-    const regex = new RegExp(keyWord.replace(/\s+/g, ''), 'i');
+    let productsReturn = [];
 
-    const products = await this.productRepository.find({
-      where: {
-        or: [
-          {name: {like: regex}},
-          {productDescription: {like: regex}},
-          {productDetails: {like: regex}},
-        ],
-      },
-    });
+    let products = await this.productRepository.find();
 
-    return products;
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      let name = normalizeString(product.name.trim().toLowerCase());
+      let keyWordNormalize = normalizeString(keyWord.trim().toLowerCase());
+      let productDescription = normalizeString(
+        product.productDescription.trim().toLowerCase(),
+      );
+      let productDetails = normalizeString(
+        product.productDetails.trim().toLowerCase(),
+      );
+
+      if (
+        name.includes(keyWordNormalize) ||
+        productDescription.includes(keyWordNormalize) ||
+        productDetails.includes(keyWordNormalize)
+      ) {
+        productsReturn.push(product);
+      }
+    }
+
+    return productsReturn;
   }
 
   @del('/searches/{id}')

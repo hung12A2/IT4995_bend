@@ -19,7 +19,7 @@
     "ShopInfo": 13,
     "UserInfo": 2,
     "KiotInfo": 2,
-    "Search": 5
+    "Search": 13
   },
   "models": {
     "Category": {
@@ -122,10 +122,14 @@
       "6da95461-2109-4a3c-b49a-58d2e0475730": "{\"id\":\"6da95461-2109-4a3c-b49a-58d2e0475730\",\"idOfShop\":\"6\",\"idOfKiot\":\"5\",\"numberOfProduct\":0,\"avgRating\":3,\"numberOfRating\":2,\"numberOfSold\":2,\"numberOfOrder\":1,\"numberOfSuccesOrder\":1,\"numberOfRejectOrder\":0,\"numberOfReturnOrder\":0,\"numberOfFailedOrder\":0}"
     },
     "Search": {
-      "1": "{\"keyWord\":\"quạt\",\"idOfUser\":\"1\",\"id\":\"1\"}",
-      "2": "{\"keyWord\":\"tiể\",\"idOfUser\":\"1\",\"id\":\"2\"}",
-      "3": "{\"keyWord\":\"gia dinh\",\"idOfUser\":\"1\",\"id\":\"3\"}",
-      "4": "{\"keyWord\":\"5 sao\",\"idOfUser\":\"1\",\"id\":\"4\"}"
+      "5": "{\"keyWord\":\"vui\",\"idOfUser\":\"1\",\"createdAt\":\"2024-05-25T08:38:37.000Z\",\"updatedAt\":\"2024-05-25T08:39:26.000Z\",\"id\":\"5\"}",
+      "6": "{\"keyWord\":\"khỏe\",\"idOfUser\":\"1\",\"createdAt\":\"2024-05-25T08:40:29.000Z\",\"updatedAt\":\"2024-05-25T08:40:29.000Z\",\"id\":\"6\"}",
+      "7": "{\"keyWord\":\"Vuive\",\"idOfUser\":\"1\",\"createdAt\":\"2024-05-25T08:40:34.000Z\",\"updatedAt\":\"2024-05-25T08:40:34.000Z\",\"id\":\"7\"}",
+      "8": "{\"keyWord\":\"gia dinh\",\"idOfUser\":\"1\",\"createdAt\":\"2024-05-25T08:40:41.000Z\",\"updatedAt\":\"2024-05-25T08:40:41.000Z\",\"id\":\"8\"}",
+      "9": "{\"keyWord\":\"giadinh\",\"idOfUser\":\"1\",\"createdAt\":\"2024-05-25T08:40:58.000Z\",\"updatedAt\":\"2024-05-25T08:40:58.000Z\",\"id\":\"9\"}",
+      "10": "{\"keyWord\":\"tieuly\",\"idOfUser\":\"1\",\"createdAt\":\"2024-05-25T08:41:21.000Z\",\"updatedAt\":\"2024-05-25T08:41:21.000Z\",\"id\":\"10\"}",
+      "11": "{\"keyWord\":\"tieu ly\",\"idOfUser\":\"1\",\"createdAt\":\"2024-05-25T08:41:38.000Z\",\"updatedAt\":\"2024-05-25T08:41:38.000Z\",\"id\":\"11\"}",
+      "12": "{\"keyWord\":\"tiểu ly\",\"idOfUser\":\"1\",\"createdAt\":\"2024-05-25T08:41:46.000Z\",\"updatedAt\":\"2024-05-25T08:41:46.000Z\",\"id\":\"12\"}"
     }
   }
 }
