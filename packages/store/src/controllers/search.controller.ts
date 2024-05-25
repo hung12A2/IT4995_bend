@@ -148,33 +148,10 @@ export class SearchController {
       });
     }
 
-    let productsReturn = [];
-
-    let products = await this.productRepository.find();
-
-    for (let i = 0; i < products.length; i++) {
-      const product = products[i];
-      let name = normalizeString(product.name.trim().toLowerCase());
-      let keyWordNormalize = normalizeString(
-        search.keyWord.trim().toLowerCase(),
-      );
-      let productDescription = normalizeString(
-        product.productDescription.trim().toLowerCase(),
-      );
-      let productDetails = normalizeString(
-        product.productDetails.trim().toLowerCase(),
-      );
-
-      if (
-        name.includes(keyWordNormalize) ||
-        productDescription.includes(keyWordNormalize) ||
-        productDetails.includes(keyWordNormalize)
-      ) {
-        productsReturn.push(product);
-      }
-    }
-
-    return productsReturn;
+    return {
+      code: 200,
+      message: 'Create search success',
+    };
   }
 
   @get('/searches/count')
@@ -240,6 +217,74 @@ export class SearchController {
         productDetails.includes(keyWordNormalize)
       ) {
         productsReturn.push(product);
+      }
+    }
+
+    return productsReturn;
+  }
+
+  @post('/suggestForUser')
+  @response(200, {
+    description: 'Array of Search model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Search, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async suggest(
+    @requestBody({
+      description: 'Search model instance',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              listKeyWord: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+    req: any,
+  ): Promise<any> {
+    let listKeyWord = req.listKeyWord;
+    let productsReturn = [];
+
+    let products = await this.productRepository.find();
+    let keyWordNormalize = [];
+    for (let i = 0; i < listKeyWord.length; i++) {
+      keyWordNormalize.push(
+        normalizeString(listKeyWord[i].trim().toLowerCase()),
+      );
+    }
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      let name = normalizeString(product.name.trim().toLowerCase());
+      let productDescription = normalizeString(
+        product.productDescription.trim().toLowerCase(),
+      );
+      let productDetails = normalizeString(
+        product.productDetails.trim().toLowerCase(),
+      );
+
+      for (let j = 0; j < keyWordNormalize.length; j++) {
+        if (
+          name.includes(keyWordNormalize[j]) ||
+          productDescription.includes(keyWordNormalize[j]) ||
+          productDetails.includes(keyWordNormalize[j])
+        ) {
+          productsReturn.push(product);
+          break;
+        }
       }
     }
 

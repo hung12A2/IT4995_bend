@@ -23,6 +23,7 @@ import storeAxios from '../services/storeAxios.service';
 import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {SecurityBindings} from '@loopback/security';
+import axios from 'axios';
 
 export class SearchController {
   constructor() {}
@@ -57,30 +58,6 @@ export class SearchController {
   ): Promise<any> {
     const userId = currentUserProfile.id;
     const keyWord = search.keyWord;
-    let shop: any = await authAxios
-      .get(`searches/${keyWord}`)
-      .then(res => res)
-      .catch(e => console.log(e));
-    if (shop.length > 0) {
-      shop = await Promise.all(
-        shop.map(async (item: any) => {
-          const idOfShop = item.id;
-          const data: any = await storeAxios
-            .get(`/shop-infos/${idOfShop}`)
-
-            .then(res => res)
-            .catch(err => console.log(err));
-          return {
-            ...item,
-            numberOfProduct: data.numberOfProduct,
-            numberOfOrder: data.numberOfOrder,
-            numberOfRating: data.numberOfRating,
-            avgRating: data.avgRating,
-            numberOfSold: data.numberOfSold,
-          };
-        }),
-      );
-    }
 
     let products: any = await storeAxios
       .post(`/searches/user/${userId}`, {
@@ -89,7 +66,7 @@ export class SearchController {
       .then(res => res)
       .catch(err => console.log(err));
 
-    return {shop, products};
+    return products;
   }
 
   @get('/searches/{keyWord}')
@@ -138,7 +115,6 @@ export class SearchController {
     return {shop, products};
   }
 
-  
   @authenticate('jwt')
   @get('/searches')
   @response(200, {
@@ -167,5 +143,50 @@ export class SearchController {
       .then(res => res)
       .catch(err => console.log(err));
     return data;
+  }
+
+  @post('/suggestForUser')
+  @response(200, {
+    description: 'Array of Search model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+        },
+      },
+    },
+  })
+  async suggest(
+    @requestBody({
+      description: 'Search model instance',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              listKeyWord: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+    req: any,
+  ): Promise<any> {
+    const listKeyWord = req.listKeyWord;
+
+    const dataReturn = await axios
+      .post(`suggestForUser`, {
+        listKeyWord,
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+
+      return dataReturn;
   }
 }
