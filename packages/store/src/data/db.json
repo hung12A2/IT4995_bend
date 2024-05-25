@@ -16,9 +16,10 @@
     "ProductsInOrderKiot": 26,
     "WalletOfShop": 5,
     "RequestCreateProduct": 13,
-    "ShopInfo": 3,
+    "ShopInfo": 13,
     "UserInfo": 2,
-    "KiotInfo": 2
+    "KiotInfo": 2,
+    "Search": 5
   },
   "models": {
     "Category": {
@@ -111,13 +112,20 @@
       "6d897436-3fd9-4d97-8b20-4235c405fe96": "{\"id\":\"6d897436-3fd9-4d97-8b20-4235c405fe96\",\"name\":\"cân tiểu ly\",\"image\":[{\"url\":\"https://firebasestorage.googleapis.com/v0/b/clone-facebook-3caa4.appspot.com/o/2024-05-18T17:03:42.354ZScreenshot%20from%202024-05-17%2012-21-33.png?alt=media\",\"filename\":\"2024-05-18T17:03:42.354ZScreenshot from 2024-05-17 12-21-33.png\"}],\"idOfCategory\":\"2\",\"idOfShop\":\"6\",\"idOfKiot\":\"5\",\"isOnlineProduct\":true,\"isKiotProduct\":false,\"productDescription\":\"Cân tiểu ly cân đồ vật\",\"productDetails\":\"<p>Cân tiểu ly cân đồ vật</p><p>Cân mọi thứ</p>\",\"price\":12000,\"countInStock\":99,\"isBestSeller\":true,\"cateName\":\"do gia dung\",\"status\":\"accepted\",\"weight\":1.2,\"dimension\":\"12|6|4\",\"createdAt\":\"2024-05-18T17:03:43.000Z\",\"updatedAt\":\"2024-05-18T17:35:37.000Z\",\"createdBy\":\"shop-6\",\"updatedBy\":\"admin-ae1d36cd-31f5-4b4c-9242-8662fa1f8d20\"}"
     },
     "ShopInfo": {
-      "fa5adc69-44b2-46ee-945b-9d1b5b31312e": "{\"id\":\"fa5adc69-44b2-46ee-945b-9d1b5b31312e\",\"idOfShop\":\"6\",\"numberOfProduct\":1,\"avgRating\":3.6666666666666665,\"numberOfRating\":3,\"numberOfSold\":4,\"numberOfOrder\":3,\"numberOfSuccesOrder\":3,\"numberOfRejectOrder\":0,\"numberOfReturnOrder\":0,\"numberOfFailedOrder\":0}"
+      "fa5adc69-44b2-46ee-945b-9d1b5b31312e": "{\"id\":\"fa5adc69-44b2-46ee-945b-9d1b5b31312e\",\"idOfShop\":\"6\",\"numberOfProduct\":1,\"avgRating\":3.6666666666666665,\"numberOfRating\":3,\"numberOfSold\":4,\"numberOfOrder\":3,\"numberOfSuccesOrder\":3,\"numberOfRejectOrder\":0,\"numberOfReturnOrder\":0,\"numberOfFailedOrder\":0}",
+      "283957c2-a3a2-446f-bbc7-44d7393b26d5": "{\"id\":\"283957c2-a3a2-446f-bbc7-44d7393b26d5\",\"idOfShop\":\"546bfc1e-2053-493d-b4d8-97cb6939a390\",\"numberOfProduct\":0,\"avgRating\":0,\"numberOfRating\":0,\"numberOfSold\":0,\"numberOfOrder\":0,\"numberOfSuccesOrder\":0,\"numberOfRejectOrder\":0,\"numberOfReturnOrder\":0,\"numberOfFailedOrder\":0}"
     },
     "UserInfo": {
       "1": "{\"numberOfOrder\":3,\"numberOfSuccesOrder\":3,\"numberOfReturnOrder\":0,\"idOfUser\":\"1\",\"id\":\"1\"}"
     },
     "KiotInfo": {
       "6da95461-2109-4a3c-b49a-58d2e0475730": "{\"id\":\"6da95461-2109-4a3c-b49a-58d2e0475730\",\"idOfShop\":\"6\",\"idOfKiot\":\"5\",\"numberOfProduct\":0,\"avgRating\":3,\"numberOfRating\":2,\"numberOfSold\":2,\"numberOfOrder\":1,\"numberOfSuccesOrder\":1,\"numberOfRejectOrder\":0,\"numberOfReturnOrder\":0,\"numberOfFailedOrder\":0}"
+    },
+    "Search": {
+      "1": "{\"keyWord\":\"quạt\",\"idOfUser\":\"1\",\"id\":\"1\"}",
+      "2": "{\"keyWord\":\"tiể\",\"idOfUser\":\"1\",\"id\":\"2\"}",
+      "3": "{\"keyWord\":\"gia dinh\",\"idOfUser\":\"1\",\"id\":\"3\"}",
+      "4": "{\"keyWord\":\"5 sao\",\"idOfUser\":\"1\",\"id\":\"4\"}"
     }
   }
 }

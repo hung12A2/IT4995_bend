@@ -16,3 +16,4 @@ export * from './products-in-order-kiot.controller';
 export * from './user-info.controller';
 export * from './return-order.controller';
 export * from './kiot-info.controller';
+export * from './search.controller';

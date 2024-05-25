@@ -100,15 +100,13 @@ export class StoreController {
       content: {
         'application/json': {
           schema: {
-            type: 'object'
-          }
+            type: 'object',
+          },
         },
       },
     })
     store: any,
   ): Promise<any> {
-
-
     const idOfUser = currentUser.id;
 
     const idOfShop = currentUser.idOfShop;
@@ -126,7 +124,6 @@ export class StoreController {
       phoneNumber,
     } = store;
 
-
     const pickUpProvinceName = pickUpProvince.split('-')[0].trim();
     const pickUpProvinceId = pickUpProvince.split('-')[1].trim();
     const pickUpDistrictName = pickUpDistrict.split('-')[0].trim();
@@ -140,7 +137,6 @@ export class StoreController {
     const returnDistrictId = returnDistrict.split('-')[1].trim();
     const returnWardName = returnWard.split('-')[0].trim();
     const returnWardId = returnWard.split('-')[1].trim();
-
 
     const createTime = new Date().toLocaleString();
     const updatedAt = createTime;
@@ -214,5 +210,34 @@ export class StoreController {
   })
   async UnbanedById(@param.path.string('id') id: string): Promise<void> {
     await this.storeRepository.updateById(id, {status: 'active'});
+  }
+
+  @get('/searches/{keyWord}')
+  @response(200, {
+    description: 'Array of Search model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+        },
+      },
+    },
+  })
+  async findProductByKey(
+    @param.path.string('keyWord') keyWord: string,
+  ): Promise<any> {
+
+    const regex = new RegExp(keyWord.replace(/\s+/g, ''), 'i');
+
+    const products = await this.storeRepository.find({
+      where: {
+        or: [
+          {name: {like: regex}},
+          {description: {like: regex}},
+        ],
+      },
+    });
+
+    return products;
   }
 }

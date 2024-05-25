@@ -15,3 +15,4 @@ export * from './request-create-product.model';
 export * from './shop-info.model';
 export * from './user-info.model';
 export * from './kiot-info.model';
+export * from './search.model';

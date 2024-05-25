@@ -72,6 +72,7 @@ export class UserController {
     })
     req: any,
   ): Promise<any> {
+    console.log (req)
     const {email, password} = req;
     const token = await this.userService.verifyCredentials({
       email,
