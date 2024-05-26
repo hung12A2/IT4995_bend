@@ -129,12 +129,15 @@ export class SearchController {
   })
   async findByUser(
     @inject(SecurityBindings.USER) currentUserProfile: any,
+    @param.query.object('filter') filter: any
   ): Promise<any> {
-    let filter = {
-      where: {
-        idOfUser: currentUserProfile.id,
-      },
-    };
+    const idOfUser = currentUserProfile.id;
+    let where: any;
+    if (filter) {
+      where = filter?.where || {};
+      where = {...where, idOfUser};
+      filter.where = where;
+    }
 
     const data = await storeAxios
       .get(`/searches`, {

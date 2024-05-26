@@ -78,6 +78,12 @@ export class LocationUser extends Entity {
   })
   wardId: string;
 
+  @property({
+    type: 'string',
+    required: true,
+  })
+  phoneNumber: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

@@ -4,7 +4,7 @@ export const geometry = async (k: string) => {
   const address = encodeURI(k);
   const data = await axios
     .get(
-      `https://rsapi.goong.io/geocode?address=${address}&api_key=kjg7LLE2DwzMeoPbruW4ZfcsA8jAoM3sV9qb30wC`,
+      `https://rsapi.goong.io/geocode?address=${address}&api_key=inXFXxBnv2LKqIc5NYwRmbqtMbLeUHdXWDLT32Ii`,
     )
     .then(res => res.data)
     .catch(e => console.log(e));
@@ -15,7 +15,7 @@ export const geometry = async (k: string) => {
 export const getDistance = async (origin: string, destination: string) => {
   const data = await axios
     .get(
-      `https://rsapi.goong.io/DistanceMatrix?origins=${origin}&destinations=${destination}&vehicle=car&api_key=kjg7LLE2DwzMeoPbruW4ZfcsA8jAoM3sV9qb30wC`,
+      `https://rsapi.goong.io/DistanceMatrix?origins=${origin}&destinations=${destination}&vehicle=car&api_key=inXFXxBnv2LKqIc5NYwRmbqtMbLeUHdXWDLT32Ii`,
     )
     .then(res => res.data)
     .catch(e => console.log(e));

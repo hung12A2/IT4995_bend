@@ -1009,6 +1009,11 @@
     "@types/jsonfile" "*"
     "@types/node" "*"
 
+"@types/geopoint@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@types/geopoint/-/geopoint-1.0.3.tgz#568d1e63aa53c2d6dfe5d5e30f6535e785ef8d5f"
+  integrity sha512-xJegT7hkxfkx01Kch6KzDnKHBjBb6mqKCsHyln/u+3lMRz+a+Az+Nsx2qbQSt2uuaIBLmZBgAetOkX/VYFwJng==
+
 "@types/glob@^8.1.0":
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-8.1.0.tgz#b63e70155391b0584dce44e7ea25190bbc38f2fc"
@@ -2611,6 +2616,11 @@ gensync@^1.0.0-beta.2:
   version "1.0.0-beta.2"
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.2.tgz#32a6ee76c3d7f52d46b2b1ae5d93fea8580a25e0"
   integrity sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==
+
+geopoint@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/geopoint/-/geopoint-1.0.1.tgz#08db0048b4cb935badd5f9a2c0b2e207ca4b7f24"
+  integrity sha512-ojNWKDu4hdY2MeLUIiJH9cjP2s2BrVf9P2tuIvUPS8Hht0FzZpoZEAEmOa21eUCi8ahk1XBD3reSjPjsyVujkg==
 
 get-caller-file@^2.0.1, get-caller-file@^2.0.5:
   version "2.0.5"

@@ -48,6 +48,7 @@ export class LocationUserController {
               province: {type: 'string'},
               district: {type: 'string'},
               ward: {type: 'string'},
+              phoneNumber: {type: 'string'}
             },
           },
         },
@@ -55,7 +56,7 @@ export class LocationUserController {
     })
     locationUser: any,
   ): Promise<any> {
-    const {address, isDefaultOnline, isDefaultKiot, province, district, ward} =
+    const {address, isDefaultOnline, isDefaultKiot, province, district, ward, phoneNumber} =
       locationUser;
 
     if (!address || !province || !district || !ward) {
@@ -105,6 +106,7 @@ export class LocationUserController {
       wardName,
       wardId,
       idOfUser,
+      phoneNumber,
       geometry: geometryData.results[0].geometry.location,
     };
 
@@ -133,6 +135,7 @@ export class LocationUserController {
               province: {type: 'string'},
               district: {type: 'string'},
               ward: {type: 'string'},
+              phoneNumber: {type: 'string'},
             },
           },
         },
@@ -144,7 +147,7 @@ export class LocationUserController {
       where: {idOfUser, id},
     });
 
-    const {address, isDefaultOnline, isDefaultKiot, province, district, ward} =
+    const {address, isDefaultOnline, isDefaultKiot, province, district, ward, phoneNumber} =
       locationUser;
 
     if (!oldLocation) {
@@ -240,6 +243,7 @@ export class LocationUserController {
         wardName,
         wardId,
         idOfUser,
+        phoneNumber
       };
 
       const data = await this.locationUserRepository.updateById(
@@ -250,7 +254,7 @@ export class LocationUserController {
     }
   }
 
-  @get('/location-users/{idOfUser}')
+  @get('/location-users/')
   @response(200, {
     description: 'LocationUser model instance',
     content: {
@@ -260,10 +264,10 @@ export class LocationUserController {
     },
   })
   async findById(
-    @param.path.string('idOfUser') idOfUser: string,
+    @param.query.object('filter') filter: any
   ): Promise<any> {
-    const data = await this.locationUserRepository.find({where: {idOfUser}});
-    return {code:200, data}
+    const data = await this.locationUserRepository.find(filter);
+    return data;
   }
 
   @del('/location-users/{idOfUser}/location-id/{id}')

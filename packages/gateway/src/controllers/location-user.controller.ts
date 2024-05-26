@@ -61,6 +61,7 @@ export class LocationUserController {
               province: {type: 'string'},
               district: {type: 'string'},
               ward: {type: 'string'},
+              phoneNumber: {type: 'string'},
             },
           },
         },
@@ -69,7 +70,7 @@ export class LocationUserController {
     request: any,
   ): Promise<any> {
     const idOfUser = currentUser.id;
-    const {address, isDefaultOnline, isDefaultKiot, province, district, ward} =
+    const {address, isDefaultOnline, isDefaultKiot, province, district, ward, phoneNumber} =
       request;
     const data = await axios
       .post(`/location-users/${idOfUser}`, {
@@ -79,6 +80,7 @@ export class LocationUserController {
         province,
         district,
         ward,
+        phoneNumber
       })
       .then(res => res)
       .catch(e => console.log(e));
@@ -105,10 +107,22 @@ export class LocationUserController {
   async getAllLocaiton(
     @inject(SecurityBindings.USER)
     currentUser: UserProfile,
+    @param.query.object('filter') filter: any,
   ): Promise<any> {
     const idOfUser = currentUser.id;
+
+    let where: any;
+    if (filter) {
+      where = filter?.where || {};
+      where = {...where, idOfUser};
+      filter.where = where;
+    }
     const data = await axios
-      .get(`/location-users/${idOfUser}`)
+      .get(`/location-users`, {
+        params: {
+          filter,
+        },
+      })
       .then(res => res)
       .catch(e => console.log(e));
 
@@ -148,6 +162,7 @@ export class LocationUserController {
               province: {type: 'string'},
               district: {type: 'string'},
               ward: {type: 'string'},
+              phoneNumber: {type: 'string'},
             },
           },
         },
@@ -156,7 +171,7 @@ export class LocationUserController {
     request: any,
   ): Promise<any> {
     const idOfUser = currentUser.id;
-    const {address, isDefaultOnline, isDefaultKiot, province, district, ward} =
+    const {address, isDefaultOnline, isDefaultKiot, province, district, ward, phoneNumber} =
       request;
     const data = await axios
       .patch(`/location-users/${idOfUser}/location-id/${id}`, {
@@ -166,6 +181,7 @@ export class LocationUserController {
         province,
         district,
         ward,
+        phoneNumber
       })
       .then(res => res)
       .catch(e => console.log(e));

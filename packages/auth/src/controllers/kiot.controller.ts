@@ -32,6 +32,7 @@ import {authenticate} from '@loopback/authentication';
 import {SecurityBindings, UserProfile} from '@loopback/security';
 import {authorize} from '@loopback/authorization';
 import {basicAuthorization} from '../services/basicAuthorize';
+import GeoPoint from 'geopoint';
 
 export class KiotController {
   constructor(
@@ -228,7 +229,27 @@ export class KiotController {
       },
     },
   })
-  async find(@param.filter(Kiot) filter?: Filter<Kiot>): Promise<any> {
+  async find(@param.filter(Kiot) filter?: any): Promise<any> {
+    if (filter?.where.pickUpGeometry) {
+      let near: any = filter?.where.pickUpGeometry.near;
+
+      near = {
+        lat: +near.lat,
+        lng: +near.lng,
+      };
+
+
+      let maxDistance = filter?.where.pickUpGeometry.maxDistance;
+      let unit = filter?.where.pickUpGeometry.unit;
+      let pickUpGeometry = {
+        near,
+        maxDistance: +maxDistance,
+        unit,
+      };
+      filter.where.pickUpGeometry = pickUpGeometry;
+      filter.where.pickUpGeometry = pickUpGeometry;
+    }
+
     const data = await this.kiotRepository.find(filter);
     return data;
   }
@@ -281,9 +302,9 @@ export class KiotController {
   async Ban(@param.path.string('id') id: string): Promise<any> {
     await this.kiotRepository.updateById(id, {status: 'banned'});
     return {
-      code:200,
-      message: 'Banned successfully'
-    }
+      code: 200,
+      message: 'Banned successfully',
+    };
   }
 
   @post('/kiots/unbanned/{id}')
@@ -301,9 +322,9 @@ export class KiotController {
   async unban(@param.path.string('id') id: string): Promise<any> {
     await this.kiotRepository.updateById(id, {status: 'active'});
     return {
-      code:200,
-      message: 'Unbanned successfully'
-    }
+      code: 200,
+      message: 'Unbanned successfully',
+    };
   }
 
   @authenticate('jwt')
@@ -321,8 +342,8 @@ export class KiotController {
       content: {
         'application/json': {
           schema: {
-            type: 'object'
-          }
+            type: 'object',
+          },
         },
       },
     })
