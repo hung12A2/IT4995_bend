@@ -225,10 +225,11 @@ export class StoreController {
   })
   async findProductByKey(
     @param.path.string('keyWord') keyWord: string,
+    @param.query.object('filter') filter?: any,
   ): Promise<any> {
     let productsReturn = [];
 
-    let products = await this.storeRepository.find();
+    let products = await this.storeRepository.find(filter);
 
     for (let i = 0; i < products.length; i++) {
       const product = products[i];
@@ -248,6 +249,8 @@ export class StoreController {
 
     return productsReturn;
   }
+
+
 }
 
 function normalizeString(str: string): string {

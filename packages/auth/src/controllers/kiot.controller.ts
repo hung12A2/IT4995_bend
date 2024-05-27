@@ -238,7 +238,6 @@ export class KiotController {
         lng: +near.lng,
       };
 
-
       let maxDistance = filter?.where.pickUpGeometry.maxDistance;
       let unit = filter?.where.pickUpGeometry.unit;
       let pickUpGeometry = {
@@ -453,4 +452,139 @@ export class KiotController {
 
     return this.kiotRepository, this.findById(checkKiot.id);
   }
+
+  @get('/searchesKiot/{keyWord}')
+  @response(200, {
+    description: 'Array of Search model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+        },
+      },
+    },
+  })
+  async findKiotByKey(
+    @param.path.string('keyWord') keyWord: string,
+    @param.query.object('filter') filter?: any,
+  ): Promise<any> {
+    if (filter?.where.pickUpGeometry) {
+      let near: any = filter?.where.pickUpGeometry.near;
+
+      near = {
+        lat: +near.lat,
+        lng: +near.lng,
+      };
+
+      let maxDistance = filter?.where.pickUpGeometry.maxDistance;
+      let unit = filter?.where.pickUpGeometry.unit;
+      let pickUpGeometry = {
+        near,
+        maxDistance: +maxDistance,
+        unit,
+      };
+      filter.where.pickUpGeometry = pickUpGeometry;
+      filter.where.pickUpGeometry = pickUpGeometry;
+    }
+
+    let productsReturn = [];
+
+    let products = await this.kiotRepository.find(filter);
+
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      let name = normalizeString(product.name.trim().toLowerCase());
+      let keyWordNormalize = normalizeString(keyWord.trim().toLowerCase());
+      let description = normalizeString(
+        product.description.trim().toLowerCase(),
+      );
+
+      if (
+        name.includes(keyWordNormalize) ||
+        description.includes(keyWordNormalize)
+      ) {
+        productsReturn.push(product);
+      }
+    }
+
+    return productsReturn;
+  }
+}
+
+function normalizeString(str: string): string {
+  const accentsMap: any = {
+    á: 'a',
+    à: 'a',
+    ả: 'a',
+    ã: 'a',
+    ạ: 'a',
+    ă: 'a',
+    ắ: 'a',
+    ằ: 'a',
+    ẳ: 'a',
+    ẵ: 'a',
+    ặ: 'a',
+    â: 'a',
+    ấ: 'a',
+    ầ: 'a',
+    ẩ: 'a',
+    ẫ: 'a',
+    ậ: 'a',
+    é: 'e',
+    è: 'e',
+    ẻ: 'e',
+    ẽ: 'e',
+    ẹ: 'e',
+    ê: 'e',
+    ế: 'e',
+    ề: 'e',
+    ể: 'e',
+    ễ: 'e',
+    ệ: 'e',
+    í: 'i',
+    ì: 'i',
+    ỉ: 'i',
+    ĩ: 'i',
+    ị: 'i',
+    ó: 'o',
+    ò: 'o',
+    ỏ: 'o',
+    õ: 'o',
+    ọ: 'o',
+    ô: 'o',
+    ố: 'o',
+    ồ: 'o',
+    ổ: 'o',
+    ỗ: 'o',
+    ộ: 'o',
+    ơ: 'o',
+    ớ: 'o',
+    ờ: 'o',
+    ở: 'o',
+    ỡ: 'o',
+    ợ: 'o',
+    ú: 'u',
+    ù: 'u',
+    ủ: 'u',
+    ũ: 'u',
+    ụ: 'u',
+    ư: 'u',
+    ứ: 'u',
+    ừ: 'u',
+    ử: 'u',
+    ữ: 'u',
+    ự: 'u',
+    ý: 'y',
+    ỳ: 'y',
+    ỷ: 'y',
+    ỹ: 'y',
+    ỵ: 'y',
+    đ: 'd',
+  };
+
+  return str
+    .split('')
+    .map(char => accentsMap[char] || char)
+    .join('')
+    .replace(/\s+/g, '');
 }

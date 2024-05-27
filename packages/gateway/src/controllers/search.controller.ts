@@ -80,9 +80,7 @@ export class SearchController {
       },
     },
   })
-  async getProductByKey(
-    @param.path.string('keyWord') keyWord: string,
-  ): Promise<any> {
+  async getByKey(@param.path.string('keyWord') keyWord: string): Promise<any> {
     let shop: any = await authAxios
       .get(`searches/${keyWord}`)
       .then(res => res)
@@ -107,12 +105,70 @@ export class SearchController {
       );
     }
 
+    let kiot: any = await authAxios
+      .get(`/searchesKiot/${keyWord}`)
+      .then(res => res)
+      .catch(e => console.log(e));
+    if (kiot.length > 0) {
+      kiot = await Promise.all(
+        kiot.map(async (item: any) => {
+          const idOfKiot = item.id;
+          const data: any = await storeAxios
+            .get(`/kiot-infos`, {
+              params: {
+                filter: {
+                  where: {
+                    idOfKiot,
+                  },
+                },
+              },
+            })
+            .then((res: any) => res[0])
+            .catch(err => console.log(err));
+
+          return {
+            ...item,
+            numberOfProduct: data.numberOfProduct,
+            numberOfOrder: data.numberOfOrder,
+            numberOfRating: data.numberOfRating,
+            avgRating: data.avgRating,
+            numberOfSold: data.numberOfSold,
+          };
+        }),
+      );
+    }
+
     let products: any = await storeAxios
       .get(`/searches/key/${keyWord}`)
       .then(res => res)
       .catch(err => console.log(err));
 
-    return {shop, products};
+    return {shop, kiot, products};
+  }
+
+  @get('/searchesProduct/{keyWord}')
+  @response(200, {
+    description: 'ShopInfo model instance',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+        },
+      },
+    },
+  })
+  async getProductByKey(
+    @param.query.object('filter') filter: any,
+    @param.path.string('keyWord') keyWord: string,
+  ): Promise<any> {
+    let products: any = await storeAxios
+      .get(`/searches/key/${keyWord}`, {
+        params: {filter},
+      })
+      .then(res => res)
+      .catch(err => console.log(err));
+
+    return products;
   }
 
   @authenticate('jwt')
@@ -129,7 +185,7 @@ export class SearchController {
   })
   async findByUser(
     @inject(SecurityBindings.USER) currentUserProfile: any,
-    @param.query.object('filter') filter: any
+    @param.query.object('filter') filter: any,
   ): Promise<any> {
     const idOfUser = currentUserProfile.id;
     let where: any;
@@ -189,7 +245,6 @@ export class SearchController {
       .then(res => res)
       .catch(e => console.log(e));
 
-
-      return dataReturn;
+    return dataReturn;
   }
 }

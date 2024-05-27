@@ -195,10 +195,11 @@ export class SearchController {
   })
   async findProductByKey(
     @param.path.string('keyWord') keyWord: string,
+    @param.query.object('filter') filter?: any,
   ): Promise<any> {
     let productsReturn = [];
 
-    let products = await this.productRepository.find();
+    let products = await this.productRepository.find(filter);
 
     for (let i = 0; i < products.length; i++) {
       const product = products[i];

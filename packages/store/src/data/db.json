@@ -3,7 +3,7 @@
     "Category": 7,
     "Product": 10,
     "Cart": 2,
-    "LocationUser": 7,
+    "LocationUser": 10,
     "LocationShop": 2,
     "ProductsInCart": 9,
     "Order": 23,
@@ -39,7 +39,10 @@
     },
     "Cart": {},
     "LocationUser": {
-      "6": "{\"idOfUser\":\"1\",\"address\":\"gần chợ Thanh Thủy\",\"geometry\":{\"lat\":21.173930065000036,\"lng\":105.28476621400006},\"isDefaultOnline\":true,\"isDefaultKiot\":true,\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện THanh Thủy\",\"districtId\":\"1157\",\"wardName\":\"Thị trấn Thanh Thủy\",\"wardId\":\"151201\",\"id\":\"6\"}"
+      "6": "{\"idOfUser\":\"1\",\"address\":\"gần chợ Thanh Thủy\",\"geometry\":{\"lat\":21.173930065000036,\"lng\":105.28476621400006},\"isDefaultOnline\":false,\"isDefaultKiot\":false,\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện THanh Thủy\",\"districtId\":\"1157\",\"wardName\":\"Thị trấn Thanh Thủy\",\"wardId\":\"151201\",\"id\":\"6\"}",
+      "b9606a7e-5f25-44f9-b7a5-71051ad8bf0b": "{\"id\":\"b9606a7e-5f25-44f9-b7a5-71051ad8bf0b\",\"idOfUser\":\"1\",\"address\":\"Khu phố thị trấn thanh thủy\",\"geometry\":{\"lat\":21.104677000000038,\"lng\":105.29511400000007},\"isDefaultOnline\":false,\"isDefaultKiot\":false,\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện Thanh Thủy\",\"districtId\":\"2237\",\"wardName\":\"Xã Đồng Trung\",\"wardId\":\"800105\",\"phoneNumber\":\"0915047678\"}",
+      "21c32c1f-5aef-4dd4-a02d-08dede034385": "{\"id\":\"21c32c1f-5aef-4dd4-a02d-08dede034385\",\"idOfUser\":\"1\",\"address\":\"gần cầu đảo ngọc \",\"geometry\":{\"lat\":21.1612084,\"lng\":105.2604409},\"isDefaultOnline\":true,\"isDefaultKiot\":true,\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện Thanh Thủy\",\"districtId\":\"2237\",\"wardName\":\"Thị trấn Thanh Thủy\",\"wardId\":\"undefined\",\"phoneNumber\":\"0915047678\"}",
+      "de2c1249-5c87-4e48-9c02-d257faa8c3bb": "{\"id\":\"de2c1249-5c87-4e48-9c02-d257faa8c3bb\",\"idOfUser\":\"1\",\"address\":\"tiểu học đồng luận\",\"geometry\":{\"lat\":21.10788896600285,\"lng\":105.31998947649979},\"isDefaultOnline\":false,\"isDefaultKiot\":false,\"provinceName\":\"Phú Thọ\",\"provinceId\":\"229\",\"districtName\":\"Huyện Thanh Thủy\",\"districtId\":\"2237\",\"wardName\":\"Xã Đồng Trung\",\"wardId\":\"800105\",\"phoneNumber\":\"0915047678\"}"
     },
     "ProductsInCart": {
       "7": "{\"idOfUser\":\"1\",\"idOfProduct\":\"5\",\"quantity\":7,\"isKiot\":false,\"id\":\"7\"}",
