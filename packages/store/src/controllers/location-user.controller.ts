@@ -27,7 +27,7 @@ export class LocationUserController {
     public locationUserRepository: LocationUserRepository,
   ) {}
 
-  // 
+  //
 
   @post('/location-users/{idOfUser}')
   @response(200, {
@@ -48,7 +48,7 @@ export class LocationUserController {
               province: {type: 'string'},
               district: {type: 'string'},
               ward: {type: 'string'},
-              phoneNumber: {type: 'string'}
+              phoneNumber: {type: 'string'},
             },
           },
         },
@@ -56,8 +56,15 @@ export class LocationUserController {
     })
     locationUser: any,
   ): Promise<any> {
-    const {address, isDefaultOnline, isDefaultKiot, province, district, ward, phoneNumber} =
-      locationUser;
+    const {
+      address,
+      isDefaultOnline,
+      isDefaultKiot,
+      province,
+      district,
+      ward,
+      phoneNumber,
+    } = locationUser;
 
     if (!address || !province || !district || !ward) {
       return {
@@ -111,7 +118,7 @@ export class LocationUserController {
     };
 
     const data = await this.locationUserRepository.create(newLocation);
-    
+
     return {code: 200, data};
   }
 
@@ -147,8 +154,15 @@ export class LocationUserController {
       where: {idOfUser, id},
     });
 
-    const {address, isDefaultOnline, isDefaultKiot, province, district, ward, phoneNumber} =
-      locationUser;
+    const {
+      address,
+      isDefaultOnline,
+      isDefaultKiot,
+      province,
+      district,
+      ward,
+      phoneNumber,
+    } = locationUser;
 
     if (!oldLocation) {
       return {
@@ -157,28 +171,28 @@ export class LocationUserController {
       };
     }
 
-    if ((oldLocation.isDefaultOnline == true, isDefaultOnline == false)) {
+    if (oldLocation.isDefaultOnline == true && isDefaultOnline == false) {
       return {
         code: 400,
         message: 'Khong the bo chon mac dinh online',
       };
     }
 
-    if ((oldLocation.isDefaultOnline == false, isDefaultOnline == true)) {
+    if (oldLocation.isDefaultOnline == false && isDefaultOnline == true) {
       await this.locationUserRepository.updateAll(
         {isDefaultOnline: false},
         {idOfUser},
       );
     }
 
-    if ((oldLocation.isDefaultKiot == true, isDefaultKiot == false)) {
+    if (oldLocation.isDefaultKiot == true && isDefaultKiot == false) {
       return {
         code: 400,
         message: 'Khong the bo chon mac dinh kiot',
       };
     }
 
-    if ((oldLocation.isDefaultKiot == false, isDefaultKiot == true)) {
+    if (oldLocation.isDefaultKiot == false && isDefaultKiot == true) {
       await this.locationUserRepository.updateAll(
         {isDefaultKiot: false},
         {idOfUser},
@@ -243,7 +257,7 @@ export class LocationUserController {
         wardName,
         wardId,
         idOfUser,
-        phoneNumber
+        phoneNumber,
       };
 
       const data = await this.locationUserRepository.updateById(
@@ -263,9 +277,7 @@ export class LocationUserController {
       },
     },
   })
-  async findById(
-    @param.query.object('filter') filter: any
-  ): Promise<any> {
+  async findById(@param.query.object('filter') filter: any): Promise<any> {
     const data = await this.locationUserRepository.find(filter);
     return data;
   }

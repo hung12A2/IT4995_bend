@@ -227,6 +227,9 @@ export class StoreController {
     @param.path.string('keyWord') keyWord: string,
     @param.query.object('filter') filter?: any,
   ): Promise<any> {
+    if (keyWord === 'all') { 
+      keyWord = '';
+    }
     let productsReturn = [];
 
     let products = await this.storeRepository.find(filter);

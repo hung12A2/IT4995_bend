@@ -80,7 +80,7 @@ export class SearchController {
       },
     },
   })
-  async getByKey(@param.path.string('keyWord') keyWord: string): Promise<any> {
+  async getByKey(@param.path.string('keyWord') keyWord?: string): Promise<any> {
     let shop: any = await authAxios
       .get(`searches/${keyWord}`)
       .then(res => res)

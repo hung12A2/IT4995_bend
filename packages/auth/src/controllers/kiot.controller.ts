@@ -468,6 +468,11 @@ export class KiotController {
     @param.path.string('keyWord') keyWord: string,
     @param.query.object('filter') filter?: any,
   ): Promise<any> {
+
+    if (keyWord === 'all') { 
+      keyWord = '';
+    }
+    
     if (filter?.where.pickUpGeometry) {
       let near: any = filter?.where.pickUpGeometry.near;
 
