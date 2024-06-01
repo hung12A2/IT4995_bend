@@ -373,8 +373,23 @@ export class OrderController {
   async accepted(
     @param.path.string('idOfShop') idOfShop: string,
     @param.path.string('id') id: string,
+    @requestBody({
+      description: 'content for orers',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+             content: {type: 'string'},
+            },
+          },
+        },
+      }
+    })
+    request: any
   ): Promise<any> {
     try {
+      const content = request?.content;
       const order = await this.orderRepository.find({where: {id, idOfShop}});
       const productInOrders = await this.productsInOrderRepository.find({
         where: {idOfOrder: id},
@@ -399,10 +414,19 @@ export class OrderController {
           }),
         );
 
-        await this.orderRepository.updateById(id, {
-          status: 'accepted',
-          updatedAt: new Date().toLocaleString(),
-        });
+        if (!content) {
+          await this.orderRepository.updateById(id, {
+            status: 'accepted',
+            updatedAt: new Date().toLocaleString(),
+          });
+        } else {
+          await this.orderRepository.updateById(id, {
+            status: 'accepted',
+            updatedAt: new Date().toLocaleString(),
+            content,
+          });
+        }
+     
 
         const dataNoti = JSON.stringify({
           idOfUser: order[0].idOfUser,

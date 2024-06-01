@@ -19,7 +19,6 @@ export class CartController {
     public productRepository: ProductRepository,
   ) {}
 
-
   @get('/carts/user/{idOfUser}/kiot')
   @response(200, {
     description: 'Array of Cart model instances',
@@ -41,11 +40,8 @@ export class CartController {
       productsInCart.map(async (productInCart: any) => {
         const idProduct = productInCart.idOfProduct;
         const product: any = await this.productRepository.findById(idProduct);
-        const {name, price, image} = product;
         return {
-          name,
-          price,
-          image,
+          ...product,
           quantity: productInCart.quantity,
           isKiot: productInCart.isKiot,
         };
@@ -53,8 +49,8 @@ export class CartController {
     );
 
     return {
-      code:200,
-      data: productsInCartList
+      code: 200,
+      data: productsInCartList,
     };
   }
 
@@ -70,7 +66,9 @@ export class CartController {
       },
     },
   })
-  async findOnline(@param.path.string('idOfUser') idOfUser: string): Promise<any> {
+  async findOnline(
+    @param.path.string('idOfUser') idOfUser: string,
+  ): Promise<any> {
     const productsInCart = await this.productsInCartRepository.find({
       where: {idOfUser, isKiot: false},
     });
@@ -79,11 +77,8 @@ export class CartController {
       productsInCart.map(async (productInCart: any) => {
         const idProduct = productInCart.idOfProduct;
         const product: any = await this.productRepository.findById(idProduct);
-        const {name, price, image} = product;
         return {
-          name,
-          price,
-          image,
+          ...product,
           quantity: productInCart.quantity,
           isKiot: productInCart.isKiot,
         };
@@ -91,11 +86,10 @@ export class CartController {
     );
 
     return {
-      code:200,
-      data: productsInCartList
+      code: 200,
+      data: productsInCartList,
     };
   }
-
 
   @post('/carts/user/{idOfUser}/product/{idOfProduct}')
   @response(200, {
@@ -136,6 +130,14 @@ export class CartController {
         {quantity},
         {idOfProduct, idOfUser, isKiot},
       );
+
+      if (quantity == 0) {
+        await this.productsInCartRepository.deleteAll({
+          idOfProduct,
+          idOfUser,
+          isKiot,
+        });
+      }
     } else {
       await this.productsInCartRepository.create({
         quantity,

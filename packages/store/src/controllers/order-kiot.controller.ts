@@ -391,8 +391,23 @@ export class OrderKiotController {
   async accepted(
     @param.path.string('idOfShop') idOfShop: string,
     @param.path.string('id') id: string,
+    @requestBody({
+      description: 'no desc',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              content: {type: 'string'},
+            },
+          },
+        },
+      },
+    })
+    request: any,
   ): Promise<any> {
     try {
+      const content = request?.content;
       const order = await this.orderKiotRepository.find({
         where: {id, idOfShop},
       });
@@ -429,10 +444,18 @@ export class OrderKiotController {
           }),
         );
 
-        await this.orderKiotRepository.updateById(id, {
-          status: 'accepted',
-          updatedAt: new Date().toLocaleString(),
-        });
+        if (!content) {
+          await this.orderKiotRepository.updateById(id, {
+            status: 'accepted',
+            updatedAt: new Date().toLocaleString(),
+          });
+        } else {
+          await this.orderKiotRepository.updateById(id, {
+            status: 'accepted',
+            updatedAt: new Date().toLocaleString(),
+            content,
+          });
+        }
 
         const dataNoti = JSON.stringify({
           idOfUser: order[0].idOfUser,
