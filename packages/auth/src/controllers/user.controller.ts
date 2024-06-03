@@ -127,14 +127,14 @@ export class UserManagementController {
 
       await this.userRepository.updateById(idOfUser, {
         avatar: {
-          filename: dataAvatar.filename,
-          url: dataAvatar.url,
+          filename: dataAvatar?.filename,
+          url: dataAvatar?.url,
         },
       });
 
       const dataImg = await this.userRepository.findById(idOfUser);
-      if (oldUser.avatar.url) {
-        deleteRemoteFile(oldUser.avatar.filename);
+      if (oldUser?.avatar?.url) {
+        deleteRemoteFile(oldUser?.avatar.filename);
         return {code: 200, data: dataImg};
       }
       return {code: 200, data: dataImg};
@@ -784,11 +784,17 @@ export class UserManagementController {
     newUserRequest: any,
   ): Promise<any> {
     const time = new Date().toLocaleString();
-    newUserRequest.updatedAt = time;
+    const {fullName, phoneNumber, gender} = newUserRequest;
     try {
       const data = await this.userRepository.updateById(
         currentUser.id,
-        newUserRequest,
+        {
+          fullName,
+          phoneNumber,
+          gender,
+          updatedAt: time,
+          updatedBy: `customer-${currentUser.id}`,
+        }
       );
       return {
         code: 200,

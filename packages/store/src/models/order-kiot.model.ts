@@ -207,6 +207,14 @@ export class OrderKiot extends Entity {
   })
   updatedBy: string;
 
+  @property({
+    type: 'array',
+    itemType: 'object',
+    required: false,
+    default: [],
+  })
+  logs: object;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data

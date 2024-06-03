@@ -34,7 +34,8 @@ function uploadFile(file: any) {
 }
 
 async function deleteRemoteFile(filename: string) {
-  await bucket.file(filename).delete();
+  // await bucket.file(filename).delete();
+  console.log('deleteRemoteFile', filename);
 }
 // Cloud storage
 const bucket: any = admin.storage().bucket();

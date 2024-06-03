@@ -76,12 +76,20 @@ export class ReqCreateShopController {
     });
 
     let formData = new FormData();
-    formData.append('IDcardImg', data.files.IDcardImg[0].buffer, {
-      filename: data.files.IDcardImg[0].originalname,
+    if (data.files.IDcardImg.length >0) 
+    data.files.IDcardImg?.forEach((image: any) => {
+      formData.append('IDcardImg', image.buffer, {
+        filename: image.originalname,
+      });
     });
-    formData.append('BLicenseImg', data.files.BLicenseImg[0].buffer, {
-      filename: data.files.BLicenseImg[0].originalname,
+
+    if (data.files.BLicenseImg.length >0)
+    data.files.BLicenseImg?.forEach((image: any) => {
+      formData.append('BLicenseImg', image.buffer, {
+        filename: image.originalname,
+      });
     });
+
     formData.append('pickUpAddress', data.body.pickUpAddress);
     formData.append('returnAddress', data.body.returnAddress);
     formData.append('phoneNumber', data.body.phoneNumber);
@@ -180,6 +188,44 @@ export class ReqCreateShopController {
     if (data.body.returnWard)
       formData.append('returnWard', data.body.returnWard);
 
+    let array = [];
+
+    if (data.body.oldIDcardImg) {
+      if (Array.isArray(data.body.oldIDcardImg)) {
+        if (data.body.oldIDcardImg.length > 0) {
+          data.body.oldIDcardImg.forEach((image: any, index: number) => {
+            formData.append(`oldIDcardImg`, image);
+          });
+        } else {
+          array.push(data.body.oldIDcardImg);
+          formData.append('oldIDcardImg', JSON.stringify(array));
+        }
+      } else {
+        // If it's not an array, append it directly (or handle as error if expected to always be an array)
+        array.push(data.body.oldIDcardImg);
+        formData.append('oldIDcardImg', JSON.stringify(array));
+      }
+    }
+
+    let array2 = [];
+
+    if (data.body.oldBLicenseImg) {
+      if (Array.isArray(data.body.oldBLicenseImg)) {
+        if (data.body.oldBLicenseImg.length > 0) {
+          data.body.oldBLicenseImg.forEach((image: any, index: number) => {
+            formData.append(`oldBLicenseImg`, image);
+          });
+        } else {
+          array2.push(data.body.oldBLicenseImg);
+          formData.append('oldBLicenseImg', JSON.stringify(array2));
+        }
+      } else {
+        // If it's not an array, append it directly (or handle as error if expected to always be an array)
+        array2.push(data.body.oldBLicenseImg);
+        formData.append('oldBLicenseImg', JSON.stringify(array2));
+      }
+    }
+
     const dataReturn = await axios
       .patch('/request-create-shops', formData, {
         headers: {
@@ -266,10 +312,43 @@ export class ReqCreateShopController {
     return data;
   }
 
+
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin'],
+    allowedRoles: ['customer'],
+  })
+  @get('request-create-shops/getByUser', {
+    responses: {
+      '200': {
+        description: 'Return all request create shop',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'REQ-SHOP',
+            },
+          },
+        },
+      },
+    },
+  })
+  async getOne(): Promise<any> {
+    const data = await axios
+      .get(`/request-create-shops/getByUser`, {
+        headers: {
+          authorization: `${this.request.headers.authorization}`,
+        },
+       
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
   })
   @get('request-create-shops/{id}', {
     responses: {
@@ -285,7 +364,7 @@ export class ReqCreateShopController {
       },
     },
   })
-  async getOne(@param.path.string('id') id: string): Promise<any> {
+  async getOneById(@param.path.string('id') id: string): Promise<any> {
     const data = await axios
       .get(`/request-create-shops/${id}`, {
         headers: {

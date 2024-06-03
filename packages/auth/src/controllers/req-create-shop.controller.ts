@@ -375,7 +375,38 @@ export class ReqCreateShopController {
       }),
     );
 
-    return dataReturn
+    return dataReturn;
+  }
+
+  @authenticate('jwt')
+  @get('/request-create-shops/getByUser')
+  @response(200, {
+    description: 'Array of RequestCreateShop model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(RequestCreateShop, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async getByUser(
+    @inject(SecurityBindings.USER)
+    currenProfile: UserProfile,
+  ): Promise<any> {
+    const idOfUser = currenProfile.id;
+    const dataReturn = await this.requestCreateShopRepository.findOne({
+      where: {idOfUser},
+    });
+
+    console.log(idOfUser);
+    if (!dataReturn)
+      return {
+        code: 400,
+        message: 'Khong tim thay yeu cau',
+      };
+    return dataReturn;
   }
 
   @get('/request-create-shops/{id}')
@@ -449,7 +480,7 @@ export class ReqCreateShopController {
       };
     }
 
-    const {
+    let {
       pickUpAddress,
       returnAddress,
       phoneNumber,
@@ -461,7 +492,41 @@ export class ReqCreateShopController {
       returnProvince,
       returnDistrict,
       returnWard,
+      oldIDcardImg,
+      oldBLicenseImg,
     } = data.body;
+
+    oldIDcardImg = oldIDcardImg ? oldIDcardImg : [];
+
+    if (!Array.isArray(oldIDcardImg)) {
+      oldIDcardImg = [oldIDcardImg];
+    }
+
+    if (oldIDcardImg) {
+      oldIDcardImg = oldIDcardImg.map((img: any) => {
+        img = JSON.parse(img);
+        return {
+          url: img.url,
+          filename: img.filename,
+        };
+      });
+    }
+
+    oldBLicenseImg = oldBLicenseImg ? oldBLicenseImg : [];
+
+    if (!Array.isArray(oldBLicenseImg)) {
+      oldBLicenseImg = [oldBLicenseImg];
+    }
+
+    if (oldBLicenseImg) {
+      oldBLicenseImg = oldBLicenseImg.map((img: any) => {
+        img = JSON.parse(img);
+        return {
+          url: img.url,
+          filename: img.filename,
+        };
+      });
+    }
 
     const pickUpProvinceData = pickUpProvince
       ? pickUpProvince
@@ -500,7 +565,7 @@ export class ReqCreateShopController {
       ? data.files.IDcardImg
       : [];
 
-    const IDcardImg = await Promise.all(
+    let IDcardImg = await Promise.all(
       filesIDcardImg.map(async file => {
         const data: any = await uploadFile(file);
 
@@ -522,10 +587,10 @@ export class ReqCreateShopController {
       );
     }
 
-    const filesBLicenseImg: any[] = data.files.BLicenseImg
+    let filesBLicenseImg: any[] = data.files.BLicenseImg
       ? data.files.BLicenseImg
       : [];
-    const BLicenseImg = await Promise.all(
+    let BLicenseImg = await Promise.all(
       filesBLicenseImg.map(async file => {
         const data: any = await uploadFile(file);
 
@@ -547,6 +612,12 @@ export class ReqCreateShopController {
       );
     }
 
+    IDcardImg = IDcardImg 
+    BLicenseImg = BLicenseImg
+
+    IDcardImg = [...IDcardImg, ...oldIDcardImg];
+    BLicenseImg = [...BLicenseImg, ...oldBLicenseImg];
+
     const requestCreateShopData: RequestCreateShop = Object.assign({
       status: 'pending',
       pickUpAddress,
@@ -566,9 +637,8 @@ export class ReqCreateShopController {
       phoneNumber,
       email,
       name,
-      IDcardImg: IDcardImg.length > 0 ? IDcardImg : oldRequest.IDcardImg,
-      BLicenseImg:
-        BLicenseImg.length > 0 ? BLicenseImg : oldRequest.BLicenseImg,
+      IDcardImg,
+      BLicenseImg,
       updatedAt: new Date().toLocaleString(),
       updatedBy: `user-${idOfUser}`,
     });

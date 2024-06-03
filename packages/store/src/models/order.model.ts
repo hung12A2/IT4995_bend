@@ -214,6 +214,14 @@ export class Order extends Entity {
   })
   image: object;
 
+  @property({
+    type: 'array',
+    itemType: 'object',
+    required: false,
+    default: [],
+  })
+  logs: object;
+
 
   // Define well-known properties here
 

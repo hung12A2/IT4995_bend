@@ -119,10 +119,18 @@ export class OrderKiotController {
       const order: any = await this.orderKiotRepository.find({
         where: {id, idOfShop},
       });
+      const oldLogs: any = order[0].logs;
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'deliverd',
           updatedAt: new Date().toLocaleString(),
+          logs: [
+            ...oldLogs,
+            {
+              status: 'deliverd',
+              updatedAt: new Date().toLocaleString(),
+            },
+          ],
         });
 
         const dataNoti = JSON.stringify({
@@ -166,10 +174,18 @@ export class OrderKiotController {
       const order: any = await this.orderKiotRepository.find({
         where: {id, idOfShop},
       });
+      const oldLogs: any = order[0].logs;
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'inTransit',
           updatedAt: new Date().toLocaleString(),
+          logs: [
+            ...oldLogs,
+            {
+              status: 'inTransit',
+              updatedAt: new Date().toLocaleString(),
+            },
+          ],
         });
 
         const dataNoti = JSON.stringify({
@@ -213,10 +229,18 @@ export class OrderKiotController {
       const order: any = await this.orderKiotRepository.find({
         where: {id, idOfShop},
       });
+      const oldLogs: any = order[0].logs;
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'prepared',
           updatedAt: new Date().toLocaleString(),
+          logs: [
+            ...oldLogs,
+            {
+              status: 'prepared',
+              updatedAt: new Date().toLocaleString(),
+            },
+          ],
         });
 
         const dataNoti = JSON.stringify({
@@ -260,6 +284,7 @@ export class OrderKiotController {
       const order: any = await this.orderKiotRepository.find({
         where: {id, idOfShop},
       });
+      const oldLogs: any = order[0].logs;
       const idOfUser = order[0].idOfUser;
       if (order.length == 1) {
         if (order[0].status == 'accepted') {
@@ -294,6 +319,13 @@ export class OrderKiotController {
         await this.orderKiotRepository.updateById(id, {
           status: 'rejected',
           updatedAt: new Date().toLocaleString(),
+          logs: [
+            ...oldLogs,
+            {
+              status: 'rejected',
+              updatedAt: new Date().toLocaleString(),
+            },
+          ],
         });
 
         const oldShopInfo: any = await this.shopInfoRepository.findOne({
@@ -501,10 +533,18 @@ export class OrderKiotController {
       const order: any = await this.orderKiotRepository.findOne({
         where: {id, idOfUser},
       });
+      const oldLogs: any = order.logs;
       if (order) {
         await this.orderKiotRepository.updateById(id, {
           status: 'received',
           updatedAt: new Date().toLocaleString(),
+          logs: [
+            ...oldLogs,
+            {
+              status: 'received',
+              updatedAt: new Date().toLocaleString(),
+            },
+          ],
         });
 
         const oldShopInfo: any = await this.shopInfoRepository.findOne({
@@ -677,11 +717,19 @@ export class OrderKiotController {
       const order: any = await this.orderKiotRepository.find({
         where: {id, idOfUser},
       });
+      const oldLogs: any = order[0].logs;
       const idOfShop = order[0].idOfShop;
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'returned',
           updatedAt: new Date().toLocaleString(),
+          logs: [
+            ...oldLogs,
+            {
+              status: 'returned',
+              updatedAt: new Date().toLocaleString(),
+            },
+          ],
         });
 
         const oldShopInfo: any = await this.shopInfoRepository.findOne({
@@ -833,10 +881,18 @@ export class OrderKiotController {
       const order = await this.orderKiotRepository.find({
         where: {id, idOfUser},
       });
+      const oldLogs: any = order[0].logs;
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'canceled',
           updatedAt: new Date().toLocaleString(),
+          logs: [
+            ...oldLogs,
+            {
+              status: 'canceled',
+              updatedAt: new Date().toLocaleString(),
+            },
+          ],
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -961,7 +1017,7 @@ export class OrderKiotController {
         const product: any = await this.productRepository.findById(idProduct);
         const {name, price, image, dimension, weight} = product;
         if (index == 0) {
-          imageOrder = image;
+          imageOrder = image[0];
         }
         const dimensionList = dimension.split('|');
         weightBox += weight * item.quantity;
@@ -1035,6 +1091,12 @@ export class OrderKiotController {
       priceOfAll,
       paymentMethod,
       image: imageOrder,
+      logs: [
+        {
+          status: 'pending',
+          updatedAt: time,
+        },
+      ],
     };
 
     const oldWallet: any = await this.walletRepository.findOne({

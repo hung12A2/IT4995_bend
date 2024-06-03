@@ -24,7 +24,8 @@ import {Wallet} from '../models';
 import {WalletRepository} from '../repositories';
 import {inject} from '@loopback/core';
 import {request} from 'http';
-import { genUrlVnPay } from '../config/vnPayConfig';
+import {genUrlVnPay} from '../config/vnPayConfig';
+import {RabbitMQService} from '../services/rabbitMqServices';
 
 export class WalletController {
   constructor(
@@ -35,6 +36,8 @@ export class WalletController {
     @inject(RestBindings.Http.REQUEST)
     public request: Request,
   ) {}
+
+  newRabbitMQService = RabbitMQService.getInstance();
 
   @post('/vnPay')
   @response(200, {
@@ -129,6 +132,37 @@ export class WalletController {
           {idOfUser},
         );
       }
+    } else if (type == 'charge') {
+      await this.walletRepository.updateAll(
+        {amountMoney: amountMoney + oldWallet?.amountMoney},
+        {idOfUser},
+      );
+
+      const dataTransaction = JSON.stringify({
+        idOfUser,
+        amountMoney: amountMoney,
+        type: 'charge',
+        createdAt: new Date().toLocaleString(),
+        idOfOrder: idOfUser,
+      });
+
+      (await this.newRabbitMQService).sendMessageToTopicExchange(
+        'transaction',
+        'create',
+        dataTransaction,
+      );
+
+      const dataNoti = JSON.stringify({
+        idOfUser,
+        content: `nap thanh cong ${amountMoney} VND`,
+        createdAt: new Date().toLocaleString(),
+      });
+
+      (await this.newRabbitMQService).sendMessageToTopicExchange(
+        'notification',
+        'create',
+        dataNoti,
+      );
     }
 
     const data = await this.walletRepository.findOne({where: {idOfUser}});

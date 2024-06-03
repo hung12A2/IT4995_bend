@@ -121,6 +121,7 @@ export class OrderController {
     @param.path.string('id') id: string,
   ): Promise<any> {
     const order: any = await this.orderRepository.find({where: {id, idOfShop}});
+    const oldLogs: any = order[0].logs;
     const productsInOrder = await this.productsInOrderRepository.find({
       where: {idOfOrder: id},
     });
@@ -212,6 +213,8 @@ export class OrderController {
           items: productsInOrderList,
         };
 
+        console.log(dataRaw);
+
         const response = await axios.post(
           'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create',
           dataRaw,
@@ -228,6 +231,13 @@ export class OrderController {
           totalFee: response.data.data.total_fee,
           status: 'prepared',
           updatedAt: new Date().toLocaleString(),
+          logs: [
+            ...oldLogs,
+            {
+              status: 'prepared',
+              updatedAt: new Date().toLocaleString(),
+            }
+          ]
         });
 
         return response.data;
@@ -257,6 +267,7 @@ export class OrderController {
         where: {id, idOfShop},
       });
       const idOfUser = order[0].idOfUser;
+      const oldLogs:any = order[0].logs;
       if (order.length == 1) {
         if (order[0].status == 'accepted') {
           const updatedAt = new Date(order[0].updatedAt).getTime();
@@ -288,6 +299,13 @@ export class OrderController {
         await this.orderRepository.updateById(id, {
           status: 'rejected',
           updatedAt: new Date().toLocaleString(),
+          logs: [
+            ...oldLogs,
+            {
+              status: 'rejected',
+              updatedAt: new Date().toLocaleString(),
+            }
+          ]
         });
 
         const oldShopInfo: any = await this.shopInfoRepository.findOne({
@@ -381,6 +399,7 @@ export class OrderController {
             type: 'object',
             properties: {
              content: {type: 'string'},
+             requiredNote: {type: 'string'}
             },
           },
         },
@@ -390,7 +409,9 @@ export class OrderController {
   ): Promise<any> {
     try {
       const content = request?.content;
+      const requiredNote = request?.requiredNote;
       const order = await this.orderRepository.find({where: {id, idOfShop}});
+      const oldLogs: any = order[0].logs;
       const productInOrders = await this.productsInOrderRepository.find({
         where: {idOfOrder: id},
       });
@@ -418,12 +439,28 @@ export class OrderController {
           await this.orderRepository.updateById(id, {
             status: 'accepted',
             updatedAt: new Date().toLocaleString(),
+            logs: [
+              ...oldLogs,
+              {
+                status: 'accepted',
+                updatedAt: new Date().toLocaleString(),
+              }
+            ],
+            requiredNote,
           });
         } else {
           await this.orderRepository.updateById(id, {
             status: 'accepted',
             updatedAt: new Date().toLocaleString(),
             content,
+            requiredNote,
+            logs: [
+              ...oldLogs,
+              {
+                status: 'accepted',
+                updatedAt: new Date().toLocaleString(),
+              }
+            ]
           });
         }
      
@@ -469,10 +506,18 @@ export class OrderController {
       const order: any = await this.orderRepository.findOne({
         where: {id, idOfUser},
       });
+      const oldLogs: any = order.logs;
       if (order) {
         await this.orderRepository.updateById(id, {
           status: 'received',
           updatedAt: new Date().toLocaleString(),
+          logs: [
+            ...oldLogs,
+            {
+              status: 'received',
+              updatedAt: new Date().toLocaleString(),
+            }
+          ]
         });
         const oldWallet = await this.walletOfShopRepository.findOne({
           where: {idOfShop: order.idOfShop},
@@ -610,6 +655,7 @@ export class OrderController {
         where: {id, idOfUser},
       });
       const idOfShop = order[0].idOfShop;
+      const oldLogs: any = order[0].logs;
 
       const oldShopInfo: any = await this.shopInfoRepository.findOne({
         where: {idOfShop},
@@ -635,6 +681,13 @@ export class OrderController {
         await this.orderRepository.updateById(id, {
           status: 'returned',
           updatedAt: new Date().toLocaleString(),
+          logs: [
+            ...oldLogs,
+            {
+              status: 'returned',
+              updatedAt: new Date().toLocaleString(),
+            }
+          ]
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -708,10 +761,18 @@ export class OrderController {
   ): Promise<any> {
     try {
       const order = await this.orderRepository.find({where: {id, idOfUser}});
+      const oldLogs: any = order[0].logs;
       if (order.length == 1) {
         await this.orderRepository.updateById(id, {
           status: 'canceled',
           updatedAt: new Date().toLocaleString(),
+          logs: [
+            ...oldLogs,
+            {
+              status: 'canceled',
+              updatedAt: new Date().toLocaleString(),
+            }
+          ]
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -726,7 +787,7 @@ export class OrderController {
           const dataTransaction = JSON.stringify({
             idOfUser,
             amountMoney: order[0].priceOfAll,
-            type: 'refund',
+            type: 'receive',
             createdAt: new Date().toLocaleString(),
             idOfOrder: id,
           });
@@ -902,6 +963,12 @@ export class OrderController {
       priceOfAll,
       paymentMethod,
       image: imageOrder,
+      logs: [
+        {
+          status: 'pending',
+          updatedAt: new Date().toLocaleString(),
+        },
+      ]
     };
 
     const dataOrder = await this.orderRepository.create(NewOrder);

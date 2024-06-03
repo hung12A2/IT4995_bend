@@ -17,6 +17,9 @@ export class WalletOfShop extends Entity {
   idOfShop: string;
 
   @property({
+    postgresql: {
+      dataType: 'bigint',
+    },
     type: 'number',
     default: 0,
   })

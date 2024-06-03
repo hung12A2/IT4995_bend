@@ -259,10 +259,29 @@ export class OrderKiotController {
     @inject(SecurityBindings.USER)
     currentUser: UserProfile,
     @param.path.string('idOfOrder') idOfOrder: string,
+    @requestBody({
+      description: 'add products to cart',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              content: {type: 'string'},
+              requiredNote: {type: 'string'}
+            },
+          },
+        },
+      },
+    }) request: any
   ): Promise<any> {
     const idOfShop = currentUser.idOfShop;
+    const content = request?.content
+    const requiredNote = request?.requiredNote
     const data = await axios
-      .post(`/ordersKiot/accepted/${idOfShop}/order-id/${idOfOrder}`)
+      .post(`/ordersKiot/accepted/${idOfShop}/order-id/${idOfOrder}`, {
+        content,
+        requiredNote
+      })
       .then(res => res)
       .catch(e => console.log(e));
 

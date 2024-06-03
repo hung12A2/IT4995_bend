@@ -862,4 +862,48 @@ export class UserController {
 
     return data;
   }
+
+  @authenticate('jwt')
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
+  @post('/update/customer', {
+    responses: {
+      '200': {
+        description: 'User',
+        content: {
+          'application/json': {
+            schema: {
+              'x-ts-type': User,
+            },
+          },
+        },
+      },
+    },
+  })
+  async updateCustomer(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+          },
+        },
+      },
+    })
+    newUserRequest: any,
+  ): Promise<any> {
+    const {fullName, phoneNumber, gender} = newUserRequest;
+    const data = axios.post(`update/customer`, {
+      fullName,
+      phoneNumber,
+      gender
+    }, {
+      headers:{
+        Authorization: `${this.request.headers.authorization}`
+      }
+    }).then(res => res).catch(e => console.log(e));
+
+    return data;
+  }
 }
