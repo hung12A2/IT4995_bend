@@ -36,6 +36,39 @@ export class SocketIoController {
   @socketio.connect()
   connect(socket: Socket) {
     console.log(`connect room ${this.socket.id}`);
+    this.socket.join('roomDefault');
+  }
+
+  @socketio.subscribe('inviteToRoom')
+  async joinRoom(data: any) {
+    console.log('joinRoom', data);
+    const {idOfUser, idOfShop} = data;
+    console.log('inviteToRoom', idOfUser, idOfShop);
+    this.socket.nsp
+      .to(`roomDefault`)
+      .emit('serverInviteToRoom',{idOfUser, idOfShop});
+  }
+
+  @socketio.subscribe('listConversation')
+  async listConversation(data: any) {
+    const idOfUser = data?.idOfUser;
+    const idOfShop = data?.idOfShop;
+    let listConversation: any = [];
+    if (idOfUser) {
+      listConversation = await this.conversationRepository.find({
+        where: {idOfUser},
+      });
+
+      this.socket.emit('server-listConversation', listConversation);
+    }
+
+    if (idOfShop) {
+      listConversation = await this.conversationRepository.find({
+        where: {idOfShop},
+      });
+
+      this.socket.emit('server-listConversation', listConversation);
+    }
   }
 
   /**
@@ -61,7 +94,7 @@ export class SocketIoController {
       console.log('created conversation', conversationId);
     }
 
-    console.log ('joinConversation', conversationId);
+    console.log('joinConversation', conversationId);
   }
 
   @socketio.subscribe('add-msg')
@@ -69,7 +102,7 @@ export class SocketIoController {
   async addMsg(data: any) {
     const {idOfUser, idOfShop, content, imgLink, senderId, targetId} = data;
     const conversationId = `idOfUser-${idOfUser}-idOfShop-${idOfShop}`;
-    await this.messageRepository.create({
+    const dataMsg = await this.messageRepository.create({
       idOfShop,
       idOfUser,
       senderId,
@@ -84,15 +117,7 @@ export class SocketIoController {
       {idOfUser, idOfShop},
     );
 
-    this.socket.nsp.to(conversationId).emit(
-      'server-send-msg',
-      JSON.stringify({
-        senderId,
-        targetId,
-        content,
-        imgLink: imgLink ? imgLink : '',
-      }),
-    );
+    this.socket.nsp.to(conversationId).emit('server-send-msg', dataMsg);
   }
 
   @socketio.subscribe('list-msg')
@@ -101,14 +126,10 @@ export class SocketIoController {
     const {idOfUser, idOfShop, limitmsg} = data;
     const msgData = await this.messageRepository.find({
       order: ['createdAt DESC'],
-      limit: limitmsg,
+      limit: +limitmsg,
       where: {idOfUser, idOfShop},
-      
     });
-    console.log('list-msg', msgData);
-    this.socket.nsp
-      .to(`idOfUser-${idOfUser}-idOfShop-${idOfShop}`)
-      .emit('server-list-msg', JSON.stringify(msgData));
+    this.socket.emit('server-list-msg', msgData);
   }
 
   /**
@@ -170,6 +191,6 @@ export class SocketIoController {
    */
   @socketio.disconnect()
   disconnect() {
-    console.log('disconnect room 1');
+    console.log('disconnect roomDefault');
   }
 }

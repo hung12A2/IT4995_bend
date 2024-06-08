@@ -1,10 +1,11 @@
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
-import {SocketIoApplication} from '@loopback/socketio';
+import {SocketIoApplication, SocketIoServerOptions} from '@loopback/socketio';
 import debugFactory from 'debug';
 import {SocketIoController} from './controllers/socketio.controller';
-import { RepositoryMixin } from '@loopback/repository';
-import { ServiceMixin } from '@loopback/service-proxy';
+import {RepositoryMixin} from '@loopback/repository';
+import {ServiceMixin} from '@loopback/service-proxy';
+
 
 const debug = debugFactory('loopback:example:socketio:demo');
 
@@ -33,7 +34,5 @@ export class MessageApplication extends BootMixin(
       );
       next();
     });
-
-    // Customize @loopback/boot Booter Conventions her
   }
 }

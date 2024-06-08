@@ -23,6 +23,8 @@ import {RatingProduct} from '../models';
 import {
   BoughtProductRepository,
   KiotInfoRepository,
+  OrderKiotRepository,
+  OrderRepository,
   ProductRepository,
   RatingProductRepository,
   ShopInfoRepository,
@@ -42,6 +44,10 @@ export class RatingProductController {
     public shopInfoRepository: ShopInfoRepository,
     @repository(KiotInfoRepository)
     public kiotInfoRepository: KiotInfoRepository,
+    @repository(OrderKiotRepository)
+    public orderKiotRepository: OrderKiotRepository,
+    @repository(OrderRepository)
+    public orderRepository: OrderRepository,
   ) {}
 
   @post('/rating-products/order/{idOfOrder}/product/{idOfProduct}')
@@ -81,6 +87,19 @@ export class RatingProductController {
     }
 
     if (!isKiot) {
+      const oldOrder: any = await this.orderRepository.findById(idOfOrder);
+      await this.orderRepository.updateById(idOfOrder, {
+        status: 'rating',
+        logs: [
+          ...oldOrder.logs,
+          {
+            status: 'rating',
+            updatedAt: new Date().toLocaleString(),
+          },
+        ],
+        updatedAt: new Date().toLocaleString(),
+      });
+
       const BoughtProduct: any = await this.boughtProductRepository.findOne({
         where: {idOfOrder: idOfOrder, idOfProduct: idOfProduct, isKiot},
       });
@@ -132,7 +151,7 @@ export class RatingProductController {
         return {
           code: 200,
           message: 'Rating updated',
-        }
+        };
       } else {
         const isDeleted = false;
         const time = new Date().toLocaleString();
@@ -189,6 +208,18 @@ export class RatingProductController {
         });
       }
     } else {
+      const oldOrder: any = await this.orderKiotRepository.findById(idOfOrder);
+      await this.orderKiotRepository.updateById(idOfOrder, {
+        status: 'rating',
+        logs: [
+          ...oldOrder.logs,
+          {
+            status: 'rating',
+            updatedAt: new Date().toLocaleString(),
+          },
+        ],
+        updatedAt: new Date().toLocaleString(),
+      });
       const BoughtProduct: any = await this.boughtProductRepository.findOne({
         where: {
           idOfOrder: idOfOrder,
@@ -259,7 +290,7 @@ export class RatingProductController {
         return {
           code: 200,
           message: 'Rating updated',
-        }
+        };
       } else {
         const isDeleted = false;
         const time = new Date().toLocaleString();

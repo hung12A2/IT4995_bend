@@ -1,9 +1,24 @@
+// Copyright IBM Corp. and LoopBack contributors 2020. All Rights Reserved.
+// Node module: @loopback/example-socketio
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 import {ApplicationConfig, MessageApplication} from './application';
 
 export * from './application';
 
 export async function main(options: ApplicationConfig = {}) {
-  const app = new MessageApplication(options);
+
+  console.log(options)
+
+  const app = new MessageApplication(
+    options || {
+      httpServerOptions: {
+        host: '127.0.0.1',
+        port: 6060,
+      },
+    },
+  );
   await app.boot();
   await app.start();
 
@@ -18,7 +33,7 @@ if (require.main === module) {
   // Run the application
   const config = {
     rest: {
-      port: +(process.env.PORT ?? 3000),
+      port: +(process.env.PORT ?? 6060),
       host: process.env.HOST,
       // The `gracePeriodForClose` provides a graceful close for http/https
       // servers with keep-alive clients. The default value is `Infinity`
@@ -26,7 +41,28 @@ if (require.main === module) {
       // upon stop, set its value to `0`.
       // See https://www.npmjs.com/package/stoppable
       gracePeriodForClose: 5000, // 5 seconds
-    
+    },
+    httpServerOptions: {
+      host: '127.0.0.1',
+      port: 6060,
+      cors: {
+        origin: '*',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        preflightContinue: false,
+        optionsSuccessStatus: 204,
+        maxAge: 86400,
+        credentials: true,
+      }
+    },
+    socketIoOptions: {
+      cors: {
+        origin: '*',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        preflightContinue: false,
+        optionsSuccessStatus: 204,
+        maxAge: 86400,
+        credentials: true,
+      }
     },
   };
   main(config).catch(err => {

@@ -1723,7 +1723,6 @@ export class UserManagementController {
   }
 
 
-  @authenticate('jwt')
   @get('getAllUser', {
     responses: {
       '200': {

@@ -15,19 +15,20 @@ import {
   param,
 } from '@loopback/rest';
 import axios from '../services/storeAxios.service';
+import authAxios from '../services/authAxios.service';
 import multer from 'multer';
 import {authenticate} from '@loopback/authentication';
 import {authorize} from '@loopback/authorization';
 import {basicAuthorization} from '../services/basicAuthorize';
 import {SecurityBindings, UserProfile} from '@loopback/security';
 import FormData from 'form-data';
+import {request} from 'http';
 
 export class RatingController {
-  constructor() {}
-
+  constructor(@inject(RestBindings.Http.REQUEST) public request: Request) {}
 
   @authenticate('jwt')
-  @authorize({voters:[basicAuthorization], allowedRoles: ['employee']})
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
   @get('ratingsForShop/count', {
     responses: {
       '200': {
@@ -65,7 +66,7 @@ export class RatingController {
   }
 
   @authenticate('jwt')
-  @authorize({voters:[basicAuthorization], allowedRoles: ['employee']})
+  @authorize({voters: [basicAuthorization], allowedRoles: ['employee']})
   @get('ratingsForShop', {
     responses: {
       '200': {
@@ -102,7 +103,6 @@ export class RatingController {
     return data;
   }
 
-  
   @get('ratings', {
     responses: {
       '200': {
@@ -117,15 +117,38 @@ export class RatingController {
       },
     },
   })
-  async getAll(
-    @param.query.object('filter') filter?: any,
-  ): Promise<any> {
-    const data = await axios
+  async getAll(@param.query.object('filter') filter?: any): Promise<any> {
+    let data: any = await axios
       .get(`/rating-products/`, {
         params: {filter},
       })
       .then(res => res)
       .catch(e => console.log(e));
+
+    const listIdUser = data.map((item: any) => item.idOfUser);
+
+    let dataUser:any = await authAxios.get(`getAllUser`, {
+      params: {
+        filter: {
+          where: {
+            id: {inq: listIdUser},
+          },
+        },
+      },
+      headers: {
+        authorization: this.request.headers.authorization,
+      },
+    });
+
+
+    data = data.map((item: any) => {
+      const user = dataUser.find((user: any) => user.id === item.idOfUser);
+      return {
+        ...item,
+        userAvatar: user.avatar,
+        userName: user.fullName,
+      };
+    });
 
     return data;
   }
@@ -144,9 +167,7 @@ export class RatingController {
       },
     },
   })
-  async getOneFroAll(
-    @param.query.object('filter') filter?: any,
-  ): Promise<any> {
+  async getOneFroAll(@param.query.object('filter') filter?: any): Promise<any> {
     const data = await axios
       .get(`/rating-products/count`, {
         params: {filter},
@@ -187,7 +208,6 @@ export class RatingController {
               idOfOrder: {type: 'string'},
               idOfKiot: {type: 'string'},
               idOfShop: {type: 'string'},
-
             },
           },
         },
@@ -202,19 +222,22 @@ export class RatingController {
       idOfOrder,
       idOfKiot,
       isKiot,
-      idOfShop
+      idOfShop,
     } = request;
 
     let dataRequest = {
       rating,
       comment,
       isKiot,
-      idOfKiot
-      ,idOfShop
+      idOfKiot,
+      idOfShop,
     };
 
     const data = await axios
-      .post(`/rating-products/order/${idOfOrder}/product/${idOfProduct}`, dataRequest)
+      .post(
+        `/rating-products/order/${idOfOrder}/product/${idOfProduct}`,
+        dataRequest,
+      )
       .then(res => res)
       .catch(e => console.log(e));
 

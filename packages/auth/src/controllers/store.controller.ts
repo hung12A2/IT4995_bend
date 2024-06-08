@@ -112,6 +112,7 @@ export class StoreController {
     const idOfShop = currentUser.idOfShop;
     const {
       name,
+      phoneNumber,
       description,
       pickUpAddress,
       returnAddress,
@@ -121,7 +122,7 @@ export class StoreController {
       returnDistrict,
       pickUpWard,
       returnWard,
-      phoneNumber,
+      
     } = store;
 
     const pickUpProvinceName = pickUpProvince.split('-')[0].trim();
