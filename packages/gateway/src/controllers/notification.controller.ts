@@ -20,45 +20,43 @@ import {
 
 import notificationAxios from '../services/notificationAxios.service';
 
-export class TransactionController {
+export class NotificationController {
   constructor() {}
 
-  @get('/transactions/count')
+  @get('/notifications/count')
   @response(200, {
-    description: 'Transaction model count',
+    description: 'Notification model count',
     content: {'application/json': {schema: CountSchema}},
   })
   async count(@param.query.object('filter') filter: string): Promise<any> {
-    const data = notificationAxios
-      .get('/transactions/count', {params: {filter}})
+    const data = await notificationAxios
+      .get('/notifications/count', {params: {filter}})
       .then(res => res)
       .catch(err => console.log(err));
     return data;
   }
 
-  @get('/transactions')
+  @get('/notifications')
   @response(200, {
-    description: 'Transaction model count',
+    description: 'Notification model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async getAll(
-    @param.query.object('filter') filter?: string,
-  ): Promise<any> {
-    const data = notificationAxios
-      .get('/transactions', {params: {filter}})
+  async getAll(@param.query.object('filter') filter: string): Promise<any> {
+    const data = await notificationAxios
+      .get('/notifications', {params: {filter}})
       .then(res => res)
       .catch(err => console.log(err));
     return data;
   }
 
-  @get('/transactions/{id}')
+  @get('/notifications/{id}')
   @response(200, {
-    description: 'Transaction model count',
+    description: 'Notification model count',
     content: {'application/json': {schema: CountSchema}},
   })
   async getOne(@param.path.string('id') id: string): Promise<any> {
-    const data = notificationAxios
-      .get(`/transactions/${id}`)
+    const data = await notificationAxios
+      .get(`/notifications/${id}`)
       .then(res => res)
       .catch(err => console.log(err));
 

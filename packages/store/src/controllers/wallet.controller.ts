@@ -62,7 +62,8 @@ export class WalletController {
   ): Promise<any> {
     const ip = this.request.ip;
     const {amount_money} = request;
-    return genUrlVnPay(amount_money, ip);
+    const data = await genUrlVnPay(amount_money, ip);
+    return data;
   }
 
   @post('/wallets/{idOfUser}')
@@ -112,9 +113,11 @@ export class WalletController {
     request: any,
   ): Promise<any> {
     const {amountMoney} = request;
+    let vnpayCode = request?.vnpayCode;
     const oldWallet: any = await this.walletRepository.findOne({
       where: {idOfUser},
     });
+
     if (type == 'receive') {
       await this.walletRepository.updateAll(
         {amountMoney: amountMoney + oldWallet?.amountMoney},
@@ -143,7 +146,11 @@ export class WalletController {
         amountMoney: amountMoney,
         type: 'charge',
         createdAt: new Date().toLocaleString(),
-        idOfOrder: idOfUser,
+        idOfOrder: vnpayCode,
+        image: {
+          url: 'https://vnpay.vn/s1/statics.vnpay.vn/2023/6/0oxhzjmxbksr1686814746087.png',
+          filename: 'vnpay.png',
+        },
       });
 
       (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -156,6 +163,12 @@ export class WalletController {
         idOfUser,
         content: `nap thanh cong ${amountMoney} VND`,
         createdAt: new Date().toLocaleString(),
+        title: 'Nap tien Vnpay',
+        image: {
+          url: 'https://vnpay.vn/s1/statics.vnpay.vn/2023/6/0oxhzjmxbksr1686814746087.png',
+          filename: 'vnpay.png',
+        },
+        idOfOrder: vnpayCode,
       });
 
       (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -163,6 +176,11 @@ export class WalletController {
         'create',
         dataNoti,
       );
+    } else {
+      return {
+        code: 400,
+        message: 'Bad request',
+      };
     }
 
     const data = await this.walletRepository.findOne({where: {idOfUser}});

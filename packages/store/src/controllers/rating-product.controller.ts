@@ -88,6 +88,7 @@ export class RatingProductController {
 
     if (!isKiot) {
       const oldOrder: any = await this.orderRepository.findById(idOfOrder);
+      if (oldOrder?.status != 'rating')
       await this.orderRepository.updateById(idOfOrder, {
         status: 'rating',
         logs: [
@@ -209,6 +210,7 @@ export class RatingProductController {
       }
     } else {
       const oldOrder: any = await this.orderKiotRepository.findById(idOfOrder);
+      if (oldOrder?.status != 'rating')
       await this.orderKiotRepository.updateById(idOfOrder, {
         status: 'rating',
         logs: [

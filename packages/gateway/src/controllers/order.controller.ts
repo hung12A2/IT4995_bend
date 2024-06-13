@@ -248,21 +248,124 @@ export class OrderController {
             type: 'object',
             properties: {
               content: {type: 'string'},
-              requiredNote: {type: 'string'}
+              requiredNote: {type: 'string'},
             },
           },
         },
       },
-    }) request: any
+    })
+    request: any,
   ): Promise<any> {
     const idOfShop = currentUser.idOfShop;
     const content = request?.content;
     const requiredNote = request?.requiredNote;
     const data = await axios
-      .post(`/orders/accepted/${idOfShop}/order-id/${idOfOrder}`,{
+      .post(`/orders/accepted/${idOfShop}/order-id/${idOfOrder}`, {
         content,
-        requiredNote
+        requiredNote,
       })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['employee', 'order-Managment'],
+  })
+  @post('orders/inTransist/order/{idOfOrder}', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async inTransist(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+    @param.path.string('idOfOrder') idOfOrder: string,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+
+    const data = await axios
+      .post(`/orders/inTransist/${idOfShop}/order-id/${idOfOrder}`)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['employee', 'order-Managment'],
+  })
+  @post('orders/inTransist2/order/{idOfOrder}', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async inTransist2(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+    @param.path.string('idOfOrder') idOfOrder: string,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+
+    const data = await axios
+      .post(`/orders/inTransist2/${idOfShop}/order-id/${idOfOrder}`)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
+
+  @authenticate('jwt')
+  @authorize({
+    voters: [basicAuthorization],
+    allowedRoles: ['employee', 'order-Managment'],
+  })
+  @post('orders/delivered/order/{idOfOrder}', {
+    responses: {
+      '200': {
+        description: 'Return order kiot info',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'Product in cart',
+            },
+          },
+        },
+      },
+    },
+  })
+  async delivered(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+    @param.path.string('idOfOrder') idOfOrder: string,
+  ): Promise<any> {
+    const idOfShop = currentUser.idOfShop;
+
+    const data = await axios
+      .post(`/orders/delivered/${idOfShop}/order-id/${idOfOrder}`)
       .then(res => res)
       .catch(e => console.log(e));
 
@@ -500,17 +603,20 @@ export class OrderController {
   async getAllOrderByUser(
     @inject(SecurityBindings.USER)
     currentUser: UserProfile,
+    @param.query.object('filter') filter?: any,
   ): Promise<any> {
     const idOfUser = currentUser.id;
+    let where: any;
+    if (filter) {
+      where = filter?.where || {};
+      where = {...where, idOfUser};
+      filter.where = where;
+    }
     const data = await axios
-      .get(`/orders`,{
+      .get(`/orders`, {
         params: {
-          filter: {
-            where: {
-              idOfUser
-            }
-          }
-        }
+          filter,
+        },
       })
       .then(res => res)
       .catch(e => console.log(e));

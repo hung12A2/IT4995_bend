@@ -19,7 +19,19 @@ export class Notification extends Entity {
     type: 'string',
     required: true,
   })
+  idOfOrder: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
   content: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  title: string;
 
   @property({
     type: 'object',

@@ -41,6 +41,7 @@ import {uploadFile, deleteRemoteFile} from '../config/firebaseConfig';
 import multer from 'multer';
 import {RabbitMQService} from '../services/rabbitMqServices';
 import path from 'path';
+import {title} from 'process';
 
 const storage = multer.memoryStorage();
 const upload = multer({storage});
@@ -236,8 +237,8 @@ export class OrderController {
             {
               status: 'prepared',
               updatedAt: new Date().toLocaleString(),
-            }
-          ]
+            },
+          ],
         });
 
         return response.data;
@@ -267,7 +268,7 @@ export class OrderController {
         where: {id, idOfShop},
       });
       const idOfUser = order[0].idOfUser;
-      const oldLogs:any = order[0].logs;
+      const oldLogs: any = order[0].logs;
       if (order.length == 1) {
         if (order[0].status == 'accepted') {
           const updatedAt = new Date(order[0].updatedAt).getTime();
@@ -304,8 +305,8 @@ export class OrderController {
             {
               status: 'rejected',
               updatedAt: new Date().toLocaleString(),
-            }
-          ]
+            },
+          ],
         });
 
         const oldShopInfo: any = await this.shopInfoRepository.findOne({
@@ -343,8 +344,11 @@ export class OrderController {
 
           const dataNoti = JSON.stringify({
             idOfUser,
-            content: `Đơn hàng ${id} đã bi huy va tien da duoc hoan lai vao tai khoan cua ban`,
+            title: 'Đơn hàng đã bị hủy',
+            content: `Đơn hàng ${id} đã bi huy ${order[0]?.priceOfAll} da duoc hoan lai vao tai khoan cua ban. Chung toi xin loi vi su bat tien nay`,
             createdAt: new Date().toLocaleString(),
+            image: order?.[0]?.image,
+            idOfOrder: order[0]?.id,
           });
 
           (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -356,8 +360,11 @@ export class OrderController {
 
         const dataNoti = JSON.stringify({
           idOfUser,
-          content: `Đơn hàng ${id} đã bi huy`,
+          title: 'Đơn hàng đã bị hủy',
+          content: `Đơn hàng ${id} đã bi huy. Chung toi xin loi vi su bat tien nay`,
           createdAt: new Date().toLocaleString(),
+          image: order?.[0]?.image,
+          idOfOrder: order[0]?.id,
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -398,19 +405,21 @@ export class OrderController {
           schema: {
             type: 'object',
             properties: {
-             content: {type: 'string'},
-             requiredNote: {type: 'string'}
+              content: {type: 'string'},
+              requiredNote: {type: 'string'},
             },
           },
         },
-      }
+      },
     })
-    request: any
+    request: any,
   ): Promise<any> {
     try {
       const content = request?.content;
       const requiredNote = request?.requiredNote;
       const order = await this.orderRepository.find({where: {id, idOfShop}});
+      console.log(id);
+      console.log(idOfShop)
       const oldLogs: any = order[0].logs;
       const productInOrders = await this.productsInOrderRepository.find({
         where: {idOfOrder: id},
@@ -444,7 +453,7 @@ export class OrderController {
               {
                 status: 'accepted',
                 updatedAt: new Date().toLocaleString(),
-              }
+              },
             ],
             requiredNote,
           });
@@ -459,16 +468,18 @@ export class OrderController {
               {
                 status: 'accepted',
                 updatedAt: new Date().toLocaleString(),
-              }
-            ]
+              },
+            ],
           });
         }
-     
 
         const dataNoti = JSON.stringify({
           idOfUser: order[0].idOfUser,
-          content: `Đơn hàng ${id} đã duoc chap nhan`,
+          title: 'Đơn hàng đã được chấp nhận',
+          content: `Đơn hàng ${id} đã duoc chap nhan. Vui long kiem tra lai thong tin don hang trong phan Chi tiet don hang va tin nhan (neu co) tai Luna Chat kenh lien he duy nhat danh cho nguoi ban nhe`,
           createdAt: new Date().toLocaleString(),
+          image: order[0]?.image,
+          idOfOrder: order[0]?.id,
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -476,6 +487,227 @@ export class OrderController {
           'create',
           dataNoti,
         );
+
+        return {
+          code: 200,
+          message: 'Success',
+        };
+      } else {
+        return {
+          message: 'Error not found order',
+        };
+      }
+    } catch (error) {
+      return {
+        message: `error ${error}`,
+      };
+    }
+  }
+
+  @post('/orders/inTransist/{idOfShop}/order-id/{id}')
+  @response(200, {
+    description: 'Order model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Order)}},
+  })
+  async inTransist(
+    @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('id') id: string,
+  ): Promise<any> {
+    try {
+      const order = await this.orderRepository.find({where: {id, idOfShop}});
+      const oldLogs: any = order[0].logs;
+      const productInOrders = await this.productsInOrderRepository.find({
+        where: {idOfOrder: id},
+      });
+      if (order.length == 1) {
+        await Promise.all(
+          productInOrders.map(async productInOrder => {
+            const product = await this.productRepository.findById(
+              productInOrder.idOfProduct,
+            );
+            if (product.countInStock < productInOrder.quantity) {
+              return {
+                code: 400,
+                message: 'Error not enough product',
+              };
+            } else {
+              await this.productRepository.updateById(
+                productInOrder.idOfProduct,
+                {countInStock: product.countInStock - productInOrder.quantity},
+              );
+            }
+          }),
+        );
+
+        await this.orderRepository.updateById(id, {
+          status: 'inTransist',
+          updatedAt: new Date().toLocaleString(),
+
+          logs: [
+            ...oldLogs,
+            {
+              status: 'inTransist',
+              updatedAt: new Date().toLocaleString(),
+            },
+          ],
+        });
+
+        const dataNoti = JSON.stringify({
+          idOfUser: order[0].idOfUser,
+          title: 'Dang van chuyen',
+          content: `Đơn hàng ${id} da duoc nguoi ban ${order[0]?.fromName} giao cho don vi thong qua phuong thuc van chuyen Nhanh cua GHNExpress`,
+          createdAt: new Date().toLocaleString(),
+          image: order[0]?.image,
+          idOfOrder: order[0]?.id,
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notification',
+          'create',
+          dataNoti,
+        );
+
+        return {
+          code: 200,
+          message: 'Success',
+        };
+      } else {
+        return {
+          message: 'Error not found order',
+        };
+      }
+    } catch (error) {
+      return {
+        message: `error ${error}`,
+      };
+    }
+  }
+
+  @post('/orders/inTransist2/{idOfShop}/order-id/{id}')
+  @response(200, {
+    description: 'Order model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Order)}},
+  })
+  async inTransist2(
+    @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('id') id: string,
+  ): Promise<any> {
+    try {
+      const order = await this.orderRepository.find({where: {id, idOfShop}});
+      const oldLogs: any = order[0].logs;
+      const productInOrders = await this.productsInOrderRepository.find({
+        where: {idOfOrder: id},
+      });
+      if (order.length == 1) {
+        await Promise.all(
+          productInOrders.map(async productInOrder => {
+            const product = await this.productRepository.findById(
+              productInOrder.idOfProduct,
+            );
+            if (product.countInStock < productInOrder.quantity) {
+              return {
+                code: 400,
+                message: 'Error not enough product',
+              };
+            } else {
+              await this.productRepository.updateById(
+                productInOrder.idOfProduct,
+                {countInStock: product.countInStock - productInOrder.quantity},
+              );
+            }
+          }),
+        );
+
+        await this.orderRepository.updateById(id, {
+          status: 'inTransist2',
+          updatedAt: new Date().toLocaleString(),
+
+          logs: [
+            ...oldLogs,
+            {
+              status: 'inTransist2',
+              updatedAt: new Date().toLocaleString(),
+            },
+          ],
+        });
+
+        const dataNoti = JSON.stringify({
+          idOfUser: order[0].idOfUser,
+          title: 'Dang tren duong giao den ban',
+          content: `Đơn hàng ${id} dang tren duong giao den ban, chu y dien thoai nhe`,
+          createdAt: new Date().toLocaleString(),
+          image: order[0]?.image,
+          idOfOrder: order[0]?.id,
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notification',
+          'create',
+          dataNoti,
+        );
+
+        return {
+          code: 200,
+          message: 'Success',
+        };
+      } else {
+        return {
+          message: 'Error not found order',
+        };
+      }
+    } catch (error) {
+      return {
+        message: `error ${error}`,
+      };
+    }
+  }
+
+  @post('/orders/delivered/{idOfShop}/order-id/{id}')
+  @response(200, {
+    description: 'Order model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Order)}},
+  })
+  async delivered(
+    @param.path.string('idOfShop') idOfShop: string,
+    @param.path.string('id') id: string,
+  ): Promise<any> {
+    try {
+      const order = await this.orderRepository.find({where: {id, idOfShop}});
+      const oldLogs: any = order[0].logs;
+      const productInOrders = await this.productsInOrderRepository.find({
+        where: {idOfOrder: id},
+      });
+      if (order.length == 1) {
+        await Promise.all(
+          productInOrders.map(async productInOrder => {
+            const product = await this.productRepository.findById(
+              productInOrder.idOfProduct,
+            );
+            if (product.countInStock < productInOrder.quantity) {
+              return {
+                code: 400,
+                message: 'Error not enough product',
+              };
+            } else {
+              await this.productRepository.updateById(
+                productInOrder.idOfProduct,
+                {countInStock: product.countInStock - productInOrder.quantity},
+              );
+            }
+          }),
+        );
+
+        await this.orderRepository.updateById(id, {
+          status: 'delivered',
+          updatedAt: new Date().toLocaleString(),
+          logs: [
+            ...oldLogs,
+            {
+              status: 'delivered',
+              updatedAt: new Date().toLocaleString(),
+            },
+          ],
+        });
 
         return {
           code: 200,
@@ -516,8 +748,8 @@ export class OrderController {
             {
               status: 'received',
               updatedAt: new Date().toLocaleString(),
-            }
-          ]
+            },
+          ],
         });
         const oldWallet = await this.walletOfShopRepository.findOne({
           where: {idOfShop: order.idOfShop},
@@ -547,9 +779,11 @@ export class OrderController {
 
         const dataNoti = JSON.stringify({
           idOfShop: order.idOfShop,
-          content: `Đơn hàng ${id} đã được nhận ${order.priceOfAll - order.totalFee} đã được chuyển vào tài khoản của bạn`,
+          title: 'Đơn hàng đã được nhận',
+          content: `Đơn hàng ${id} đã được nhận ${order.priceOfAll - order.totalFee} đã được chuyển vào tài khoản của shop vao ${new Date().toLocaleString()}`,
           image: order.image,
           createdAt: new Date().toLocaleString(),
+          idOfOrder: order.id,
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -686,8 +920,8 @@ export class OrderController {
             {
               status: 'returned',
               updatedAt: new Date().toLocaleString(),
-            }
-          ]
+            },
+          ],
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -771,8 +1005,8 @@ export class OrderController {
             {
               status: 'canceled',
               updatedAt: new Date().toLocaleString(),
-            }
-          ]
+            },
+          ],
         });
 
         if (order[0].paymentMethod == 'payOnline') {
@@ -800,8 +1034,11 @@ export class OrderController {
 
           const dataNoti = JSON.stringify({
             idOfUser,
-            content: `Đơn hàng ${id} đã được hủy và tiền đã được hoàn lại vào tài khoản của bạn`,
+            content: `Đơn hàng ${id} đã được hủy và ${order[0]?.priceOfAll} đã được hoàn lại vào tài khoản của bạn. Chuc ban mua sam vui ve`,
             createdAt: new Date().toLocaleString(),
+            image: order[0]?.image,
+            title: 'Đơn hàng đã duoc hủy',
+            idOfOrder: order[0]?.id,  
           });
 
           (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -813,8 +1050,12 @@ export class OrderController {
 
         const dataNoti = JSON.stringify({
           idOfShop: order[0].idOfShop,
-          content: `Đơn hàng ${id} đã bi huy`,
+          content: `Đơn hàng ${id} đã bi huy luc ${new Date().toLocaleString()}`,
+          title: 'Đơn hàng đã bị hủy',
+          image: order[0].image,
           createdAt: new Date().toLocaleString(),
+          idOfOrder: order[0].id,
+          
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -968,7 +1209,7 @@ export class OrderController {
           status: 'pending',
           updatedAt: new Date().toLocaleString(),
         },
-      ]
+      ],
     };
 
     const dataOrder = await this.orderRepository.create(NewOrder);
@@ -1024,9 +1265,11 @@ export class OrderController {
 
     const dataNoti = JSON.stringify({
       idOfShop,
-      content: `Đơn hàng ${idOrder} đã được tạo thành công voi gia tien ${priceOfAll}`,
+      title: `Đơn hang moi`,
+      content: `Đơn hàng ${idOrder} đã được tạo thành công voi gia tien ${priceOfAll} luc ${new Date().toLocaleString()}`,
       image: imageOrder,
       createdAt: new Date().toLocaleString(),
+      idOfOrder: idOrder,
     });
 
     (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -1348,7 +1591,6 @@ export class OrderController {
     @param.path.number('numberOfDays') numberOfDays: number,
     @param.path.string('idOfShop') idOfShop: string,
   ): Promise<any> {
-
     console.log('idOfShop', idOfShop);
 
     const tenDaysAgo = new Date();

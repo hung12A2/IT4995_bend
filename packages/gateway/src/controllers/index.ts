@@ -27,3 +27,5 @@ export * from './return-order.controller';
 export * from './rating.controller';
 export * from './kiot-info.controller';
 export * from './search.controller';
+export * from './notification.controller';
+export * from './notification-shop.controller';

@@ -106,12 +106,12 @@ export class OrderKiotController {
     return order;
   }
 
-  @post('/ordersKiot/deliverd/{idOfShop}/order-id/{id}')
+  @post('/ordersKiot/delivered/{idOfShop}/order-id/{id}')
   @response(200, {
     description: 'Order model instance',
     content: {'application/json': {schema: getModelSchemaRef(Order)}},
   })
-  async deliverd(
+  async delivered(
     @param.path.string('idOfShop') idOfShop: string,
     @param.path.string('id') id: string,
   ): Promise<any> {
@@ -132,19 +132,6 @@ export class OrderKiotController {
             },
           ],
         });
-
-        const dataNoti = JSON.stringify({
-          idOfUser: order[0].idOfUser,
-          content: `Don hang ${id} da den noi`,
-          image: order[0].image,
-          createdAt: new Date().toLocaleString(),
-        });
-
-        (await this.newRabbitMQService).sendMessageToTopicExchange(
-          'notification',
-          'create',
-          dataNoti,
-        );
 
         return {
           message: 'Success',

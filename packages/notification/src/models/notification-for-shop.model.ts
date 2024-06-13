@@ -39,6 +39,12 @@ export class NotificationForShop extends Entity {
   })
   createdAt: string;
 
+  @property({
+    type: 'string',
+    required: true,
+  })
+  idOfOrder: string;
+
   // Define well-known properties here
 
   // Indexer property to allow additional data
