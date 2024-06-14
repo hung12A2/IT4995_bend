@@ -177,9 +177,11 @@ export class OrderKiotController {
 
         const dataNoti = JSON.stringify({
           idOfUser: order[0].idOfUser,
-          content: `Don hang ${id} dang tren duong van chuyen`,
+          title: 'Dang tren hoa toc duong giao den ban',
+          content: `Đơn hàng hoa toc ${id} dang tren duong giao den ban, chu y dien thoai nhe`,
           image: order[0].image,
           createdAt: new Date().toLocaleString(),
+          idOfOrder: order[0]?.id,
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -229,19 +231,6 @@ export class OrderKiotController {
             },
           ],
         });
-
-        const dataNoti = JSON.stringify({
-          idOfUser: order[0].idOfUser,
-          content: `Don hang ${id} da duoc chuan bi`,
-          image: order[0].image,
-          createdAt: new Date().toLocaleString(),
-        });
-
-        (await this.newRabbitMQService).sendMessageToTopicExchange(
-          'notification',
-          'create',
-          dataNoti,
-        );
 
         return {
           message: 'Success',
@@ -347,9 +336,11 @@ export class OrderKiotController {
 
           const dataNoti = JSON.stringify({
             idOfUser,
-            content: `Don hang ${id} da bi huy, nhan lai ${order[0].priceOfAll}`,
-            image: order[0].image,
+            title: 'Đơn hàng hoa toc đã bị hủy',
+            content: `Đơn hàng hoa toc ${id} đã bi huy ${order[0]?.priceOfAll} da duoc hoan lai vao tai khoan cua ban. Chung toi xin loi vi su bat tien nay`,
             createdAt: new Date().toLocaleString(),
+            image: order?.[0]?.image,
+            idOfOrder: order[0]?.id,
           });
 
           (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -475,12 +466,13 @@ export class OrderKiotController {
             content,
           });
         }
-
         const dataNoti = JSON.stringify({
           idOfUser: order[0].idOfUser,
-          content: `Don hang ${id} da duoc chap nhan`,
-          image: order[0].image,
+          title: 'Đơn hàng hoa toc đã được chấp nhận',
+          content: `Đơn hàng hoa toc ${id} đã duoc chap nhan. Vui long kiem tra lai thong tin don hang trong phan Chi tiet don hang va tin nhan (neu co) tai Luna Chat kenh lien he duy nhat danh cho nguoi ban nhe`,
           createdAt: new Date().toLocaleString(),
+          image: order[0]?.image,
+          idOfOrder: order[0]?.id,
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -584,9 +576,11 @@ export class OrderKiotController {
 
         const dataNoti = JSON.stringify({
           idOfShop: order.idOfShop,
-          content: `Don hang ${id} da duoc nhan, nhan duoc ${order.priceOfAll - order.totalFee}`,
+          title: 'Đơn hàng hoa toc đã được nhận',
+          content: `Đơn hàng hoa toc ${id} đã được nhận ${order.priceOfAll - order.totalFee} đã được chuyển vào tài khoản của shop vao ${new Date().toLocaleString()}`,
           image: order.image,
           createdAt: new Date().toLocaleString(),
+          idOfOrder: order.id,
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -892,10 +886,12 @@ export class OrderKiotController {
           );
 
           const dataNoti = JSON.stringify({
-            idOfUser: order[0].idOfUser,
-            content: `Don hang hoa toc ${id} da bi huy, nhan lai ${order[0].priceOfAll}`,
-            image: order[0].image,
+            idOfUser,
+            content: `Đơn hàng hoa toc ${id} đã được hủy và ${order[0]?.priceOfAll} đã được hoàn lại vào tài khoản của bạn. Chuc ban mua sam vui ve`,
             createdAt: new Date().toLocaleString(),
+            image: order[0]?.image,
+            title: 'Đơn hàng hoa toc đã duoc hủy',
+            idOfOrder: order[0]?.id,
           });
 
           (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -923,9 +919,11 @@ export class OrderKiotController {
 
         const dataNoti = JSON.stringify({
           idOfShop: order[0].idOfShop,
-          content: `Don hang hoa toc ${id} da bi huy`,
+          content: `Đơn hàng hoa toc ${id} đã bi huy luc ${new Date().toLocaleString()}`,
+          title: 'Đơn hàng hoa toc đã bị hủy',
           image: order[0].image,
           createdAt: new Date().toLocaleString(),
+          idOfOrder: order[0].id,
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -1149,9 +1147,11 @@ export class OrderKiotController {
     );
     const dataNoti = JSON.stringify({
       idOfShop,
-      content: `Đơn hàng ${idOrder} đã được tạo thành công voi gia tien ${priceOfAll}`,
+      title: `Đơn hang hoa toc moi`,
+      content: `Đơn hàng hoa toc ${idOrder} đã được tạo thành công voi gia tien ${priceOfAll} luc ${new Date().toLocaleString()}`,
       image: imageOrder,
       createdAt: new Date().toLocaleString(),
+      idOfOrder: idOrder,
     });
 
     (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -1279,7 +1279,7 @@ export class OrderKiotController {
     const estimateTime =
       +distanceData.rows[0].elements[0].duration.text.split(' ')[0];
 
-    if (distance > 100) {
+    if (distance > 20) {
       distance = distance / 1000;
     }
     if (distance > 2.5) {
@@ -1304,6 +1304,7 @@ export class OrderKiotController {
       weight: Math.round(weightBox),
       dimension: `${lengthBox}|${widthBox}|${heightBox}`,
       insuranceValue,
+      estimateTime,
     };
 
     return {

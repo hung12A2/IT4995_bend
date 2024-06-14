@@ -56,7 +56,7 @@ export class SocketIoController {
     let listConversation: any = [];
     if (idOfUser) {
       listConversation = await this.conversationRepository.find({
-        where: {idOfUser},
+        where: {idOfUser, lastMsg: {neq: ''}},
       });
 
       this.socket.emit('server-listConversation', listConversation);

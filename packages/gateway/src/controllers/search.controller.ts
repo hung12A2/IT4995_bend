@@ -204,6 +204,30 @@ export class SearchController {
     return data;
   }
 
+  @get('/searchesAll')
+  @response(200, {
+    description: 'Array of Search model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+        },
+      },
+    },
+  })
+  async findAll(
+    @param.query.object('filter') filter: any,
+  ): Promise<any> {
+    const data = await storeAxios
+      .get(`/searches`, {
+        params: {filter},
+      })
+      .then(res => res)
+      .catch(err => console.log(err));
+    return data;
+  }
+
+
   @post('/suggestForUser')
   @response(200, {
     description: 'Array of Search model instances',

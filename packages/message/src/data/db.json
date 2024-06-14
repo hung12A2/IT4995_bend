@@ -1,28 +1,14 @@
 {
   "ids": {
-    "Conversation": 3,
-    "Message": 107
+    "Conversation": 7,
+    "Message": 120
   },
   "models": {
     "Conversation": {
-      "1": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"createdAt\":\"2024-04-21T18:43:49.049Z\",\"id\":\"1\",\"lastMsg\":\"Buồn ngủ quá\"}"
+      "6": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"lastMsg\":\"halo\",\"createdAt\":\"2024-06-14T03:18:35.000Z\",\"id\":\"6\"}"
     },
     "Message": {
-      "91": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"1\",\"targetId\":\"6\",\"content\":\"mong không sập\",\"imgLink\":\"\",\"createdAt\":\"2024-06-08T16:28:01.000Z\",\"id\":\"91\"}",
-      "92": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"1\",\"targetId\":\"6\",\"content\":\"nản vl\",\"imgLink\":\"\",\"createdAt\":\"2024-06-08T16:28:49.000Z\",\"id\":\"92\"}",
-      "93": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"1\",\"targetId\":\"6\",\"content\":\"đừng bug mà\",\"imgLink\":\"\",\"createdAt\":\"2024-06-08T16:32:09.000Z\",\"id\":\"93\"}",
-      "94": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"1\",\"targetId\":\"6\",\"content\":\"được cmnr\",\"imgLink\":\"\",\"createdAt\":\"2024-06-08T16:32:14.000Z\",\"id\":\"94\"}",
-      "95": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"6\",\"targetId\":\"1\",\"content\":\"Tôi chưa, bạn muốn mua gì\",\"imgLink\":\"\",\"createdAt\":\"2024-06-08T16:32:43.000Z\",\"id\":\"95\"}",
-      "96": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"1\",\"targetId\":\"6\",\"content\":\"không\",\"imgLink\":\"\",\"createdAt\":\"2024-06-08T16:32:50.000Z\",\"id\":\"96\"}",
-      "97": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"1\",\"targetId\":\"6\",\"content\":\"cút\",\"imgLink\":\"\",\"createdAt\":\"2024-06-08T16:32:51.000Z\",\"id\":\"97\"}",
-      "98": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"1\",\"targetId\":\"6\",\"content\":\"Sao lại đuổi tôi\",\"imgLink\":\"\",\"createdAt\":\"2024-06-08T22:06:02.000Z\",\"id\":\"98\"}",
-      "100": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"1\",\"targetId\":\"6\",\"content\":\"đừng thế \",\"imgLink\":\"\",\"createdAt\":\"2024-06-08T22:06:45.000Z\",\"id\":\"100\"}",
-      "101": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"6\",\"targetId\":\"1\",\"content\":\"Mua đồ cho tôi nhé\",\"imgLink\":\"\",\"createdAt\":\"2024-06-08T22:11:59.000Z\",\"id\":\"101\"}",
-      "102": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"6\",\"targetId\":\"1\",\"content\":\"<3 mua đồ điiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii\",\"imgLink\":\"\",\"createdAt\":\"2024-06-08T22:15:28.000Z\",\"id\":\"102\"}",
-      "103": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"6\",\"targetId\":\"1\",\"content\":\"ế quá rồi\",\"imgLink\":\"\",\"createdAt\":\"2024-06-08T22:15:36.000Z\",\"id\":\"103\"}",
-      "104": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"6\",\"targetId\":\"1\",\"content\":\"Đừng boom hàng nhé \",\"imgLink\":\"\",\"createdAt\":\"2024-06-08T22:21:59.000Z\",\"id\":\"104\"}",
-      "105": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"6\",\"targetId\":\"1\",\"content\":\"LƯU Ý: Shopee KHÔNG cho phép các hành vi: Đặt cọc/Chuyển khoản riêng cho người bán/Giao dịch ngoài hệ thống Shopee/Cung cấp thông tin liên hệ cho người bán/Các hoạt động tuyển CTV/Tặng quà miễn phí, ... Vui lòng chỉ mua-bán trực tiếp trên ứng dụng Shopee để tránh nguy cơ bị lừa đảo bạn nhé!Tìm hiểu thêm\",\"imgLink\":\"\",\"createdAt\":\"2024-06-08T22:22:22.000Z\",\"id\":\"105\"}",
-      "106": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"1\",\"targetId\":\"6\",\"content\":\"Buồn ngủ quá\",\"imgLink\":\"\",\"createdAt\":\"2024-06-10T02:30:05.000Z\",\"id\":\"106\"}"
+      "119": "{\"idOfUser\":\"1\",\"idOfShop\":\"6\",\"senderId\":\"1\",\"targetId\":\"6\",\"content\":\"halo\",\"imgLink\":\"\",\"createdAt\":\"2024-06-14T03:18:37.000Z\",\"id\":\"119\"}"
     }
   }
 }
