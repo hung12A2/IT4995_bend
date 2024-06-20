@@ -144,6 +144,7 @@ export class OrderController {
               paymentMethod: {type: 'string'},
               note: {type: 'string'},
               requiredNote: {type: 'string'},
+              totalFee: {type: 'number'},
               items: {
                 type: 'array',
                 items: {
@@ -181,6 +182,8 @@ export class OrderController {
       note,
       requiredNote,
       items,
+      totalFee,
+
     } = request;
     const data = axios
       .post(
@@ -204,6 +207,7 @@ export class OrderController {
           note,
           requiredNote,
           items,
+          totalFee,
         },
         {
           headers: {

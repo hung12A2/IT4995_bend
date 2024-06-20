@@ -314,10 +314,6 @@ export class ReqCreateShopController {
 
 
   @authenticate('jwt')
-  @authorize({
-    voters: [basicAuthorization],
-    allowedRoles: ['customer'],
-  })
   @get('request-create-shops/getByUser', {
     responses: {
       '200': {

@@ -219,6 +219,7 @@ export class OrderKiotController {
         where: {id, idOfShop},
       });
       const oldLogs: any = order[0].logs;
+      console.log(order);
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'prepared',

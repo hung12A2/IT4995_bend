@@ -418,8 +418,7 @@ export class OrderController {
       const content = request?.content;
       const requiredNote = request?.requiredNote;
       const order = await this.orderRepository.find({where: {id, idOfShop}});
-      console.log(id);
-      console.log(idOfShop)
+
       const oldLogs: any = order[0].logs;
       const productInOrders = await this.productsInOrderRepository.find({
         where: {idOfOrder: id},
@@ -1113,6 +1112,7 @@ export class OrderController {
       note,
       requiredNote,
       items,
+      totalFee
     } = order;
 
     let weightBox = 0;
@@ -1204,6 +1204,7 @@ export class OrderController {
       priceOfAll,
       paymentMethod,
       image: imageOrder,
+      totalFee,
       logs: [
         {
           status: 'pending',
@@ -1820,21 +1821,5 @@ export class OrderController {
     return this.orderRepository.findById(id, filter);
   }
 
-  @patch('/orders/{id}')
-  @response(204, {
-    description: 'Order PATCH success',
-  })
-  async updateById(
-    @param.path.string('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Order, {partial: true}),
-        },
-      },
-    })
-    order: Order,
-  ): Promise<void> {
-    await this.orderRepository.updateById(id, order);
-  }
+
 }

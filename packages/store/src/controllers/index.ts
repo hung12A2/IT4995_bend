@@ -17,3 +17,4 @@ export * from './user-info.controller';
 export * from './return-order.controller';
 export * from './kiot-info.controller';
 export * from './search.controller';
+export * from './add-form.controller';

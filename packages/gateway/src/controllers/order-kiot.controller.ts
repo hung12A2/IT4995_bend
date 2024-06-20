@@ -122,6 +122,7 @@ export class OrderKiotController {
       items,
       distance,
       totalFee,
+      
     } = request;
     const data = axios
       .post(
@@ -380,7 +381,7 @@ export class OrderKiotController {
   ): Promise<any> {
     const idOfShop = currentUser.idOfShop;
     const data = await axios
-      .post(`/ordersKiot/deliverd/${idOfShop}/order-id/${idOfOrder}`)
+      .post(`/ordersKiot/delivered/${idOfShop}/order-id/${idOfOrder}`)
       .then(res => res)
       .catch(e => console.log(e));
 
@@ -586,10 +587,21 @@ export class OrderKiotController {
   async getAllOrderByUser(
     @inject(SecurityBindings.USER)
     currentUser: UserProfile,
+    @param.query.object('filter') filter?: any,
   ): Promise<any> {
     const idOfUser = currentUser.id;
+    let where: any;
+    if (filter) {
+      where = filter?.where || {};
+      where = {...where, idOfUser};
+      filter.where = where;
+    }
     const data = await axios
-      .get(`/ordersKiot/${idOfUser}`)
+      .get(`/ordersKiot`,{
+        params: {
+          filter
+        }
+      })
       .then(res => res)
       .catch(e => console.log(e));
 

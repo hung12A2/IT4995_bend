@@ -16,3 +16,5 @@ export * from './shop-info.repository';
 export * from './user-info.repository';
 export * from './kiot-info.repository';
 export * from './search.repository';
+export * from './add-form.repository';
+export * from './product-in-add-form.repository';

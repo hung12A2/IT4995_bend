@@ -192,11 +192,7 @@ export class KiotController {
     return data;
   }
 
-  @authenticate('jwt')
-  @authorize({
-    voters: [basicAuthorization],
-    allowedRoles: ['admin'],
-  })
+
   @get('kiots/{id}', {
     responses: {
       '200': {

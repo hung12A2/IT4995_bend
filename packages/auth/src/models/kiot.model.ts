@@ -18,6 +18,12 @@ export class Kiot extends Entity {
   idOfUser: string;
 
   @property({
+    type: 'string',
+    required: true,
+  })
+  idOfShop: string;
+
+  @property({
     type: 'object',
   })
   coverImage?: object;

@@ -16,3 +16,5 @@ export * from './shop-info.model';
 export * from './user-info.model';
 export * from './kiot-info.model';
 export * from './search.model';
+export * from './add-form.model';
+export * from './product-in-add-form.model';
