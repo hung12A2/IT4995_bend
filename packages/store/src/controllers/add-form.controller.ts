@@ -48,6 +48,7 @@ export class AddFormController {
             properties: {
               idOfShop: {type: 'string'},
               note: {type: 'string'},
+              type: {type: 'string'},
               items: {
                 type: 'array',
                 items: {
@@ -65,12 +66,13 @@ export class AddFormController {
     })
     addForm: any,
   ): Promise<any> {
-    const {idOfShop, note, items} = addForm;
+    const {idOfShop, note, items, type} = addForm;
     const createdAt = new Date().toLocaleString();
     const addFormData = await this.addFormRepository.create({
       idOfShop,
       note,
       createdAt,
+      type,
     });
 
     const data = await Promise.all(
@@ -84,9 +86,15 @@ export class AddFormController {
         const oldProduct = await this.productRepository.findById(
           item.idOfProduct,
         );
-        await this.productRepository.updateById(item.idOfProduct, {
-          countInStock: oldProduct.countInStock + item.quantity,
-        });
+        if (type == 'import') {
+          await this.productRepository.updateById(item.idOfProduct, {
+            countInStock: oldProduct.countInStock + item.quantity,
+          });
+        } else {
+          await this.productRepository.updateById(item.idOfProduct, {
+            countInStock: oldProduct.countInStock - item.quantity,
+          });
+        }
       }),
     );
 
@@ -116,39 +124,26 @@ export class AddFormController {
   })
   async find(@param.filter(AddForm) filter?: Filter<AddForm>): Promise<any> {
     const dataListForm = await this.addFormRepository.find(filter);
-    const data = await Promise.all(
-      dataListForm.map(async (item: any) => {
-        let items = await this.productInAddFormRepository.find({
-          where: {
-            idOfForm: item.id,
-          },
-        });
-        let listProductId = items.map((item: any) => item.idOfProduct);
-        let listProduct = await this.productRepository.find({
-          where: {
-            id: {
-              inq: listProductId,
-            },
-          },
-        });
-        items = items.map((item: any) => {
-          const product = listProduct.find(
-            (product: any) => product.id === item.idOfProduct,
-          );
-          return {
-            ...item,
-            product,
-          };
-        });
-        return {
-          ...item,
-          items,
-        };
-      }),
-    );
-
-    return data;
+    return dataListForm;
   }
+
+  @get('/product-in-add-forms')
+  @response(200, {
+    description: 'Array of AddForm model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(AddForm, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findProduct(@param.filter(AddForm) filter?: Filter<AddForm>): Promise<any> {
+    const dataListForm = await this.productInAddFormRepository.find(filter);
+    return dataListForm;
+  }
+
 
   @get('/add-forms/{id}')
   @response(200, {
@@ -161,32 +156,8 @@ export class AddFormController {
   })
   async findById(@param.path.string('id') id: string): Promise<any> {
     const dataListForm = await this.addFormRepository.findById(id);
-    let dataProductInForm = await this.productInAddFormRepository.find({where: {
-      idOfForm: dataListForm?.id
-    }})
-
-    let listProductId = dataProductInForm.map((item: any) => item.idOfProduct);
-    let listProduct = await this.productRepository.find({
-      where: {
-        id: {
-          inq: listProductId,
-        },
-      },
-    });
-
-    dataProductInForm = dataProductInForm.map((item: any) => { 
-      const product = listProduct.find(
-        (product: any) => product.id === item.idOfProduct,
-      );
-      return {
-        ...item,
-        product,
-      };
-    })
-
-    return {
-      ...dataListForm,
-      items: dataProductInForm
-    };
+    return dataListForm;
   }
+
+
 }

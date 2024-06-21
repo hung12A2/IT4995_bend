@@ -151,6 +151,7 @@ export class OrderController {
     try {
       if (order.length == 1) {
         const orderData = order[0];
+
         const {
           fromName,
           toName,
@@ -214,9 +215,7 @@ export class OrderController {
           items: productsInOrderList,
         };
 
-        console.log(dataRaw);
-
-        const response = await axios.post(
+        const response: any = await axios.post(
           'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create',
           dataRaw,
           {
@@ -226,7 +225,7 @@ export class OrderController {
               ShopId: '191006',
             },
           },
-        );
+        ).then(res => res).catch(e => console.log (e));
 
         await this.orderRepository.updateById(id, {
           totalFee: response.data.data.total_fee,

@@ -38,6 +38,7 @@ export class ProductsController {
     @inject(RestBindings.Http.REQUEST) public request: Request,
   ) {}
 
+  
   @get('products/', {
     responses: {
       '200': {

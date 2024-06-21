@@ -49,6 +49,7 @@ export class AddFormController {
             type: 'object',
             properties: {
               note: {type: 'string'},
+              type: {type: 'string'},
               items: {
                 type: 'array',
                 items: {
@@ -69,12 +70,13 @@ export class AddFormController {
     currentUser: UserProfile,
   ): Promise<any> {
     const idOfShop = currentUser?.idOfShop;
-    const {note, items} = addForm;
+    const {note, items, type} = addForm;
     const data = storeAxios
       .post('/add-forms', {
         idOfShop,
         note,
         items,
+        type
       })
       .then(res => res)
       .catch(e => console.log(e));
@@ -162,6 +164,37 @@ export class AddFormController {
       return data
   }
 
+
+  @get('/product-in-add-forms')
+  @response(200, {
+    description: 'Array of AddForm model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: {
+            type: 'object',
+          },
+        },
+      },
+    },
+  })
+  async findProductInAddForm(
+    @param.query.object('filter') filter?: any,
+
+  ): Promise<any> {
+    const data = await storeAxios
+      .get('/product-in-add-forms', {
+        params: {
+          filter,
+        },
+      })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+      return data
+  }
+
   @authenticate('jwt')
   @get('/add-forms/{id}')
   @response(200, {
@@ -186,7 +219,7 @@ export class AddFormController {
   
 
     const data = await storeAxios
-      .get('/add-forms/${id}')
+      .get(`/add-forms/${id}`)
       .then(res => res)
       .catch(e => console.log(e));
 

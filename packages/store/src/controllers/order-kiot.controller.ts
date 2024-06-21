@@ -164,12 +164,12 @@ export class OrderKiotController {
       const oldLogs: any = order[0].logs;
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
-          status: 'inTransit',
+          status: 'inTransist',
           updatedAt: new Date().toLocaleString(),
           logs: [
             ...oldLogs,
             {
-              status: 'inTransit',
+              status: 'inTransist',
               updatedAt: new Date().toLocaleString(),
             },
           ],

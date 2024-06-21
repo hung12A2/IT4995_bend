@@ -401,6 +401,7 @@ export class OrderController {
     @param.path.string('idOfOrder') idOfOrder: string,
   ): Promise<any> {
     const idOfShop = currentUser.idOfShop;
+    console.log ('hello')
     const data = await axios
       .post(`/orders/prepared/${idOfShop}/order-id/${idOfOrder}`)
       .then(res => res)
