@@ -14,7 +14,7 @@ export async function main(options: ApplicationConfig = {}) {
   const app = new MessageApplication(
     options || {
       httpServerOptions: {
-        host: '127.0.0.1',
+        host: '127.0.0.0',
         port: 6060,
       },
     },
@@ -43,7 +43,7 @@ if (require.main === module) {
       gracePeriodForClose: 5000, // 5 seconds
     },
     httpServerOptions: {
-      host: '127.0.0.1',
+      host: '127.0.0.0',
       port: 6060,
       cors: {
         origin: '*',
