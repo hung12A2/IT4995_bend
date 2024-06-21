@@ -62,6 +62,7 @@
     "@types/multer": "^1.4.11",
     "axios": "^1.6.8",
     "form-data": "^4.0.0",
+    "multer": "^1.4.5-lts.1",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
