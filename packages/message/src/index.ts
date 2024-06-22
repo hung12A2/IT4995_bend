@@ -15,7 +15,7 @@ export async function main(options: ApplicationConfig = {}) {
     options || {
       httpServerOptions: {
         host: '127.0.0.1',
-        port: 6060,
+        port: 10000,
       },
     },
   );
@@ -33,7 +33,7 @@ if (require.main === module) {
   // Run the application
   const config = {
     rest: {
-      port: +(process.env.PORT ?? 6060),
+      port: +(process.env.PORT ?? 10000),
       host: process.env.HOST,
       // The `gracePeriodForClose` provides a graceful close for http/https
       // servers with keep-alive clients. The default value is `Infinity`
@@ -44,7 +44,7 @@ if (require.main === module) {
     },
     httpServerOptions: {
       host: '127.0.0.1',
-      port: 6060,
+      port: 10000,
       cors: {
         origin: '*',
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
