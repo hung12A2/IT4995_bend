@@ -21,6 +21,7 @@ import {EmployeeManagementService} from '../services/employeeManagment.service';
 import axios from '../services/authAxios.service';
 import {authorize} from '@loopback/authorization';
 import {basicAuthorization} from '../services/basicAuthorize';
+import storeAxios from '../services/storeAxios.service';
 
 // import {inject} from '@loopback/core';
 
@@ -72,7 +73,7 @@ export class UserController {
     })
     req: any,
   ): Promise<any> {
-    console.log (req)
+    console.log(req);
     const {email, password} = req;
     const token = await this.userService.verifyCredentials({
       email,
@@ -242,6 +243,13 @@ export class UserController {
       })
       .then(res => res)
       .catch(e => console.log(e));
+
+    const customerData = data?.data;
+    const data2 = await storeAxios
+    .post(`/wallets/${customerData?.id}`)
+    .then(res => res)
+    .catch(e => console.log(e));
+
     return data;
   }
 
@@ -317,6 +325,9 @@ export class UserController {
               email: {
                 type: 'string',
               },
+              host: {
+                type: 'string',
+              },
             },
           },
         },
@@ -356,6 +367,9 @@ export class UserController {
               email: {
                 type: 'string',
               },
+              host: {
+                type: 'string',
+              },
             },
           },
         },
@@ -393,6 +407,9 @@ export class UserController {
             type: 'object',
             properties: {
               email: {
+                type: 'string',
+              },
+              host: {
                 type: 'string',
               },
             },
@@ -803,7 +820,6 @@ export class UserController {
     return data;
   }
 
-
   @get('getAllUser', {
     responses: {
       '200': {
@@ -832,7 +848,6 @@ export class UserController {
 
     return data;
   }
-
 
   @get('getAllUser/count', {
     responses: {
@@ -894,15 +909,22 @@ export class UserController {
     newUserRequest: any,
   ): Promise<any> {
     const {fullName, phoneNumber, gender} = newUserRequest;
-    const data = axios.post(`update/customer`, {
-      fullName,
-      phoneNumber,
-      gender
-    }, {
-      headers:{
-        Authorization: `${this.request.headers.authorization}`
-      }
-    }).then(res => res).catch(e => console.log(e));
+    const data = axios
+      .post(
+        `update/customer`,
+        {
+          fullName,
+          phoneNumber,
+          gender,
+        },
+        {
+          headers: {
+            Authorization: `${this.request.headers.authorization}`,
+          },
+        },
+      )
+      .then(res => res)
+      .catch(e => console.log(e));
 
     return data;
   }

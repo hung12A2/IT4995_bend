@@ -21,6 +21,7 @@ import {
 } from '@loopback/rest';
 import {Kiot} from '../models';
 import {
+  AreaRepository,
   EmployeeRepository,
   KiotRepository,
   StoreRepository,
@@ -44,6 +45,8 @@ export class KiotController {
     public userRepository: UserRepository,
     @repository(EmployeeRepository)
     public employeeRepository: EmployeeRepository,
+    @repository(AreaRepository)
+    public areaRepository: AreaRepository,
   ) {}
 
   @authenticate('jwt')
@@ -85,7 +88,7 @@ export class KiotController {
   ): Promise<any> {
     const idOfUser = currentUser.id;
 
-    const checkArea = await this.shopRepository.findOne({
+    const checkArea = await this.areaRepository.findOne({
       where: {id: idOfArea},
     });
     if (!checkArea) {
@@ -230,7 +233,7 @@ export class KiotController {
     },
   })
   async find(@param.filter(Kiot) filter?: any): Promise<any> {
-    if (filter?.where.pickUpGeometry) {
+    if (filter?.where?.pickUpGeometry) {
       let near: any = filter?.where.pickUpGeometry.near;
 
       near = {
@@ -349,8 +352,6 @@ export class KiotController {
     kiot: any,
   ): Promise<any> {
     const idOfUser = currentUser.id;
-
-    console.log(idOfArea);
 
     const {
       name,

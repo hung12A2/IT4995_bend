@@ -211,7 +211,7 @@ export class ProductController {
       });
     }
 
-    if (!idOfKiot && isKiotProduct) {
+    if (!idOfKiot && isKiotProduct == true) {
       return {
         code: 400,
         message: 'Missing idOfKiot',

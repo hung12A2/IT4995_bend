@@ -408,7 +408,7 @@ export class ProductsController {
       formData.append('idOfKiot', currentUser.idOfKiot);
     }
 
-    if (!currentUser.idOfKiot && data.body.isKiotProduct) {
+    if (!currentUser.idOfKiot && data.body.isKiotProduct== true) {
       return {
         code: 400,
         message: 'You are not allowed to create kiot product',

@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'https://it4995-bend-notification.onrender.com/',
-  // baseURL: 'http://localhost:3333/',
+  // baseURL: 'https://it4995-bend-notification.onrender.com/',
+  baseURL: 'http://localhost:3333/',
   headers: {
     'Content-Type': 'application/json',
   },

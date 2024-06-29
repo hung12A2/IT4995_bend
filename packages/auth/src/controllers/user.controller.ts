@@ -1063,6 +1063,9 @@ export class UserManagementController {
               email: {
                 type: 'string',
               },
+              host: {
+                type: 'string',
+              }
             },
           },
         },
@@ -1070,7 +1073,7 @@ export class UserManagementController {
     })
     req: any,
   ): Promise<any> {
-    const {email} = req;
+    const {email, host} = req;
 
     const user = await this.userRepository.findOne({where: {email}});
 
@@ -1095,7 +1098,7 @@ export class UserManagementController {
     const data = await sendEmail(
       email,
       'Reset Password',
-      `http://localhost:3000/resetPassword?token=${resetToken}`,
+      `${host}/resetPassword?token=${resetToken}`,
     );
 
     return {
@@ -1128,6 +1131,9 @@ export class UserManagementController {
               email: {
                 type: 'string',
               },
+              host: {
+                type: 'string',
+              }
             },
           },
         },
@@ -1135,7 +1141,7 @@ export class UserManagementController {
     })
     req: any,
   ): Promise<any> {
-    const {email} = req;
+    const {email, host} = req;
 
     const user = await this.adminrepository.findOne({where: {email}});
 
@@ -1160,7 +1166,7 @@ export class UserManagementController {
     const data = await sendEmail(
       email,
       'Reset Password',
-      `http://localhost:3000/resetPassword?token=${resetToken}`,
+      `${host}/resetPassword?token=${resetToken}`,
     );
 
     return {
@@ -1193,6 +1199,9 @@ export class UserManagementController {
               email: {
                 type: 'string',
               },
+              host: {
+                type: 'string',
+              }
             },
           },
         },
@@ -1200,7 +1209,7 @@ export class UserManagementController {
     })
     req: any,
   ): Promise<any> {
-    const {email} = req;
+    const {email, host} = req;
 
     const user = await this.employeeRepository.findOne({where: {email}});
 
@@ -1225,7 +1234,7 @@ export class UserManagementController {
     const data = await sendEmail(
       email,
       'Reset Password',
-      `http://localhost:3000/forgotPassowrdEmployee?token=${resetToken}`,
+      `${host}/forgotPassowrdEmployee?token=${resetToken}`,
     );
     
     return {

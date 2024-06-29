@@ -105,7 +105,7 @@ export class RequestCreateProductController {
       dimension,
     } = data.body;
 
-    if (!idOfKiot && isKiotProduct) {
+    if (!idOfKiot && isKiotProduct == true) {
       return {
         code: 400,
         message: 'Missing idOfKiot',
@@ -456,7 +456,7 @@ export class RequestCreateProductController {
       });
     }
 
-    if (!idOfKiot && isKiotProduct) {
+    if (!idOfKiot && isKiotProduct == true) {
       return {
         code: 400,
         message: 'Missing idOfKiot',

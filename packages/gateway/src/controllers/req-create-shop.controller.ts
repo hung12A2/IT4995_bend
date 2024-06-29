@@ -20,6 +20,7 @@ import multer from 'multer';
 import FormData from 'form-data';
 import {authorize} from '@loopback/authorization';
 import {basicAuthorization} from '../services/basicAuthorize';
+import storeAxios from '../services/storeAxios.service';
 
 const storage = multer.memoryStorage();
 const upload = multer({storage});
@@ -76,19 +77,19 @@ export class ReqCreateShopController {
     });
 
     let formData = new FormData();
-    if (data.files.IDcardImg.length >0) 
-    data.files.IDcardImg?.forEach((image: any) => {
-      formData.append('IDcardImg', image.buffer, {
-        filename: image.originalname,
+    if (data.files.IDcardImg.length > 0)
+      data.files.IDcardImg?.forEach((image: any) => {
+        formData.append('IDcardImg', image.buffer, {
+          filename: image.originalname,
+        });
       });
-    });
 
-    if (data.files.BLicenseImg.length >0)
-    data.files.BLicenseImg?.forEach((image: any) => {
-      formData.append('BLicenseImg', image.buffer, {
-        filename: image.originalname,
+    if (data.files.BLicenseImg.length > 0)
+      data.files.BLicenseImg?.forEach((image: any) => {
+        formData.append('BLicenseImg', image.buffer, {
+          filename: image.originalname,
+        });
       });
-    });
 
     formData.append('pickUpAddress', data.body.pickUpAddress);
     formData.append('returnAddress', data.body.returnAddress);
@@ -116,7 +117,7 @@ export class ReqCreateShopController {
   }
 
   @authenticate('jwt')
-  @authorize({voters:[basicAuthorization], allowedRoles: ['customer']})
+  @authorize({voters: [basicAuthorization], allowedRoles: ['customer']})
   @post('request-create-shop/update', {
     responses: {
       '200': {
@@ -274,7 +275,15 @@ export class ReqCreateShopController {
       .then(res => res)
       .catch(e => console.log(e));
 
+    const shopData = data?.data;
+
+    const data2 = await storeAxios
+      .post(`/wallet-of-shops/${shopData?.id}`)
+      .then(res => res)
+      .catch(e => console.log(e));
+
     return data;
+
   }
 
   @authenticate('jwt')
@@ -312,7 +321,6 @@ export class ReqCreateShopController {
     return data;
   }
 
-
   @authenticate('jwt')
   @get('request-create-shops/getByUser', {
     responses: {
@@ -334,7 +342,6 @@ export class ReqCreateShopController {
         headers: {
           authorization: `${this.request.headers.authorization}`,
         },
-       
       })
       .then(res => res)
       .catch(e => console.log(e));
@@ -366,7 +373,6 @@ export class ReqCreateShopController {
         headers: {
           authorization: `${this.request.headers.authorization}`,
         },
-       
       })
       .then(res => res)
       .catch(e => console.log(e));
@@ -447,7 +453,6 @@ export class ReqCreateShopController {
     return data;
   }
 
-
   @get('test', {
     responses: {
       '200': {
@@ -462,8 +467,8 @@ export class ReqCreateShopController {
       },
     },
   })
-  async test(): Promise<any> { 
+  async test(): Promise<any> {
     const data = new Date().toLocaleString();
-   return(data);
+    return data;
   }
 }
