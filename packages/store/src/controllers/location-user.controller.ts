@@ -49,6 +49,7 @@ export class LocationUserController {
               district: {type: 'string'},
               ward: {type: 'string'},
               phoneNumber: {type: 'string'},
+              name: {type: 'string'}
             },
           },
         },
@@ -64,6 +65,7 @@ export class LocationUserController {
       district,
       ward,
       phoneNumber,
+      name
     } = locationUser;
 
     if (!address || !province || !district || !ward) {
@@ -115,6 +117,7 @@ export class LocationUserController {
       idOfUser,
       phoneNumber,
       geometry: geometryData.results[0].geometry.location,
+      name
     };
 
     const data = await this.locationUserRepository.create(newLocation);
@@ -143,6 +146,7 @@ export class LocationUserController {
               district: {type: 'string'},
               ward: {type: 'string'},
               phoneNumber: {type: 'string'},
+              name: {type: 'string'}
             },
           },
         },
@@ -162,6 +166,7 @@ export class LocationUserController {
       district,
       ward,
       phoneNumber,
+      name
     } = locationUser;
 
     if (!oldLocation) {
@@ -237,6 +242,7 @@ export class LocationUserController {
         wardName,
         wardId,
         idOfUser,
+        name,
         geometry: geometryData.results[0].geometry.location,
       };
 
@@ -258,6 +264,7 @@ export class LocationUserController {
         wardId,
         idOfUser,
         phoneNumber,
+        name
       };
 
       const data = await this.locationUserRepository.updateById(

@@ -215,17 +215,20 @@ export class OrderController {
           items: productsInOrderList,
         };
 
-        const response: any = await axios.post(
-          'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create',
-          dataRaw,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Token: '33108a16-e157-11ee-8bfa-8a2dda8ec551',
-              ShopId: '191006',
+        const response: any = await axios
+          .post(
+            'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/create',
+            dataRaw,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Token: '33108a16-e157-11ee-8bfa-8a2dda8ec551',
+                ShopId: '191006',
+              },
             },
-          },
-        ).then(res => res).catch(e => console.log (e));
+          )
+          .then(res => res)
+          .catch(e => console.log(e));
 
         await this.orderRepository.updateById(id, {
           totalFee: response.data.data.total_fee,
@@ -1036,7 +1039,7 @@ export class OrderController {
             createdAt: new Date().toLocaleString(),
             image: order[0]?.image,
             title: 'Đơn hàng đã duoc hủy',
-            idOfOrder: order[0]?.id,  
+            idOfOrder: order[0]?.id,
           });
 
           (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -1053,7 +1056,6 @@ export class OrderController {
           image: order[0].image,
           createdAt: new Date().toLocaleString(),
           idOfOrder: order[0].id,
-          
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -1111,7 +1113,7 @@ export class OrderController {
       note,
       requiredNote,
       items,
-      totalFee
+      totalFee,
     } = order;
 
     let weightBox = 0;
@@ -1568,11 +1570,20 @@ export class OrderController {
       ([name, order]) => ({
         name,
         order,
-        orderSuccess: formattedOrdersCountByDay2[name],
+        orderSuccess: formattedOrdersCountByDay2[name] || '0',
       }),
     );
 
-    return ordersArray;
+    
+    const sortedOrdersArray = ordersArray.sort((a, b) => {
+      // Convert name to Date object for comparison
+      const dateA = new Date(a.name);
+      const dateB = new Date(b.name);
+    
+      return dateA.getTime() - dateB.getTime();
+    });
+    
+    return sortedOrdersArray;
   }
 
   @get('/orders/days/{numberOfDays}/shop/{idOfShop}')
@@ -1604,6 +1615,7 @@ export class OrderController {
 
     // Lọc các đơn hàng được tạo trong 10 ngày qua
     const filter = {
+      order: ['createdAt ASC'],
       where: {
         idOfShop,
         createdAt: {
@@ -1613,6 +1625,7 @@ export class OrderController {
     };
 
     const filter2 = {
+      order: ['createdAt ASC'],
       where: {
         idOfShop,
         status: 'received', // Sử dụng ISO string cho so sánh ngày
@@ -1658,7 +1671,7 @@ export class OrderController {
     allDays.forEach(day => {
       // day ở đây cũng phải được định dạng chỉ với ngày, không có thời gian
       if (!ordersCountByDay[day]) {
-        ordersCountByDay[day] = '0'; // Thêm ngày không có đơn hàng với giá trị '0'
+        ordersCountByDay[day] ='0'; // Thêm ngày không có đơn hàng với giá trị '0'
       }
 
       if (!ordersCountByDay2[day]) {
@@ -1685,11 +1698,19 @@ export class OrderController {
       ([name, order]) => ({
         name,
         order,
-        orderSuccess: formattedOrdersCountByDay2[name],
+        orderSuccess: formattedOrdersCountByDay2[name] || '0',
       }),
     );
 
-    return ordersArray;
+    const sortedOrdersArray = ordersArray.sort((a, b) => {
+      // Convert name to Date object for comparison
+      const dateA = new Date(a.name);
+      const dateB = new Date(b.name);
+    
+      return dateA.getTime() - dateB.getTime();
+    });
+    
+    return sortedOrdersArray;
   }
 
   @get('/orders/{id}')
@@ -1819,6 +1840,4 @@ export class OrderController {
   ): Promise<Order> {
     return this.orderRepository.findById(id, filter);
   }
-
-
 }

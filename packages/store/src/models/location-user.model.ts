@@ -20,6 +20,12 @@ export class LocationUser extends Entity {
     type: 'string',
     required: true,
   })
+  name: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
   address: string;
 
   @property({

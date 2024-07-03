@@ -219,7 +219,6 @@ export class OrderKiotController {
         where: {id, idOfShop},
       });
       const oldLogs: any = order[0].logs;
-      console.log(order);
       if (order.length == 1) {
         await this.orderKiotRepository.updateById(id, {
           status: 'prepared',
@@ -410,6 +409,7 @@ export class OrderKiotController {
             type: 'object',
             properties: {
               content: {type: 'string'},
+              requiredNote: {type: 'string'},
             },
           },
         },
@@ -419,10 +419,13 @@ export class OrderKiotController {
   ): Promise<any> {
     try {
       const content = request?.content;
+      const requiredNote = request?.requiredNote;
       const order = await this.orderKiotRepository.find({
         where: {id, idOfShop},
       });
       const idOfOrder = order[0].id;
+
+      const oldLogs: any = order[0].logs;
 
       const productInOrders = await this.productsInOrderKiotRepository.find({
         where: {idOfOrder},
@@ -456,15 +459,31 @@ export class OrderKiotController {
         );
 
         if (!content) {
-          await this.orderKiotRepository.updateById(id, {
+          await this.orderKiotRepository.updateById(id,  {
             status: 'accepted',
             updatedAt: new Date().toLocaleString(),
+            logs: [
+              ...oldLogs,
+              {
+                status: 'accepted',
+                updatedAt: new Date().toLocaleString(),
+              },
+            ],
+            requiredNote,
           });
         } else {
           await this.orderKiotRepository.updateById(id, {
             status: 'accepted',
             updatedAt: new Date().toLocaleString(),
             content,
+            requiredNote,
+            logs: [
+              ...oldLogs,
+              {
+                status: 'accepted',
+                updatedAt: new Date().toLocaleString(),
+              },
+            ],
           });
         }
         const dataNoti = JSON.stringify({
@@ -767,8 +786,6 @@ export class OrderKiotController {
             'create',
             dataNoti,
           );
-
-          console.log(order[0].id);
 
           const dataTransaction = JSON.stringify({
             idOfUser,
@@ -1440,11 +1457,20 @@ export class OrderKiotController {
       ([name, order]) => ({
         name,
         order,
-        orderSuccess: formattedOrdersCountByDay2[name],
+        orderSuccess: formattedOrdersCountByDay2[name] || 0,
       }),
     );
 
-    return ordersArray;
+    
+    const sortedOrdersArray = ordersArray.sort((a, b) => {
+      // Convert name to Date object for comparison
+      const dateA = new Date(a.name);
+      const dateB = new Date(b.name);
+    
+      return dateA.getTime() - dateB.getTime();
+    });
+    
+    return sortedOrdersArray;
   }
 
   @get('/ordersKiotShop/days/{numberOfDays}/shop/{idOfShop}')
@@ -1555,11 +1581,20 @@ export class OrderKiotController {
       ([name, order]) => ({
         name,
         order,
-        orderSuccess: formattedOrdersCountByDay2[name],
+        orderSuccess: formattedOrdersCountByDay2[name] || '0',
       }),
     );
 
-    return ordersArray;
+    
+    const sortedOrdersArray = ordersArray.sort((a, b) => {
+      // Convert name to Date object for comparison
+      const dateA = new Date(a.name);
+      const dateB = new Date(b.name);
+    
+      return dateA.getTime() - dateB.getTime();
+    });
+    
+    return sortedOrdersArray;
   }
 
   @get('/ordersKiot/count')

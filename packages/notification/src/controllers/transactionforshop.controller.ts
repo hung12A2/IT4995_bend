@@ -130,7 +130,15 @@ export class TransactionforshopController {
       }),
     );
 
-    return ordersArray;
+    const sortedOrdersArray = ordersArray.sort((a, b) => {
+      // Convert name to Date object for comparison
+      const dateA = new Date(a.name);
+      const dateB = new Date(b.name);
+    
+      return dateA.getTime() - dateB.getTime();
+    });
+    
+    return sortedOrdersArray;
   }
 
   @get('/transaction-shops/sum/{numberOfDays}/shop/{idOfShop}')

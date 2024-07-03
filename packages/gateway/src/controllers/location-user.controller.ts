@@ -62,6 +62,7 @@ export class LocationUserController {
               district: {type: 'string'},
               ward: {type: 'string'},
               phoneNumber: {type: 'string'},
+              name: {type: 'string'} 
             },
           },
         },
@@ -70,7 +71,7 @@ export class LocationUserController {
     request: any,
   ): Promise<any> {
     const idOfUser = currentUser.id;
-    const {address, isDefaultOnline, isDefaultKiot, province, district, ward, phoneNumber} =
+    const {address, isDefaultOnline, isDefaultKiot, province, district, ward, phoneNumber, name} =
       request;
     const data = await axios
       .post(`/location-users/${idOfUser}`, {
@@ -80,6 +81,7 @@ export class LocationUserController {
         province,
         district,
         ward,
+        name,
         phoneNumber
       })
       .then(res => res)
@@ -163,6 +165,7 @@ export class LocationUserController {
               district: {type: 'string'},
               ward: {type: 'string'},
               phoneNumber: {type: 'string'},
+              name: {type: 'string'} 
             },
           },
         },
@@ -171,7 +174,7 @@ export class LocationUserController {
     request: any,
   ): Promise<any> {
     const idOfUser = currentUser.id;
-    const {address, isDefaultOnline, isDefaultKiot, province, district, ward, phoneNumber} =
+    const {address, isDefaultOnline, isDefaultKiot, province, district, ward, phoneNumber, name} =
       request;
     const data = await axios
       .patch(`/location-users/${idOfUser}/location-id/${id}`, {
@@ -181,7 +184,8 @@ export class LocationUserController {
         province,
         district,
         ward,
-        phoneNumber
+        phoneNumber,
+        name
       })
       .then(res => res)
       .catch(e => console.log(e));

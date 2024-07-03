@@ -23,6 +23,12 @@ export class NotificationForShop extends Entity {
   content: string;
 
   @property({
+    type: 'string',
+    required: true,
+  })
+  title: string
+
+  @property({
     type: 'object',
     required: false,
   })
