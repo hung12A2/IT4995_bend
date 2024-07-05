@@ -17,6 +17,7 @@ import {
 } from '@loopback/rest';
 import {authenticate} from '@loopback/authentication';
 import axios from '../services/authAxios.service';
+import storeAxios from '../services/storeAxios.service';
 import multer from 'multer';
 import FormData from 'form-data';
 import {authorize} from '@loopback/authorization';
@@ -80,12 +81,17 @@ export class KiotController {
     request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
   ): Promise<any> {
-    const data = axios
+    const data: any = await axios
       .post(`/kiots/area/${idOfArea}`, request, {
         headers: {
           authorization: this.request.headers.authorization,
         },
       })
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    await storeAxios
+      .post(`/kiot-infos/${data?.id}`)
       .then(res => res)
       .catch(e => console.log(e));
 
@@ -191,7 +197,6 @@ export class KiotController {
 
     return data;
   }
-
 
   @get('kiots/{id}', {
     responses: {

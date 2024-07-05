@@ -398,6 +398,7 @@ export class ReqCreateShopController {
     const idOfUser = currenProfile.id;
     const dataReturn = await this.requestCreateShopRepository.findOne({
       where: {idOfUser},
+      order: ['createdAt DESC'],
     });
 
     console.log(idOfUser);

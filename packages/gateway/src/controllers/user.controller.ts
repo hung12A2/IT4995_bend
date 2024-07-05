@@ -245,8 +245,14 @@ export class UserController {
       .catch(e => console.log(e));
 
     const customerData = data?.data;
-    const data2 = await storeAxios
+     
+    await storeAxios
     .post(`/wallets/${customerData?.id}`)
+    .then(res => res)
+    .catch(e => console.log(e));
+
+    await storeAxios
+    .post(`/user-infos/${customerData?.id}`)
     .then(res => res)
     .catch(e => console.log(e));
 

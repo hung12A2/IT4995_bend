@@ -554,7 +554,7 @@ export class OrderKiotController {
     });
 
     const dataReturn = await axios
-      .post(`/orders/returned/${idOfUser}/order-id/${idOfOrder}`, formData, {
+      .post(`/ordersKiot/returned/${idOfUser}/order-id/${idOfOrder}`, formData, {
         headers: {
           'Content-Type': `multipart/form-data`,
         },

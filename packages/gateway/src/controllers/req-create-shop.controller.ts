@@ -277,13 +277,17 @@ export class ReqCreateShopController {
 
     const shopData = data?.data;
 
-    const data2 = await storeAxios
+    await storeAxios
       .post(`/wallet-of-shops/${shopData?.id}`)
       .then(res => res)
       .catch(e => console.log(e));
 
-    return data;
+    await storeAxios
+      .post(`/shop-infos/${shopData?.id}`)
+      .then(res => res)
+      .catch(e => console.log(e));
 
+    return data;
   }
 
   @authenticate('jwt')
