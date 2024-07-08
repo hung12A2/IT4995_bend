@@ -64,7 +64,9 @@ export class NotificaitonApllication extends BootMixin(
           NotificationRepository,
         );
         const check = await notificationRepository.findOne({
-          where: {idOfOrder: data?.idOfOrder},
+          where: {idOfOrder: data?.idOfOrder, title: {
+            like: 'Nap tien'
+          }},
         });
         if (check) {
           return;

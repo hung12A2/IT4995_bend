@@ -44,6 +44,7 @@ import {uploadFile, deleteRemoteFile} from '../config/firebaseConfig';
 import multer from 'multer';
 import {RabbitMQService} from '../services/rabbitMqServices';
 import {geometry, getDistance} from '../utils/getGeometry';
+import { title } from 'process';
 
 const storage = multer.memoryStorage();
 const upload = multer({storage});
@@ -184,11 +185,14 @@ export class OrderKiotController {
           idOfOrder: order[0]?.id,
         });
 
+
         (await this.newRabbitMQService).sendMessageToTopicExchange(
           'notification',
           'create',
           dataNoti,
         );
+
+        console.log ('hello')
 
         return {
           message: 'Success',
@@ -776,8 +780,10 @@ export class OrderKiotController {
 
           const dataNoti = JSON.stringify({
             idOfUser,
-            content: `Don hang ${id} da bi hoan tra, nhan lai ${order[0].priceOfAll}`,
+            content: `Don hang hoa toc ${id} da bi hoan tra, nhan lai ${order[0].priceOfAll}`,
             image: order[0].image,
+            title: 'Don hang hoa toc da bi hoan tra',
+            idOfOrder: order[0].id,
             createdAt: new Date().toLocaleString(),
           });
 
@@ -805,9 +811,11 @@ export class OrderKiotController {
         }
         const dataNoti = JSON.stringify({
           idOfShop,
-          content: `Don hang ${id} da bi hoan tra`,
+          content: `Don hang hoa toc ${id} da bi hoan tra`,
           image: order[0].image,
           createdAt: new Date().toLocaleString(),
+          title: 'Don hang hoa toc da bi hoan tra',
+          idOfOrder: order[0].id,
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -1227,6 +1235,8 @@ export class OrderKiotController {
       items,
     } = order;
 
+    console.log (order)
+
     let distance = 0;
     let totalFee = 10000;
     let weightBox = 0;
@@ -1278,11 +1288,11 @@ export class OrderKiotController {
     const fromGeometryData = await geometry(
       `${fromAddress}, ${fromWard}, ${fromDistrict}, ${fromProvince}`,
     );
-    const formGeometry = fromGeometryData.results[0].geometry.location;
+    const formGeometry = fromGeometryData?.results[0].geometry.location;
     const toGeometryData = await geometry(
       `${toAddress}, ${toWard}, ${toDistrict}, ${toProvince}`,
     );
-    const toGeometry = toGeometryData.results[0].geometry.location;
+    const toGeometry = toGeometryData?.results[0].geometry.location;
 
     const fromGeometryString = `${formGeometry.lat},${formGeometry.lng}`;
     const toGeometryString = `${toGeometry.lat},${toGeometry.lng}`;

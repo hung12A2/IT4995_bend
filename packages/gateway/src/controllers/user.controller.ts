@@ -245,16 +245,18 @@ export class UserController {
       .catch(e => console.log(e));
 
     const customerData = data?.data;
-     
-    await storeAxios
-    .post(`/wallets/${customerData?.id}`)
-    .then(res => res)
-    .catch(e => console.log(e));
 
-    await storeAxios
-    .post(`/user-infos/${customerData?.id}`)
-    .then(res => res)
-    .catch(e => console.log(e));
+    if (customerData) {
+      await storeAxios
+        .post(`/wallets/${customerData?.id}`)
+        .then(res => res)
+        .catch(e => console.log(e));
+
+      await storeAxios
+        .post(`/user-infos/${customerData?.id}`)
+        .then(res => res)
+        .catch(e => console.log(e));
+    }
 
     return data;
   }

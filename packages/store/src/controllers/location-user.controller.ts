@@ -219,6 +219,7 @@ export class LocationUserController {
     const wardId = ward.split('-')[1];
 
     if (
+      oldLocation.address !== address ||
       oldLocation.provinceName !== provinceName ||
       oldLocation.districtName !== districtName ||
       oldLocation.wardName !== wardName

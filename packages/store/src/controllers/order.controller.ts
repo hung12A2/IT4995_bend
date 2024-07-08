@@ -770,6 +770,7 @@ export class OrderController {
           type: 'receive',
           createdAt: new Date().toLocaleString(),
           idOfOrder: id,
+          image: order.image,
         });
 
         (await this.newRabbitMQService).sendMessageToTopicExchange(
@@ -934,6 +935,21 @@ export class OrderController {
             {idOfUser},
           );
         }
+
+        const dataNoti = JSON.stringify({
+          idOfShop,
+          content: `Don hang ${id} da bi hoan tra`,
+          image: order[0].image,
+          createdAt: new Date().toLocaleString(),
+          title: 'Don hang da bi hoan tra',
+          idOfOrder: order[0].id,
+        });
+
+        (await this.newRabbitMQService).sendMessageToTopicExchange(
+          'notificationForShop',
+          'create',
+          dataNoti,
+        );
 
         const data: any = await new Promise<object>((resolve, reject) => {
           cpUpload(request, response, (err: unknown) => {
@@ -1216,6 +1232,19 @@ export class OrderController {
 
     const dataOrder = await this.orderRepository.create(NewOrder);
 
+    const idOrder = dataOrder.id;
+
+    await Promise.all(
+      await items.map(async (item: any) => {
+        const idProduct = item.idOfProduct;
+        await this.productsInOrderRepository.create({
+          idOfOrder: idOrder,
+          idOfProduct: idProduct,
+          quantity: item.quantity,
+        });
+      }),
+    );
+
     const oldShopInfo: any = await this.shopInfoRepository.findOne({
       where: {idOfShop},
     });
@@ -1252,18 +1281,6 @@ export class OrderController {
         );
       }
     }
-
-    const idOrder = dataOrder.id;
-    await Promise.all(
-      await items.map(async (item: any) => {
-        const idProduct = item.idOfProduct;
-        await this.productsInOrderRepository.create({
-          idOfOrder: idOrder,
-          idOfProduct: idProduct,
-          quantity: item.quantity,
-        });
-      }),
-    );
 
     const dataNoti = JSON.stringify({
       idOfShop,

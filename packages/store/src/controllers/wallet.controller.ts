@@ -143,7 +143,7 @@ export class WalletController {
 
       const dataTransaction = JSON.stringify({
         idOfUser,
-        amountMoney: amountMoney,
+        amountMoney: amountMoney ,
         type: 'charge',
         createdAt: new Date().toLocaleString(),
         idOfOrder: vnpayCode,

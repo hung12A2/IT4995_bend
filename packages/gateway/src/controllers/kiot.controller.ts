@@ -91,7 +91,7 @@ export class KiotController {
       .catch(e => console.log(e));
 
     await storeAxios
-      .post(`/kiot-infos/${data?.id}`)
+      .post(`/kiot-infos/${data?.idOfShop}/kiot/${data?.id}`)
       .then(res => res)
       .catch(e => console.log(e));
 
