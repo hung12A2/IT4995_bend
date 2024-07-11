@@ -860,7 +860,7 @@ export class OrderKiotController {
   async getOne(@param.path.string('id') id: string): Promise<any> {
     const data = await axios
       .get(`/ordersKiot/${id}`)
-      .then(res => res.data)
+      .then(res => res)
       .catch(e => console.log(e));
 
     this.response.header('Access-Control-Expose-Headers', 'Content-Range');
