@@ -105,4 +105,28 @@ export class WalletOfShopController {
 
     return data;
   }
+
+  @authenticate('jwt')
+  @get('/wallet-of-shops/')
+  @response(200, {
+    description: 'Wallet model instance',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+        },
+      },
+    },
+  })
+  async getWallet(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+  ): Promise<any> {
+    const data = await storeAxios
+      .get(`/wallet-of-shops/${currentUserProfile?.idOfShop}`)
+      .then(res => res)
+      .catch(e => console.log(e));
+
+    return data;
+  }
 }
