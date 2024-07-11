@@ -137,7 +137,7 @@ export class WalletController {
       }
     } else if (type == 'charge') {
       await this.walletRepository.updateAll(
-        {amountMoney: amountMoney + oldWallet?.amountMoney / 2},
+        {amountMoney: amountMoney/2 + oldWallet?.amountMoney},
         {idOfUser},
       );
 
