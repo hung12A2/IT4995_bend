@@ -243,7 +243,7 @@ export class ReqCreateShopController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'reqCreateShop-Managment'],
+    allowedRoles: ['admin'],
   })
   @post('request-create-shops/accepted/{idOfRequest}', {
     responses: {
@@ -293,7 +293,7 @@ export class ReqCreateShopController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'reqCreateShop-Managment'],
+    allowedRoles: ['admin'],
   })
   @get('request-create-shops', {
     responses: {
@@ -387,7 +387,7 @@ export class ReqCreateShopController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'reqCreateShop-Managment'],
+    allowedRoles: ['admin'],
   })
   @get('request-create-shops/count', {
     responses: {
@@ -422,7 +422,7 @@ export class ReqCreateShopController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'reqCreateShop-Managment'],
+    allowedRoles: ['admin'],
   })
   @post('request-create-shops/reject/{idOfRequest}', {
     responses: {

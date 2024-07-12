@@ -849,7 +849,7 @@ export class UserManagementController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'users-Managment'],
+    allowedRoles: ['admin', 'Users-Managment'],
   })
   @post('/unbanned/customer/{idOfUser}', {
     responses: {

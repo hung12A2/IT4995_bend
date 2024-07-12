@@ -36,7 +36,7 @@ export class OrderKiotController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'orderKiot-Managment'],
+    allowedRoles: ['employee', 'OrdersKiot-Managment'],
   })
   @post('order-kiot/create/shop/{idOfShop}/kiot/{idOfKiot}', {
     responses: {
@@ -240,7 +240,7 @@ export class OrderKiotController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'orderKiot-Managment'],
+    allowedRoles: ['employee', 'OrdersKiot-Managment'],
   })
   @post('order-kiot/accepted/order/{idOfOrder}', {
     responses: {
@@ -292,7 +292,7 @@ export class OrderKiotController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'orderKiot-Managment'],
+    allowedRoles: ['employee', 'OrdersKiot-Managment'],
   })
   @post('order-kiot/prepared/order/{idOfOrder}', {
     responses: {
@@ -325,7 +325,7 @@ export class OrderKiotController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'orderKiot-Managment'],
+    allowedRoles: ['employee', 'OrdersKiot-Managment'],
   })
   @post('order-kiot/inTransit/order/{idOfOrder}', {
     responses: {
@@ -358,7 +358,7 @@ export class OrderKiotController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'orderKiot-Managment'],
+    allowedRoles: ['employee', 'OrdersKiot-Managment'],
   })
   @post('order-kiot/deliverd/order/{idOfOrder}', {
     responses: {
@@ -391,7 +391,7 @@ export class OrderKiotController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'orderKiot-Managment'],
+    allowedRoles: ['employee', 'OrdersKiot-Managment'],
   })
   @post('order-kiot/rejected/order/{idOfOrder}', {
     responses: {
@@ -745,7 +745,7 @@ export class OrderKiotController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'order-Managment'],
+    allowedRoles: ['admin', 'Orders-Managment'],
   })
   @get('ordersKiotAdmin/count', {
     responses: {
@@ -773,7 +773,7 @@ export class OrderKiotController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'order-Managment'],
+    allowedRoles: ['admin', 'Orders-Managment'],
   })
   @get('ordersKiotAdmin/days/{numberOfDay}', {
     responses: {
@@ -841,7 +841,7 @@ export class OrderKiotController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'order-Managment'],
+    allowedRoles: ['admin', 'Orders-Managment'],
   })
   @get('ordersKiotAdmin/{id}', {
     responses: {

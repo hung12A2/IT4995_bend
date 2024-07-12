@@ -236,7 +236,7 @@ export class AdminController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'users-Managment'],
+    allowedRoles: ['admin', 'Users-Managment'],
   })
   @post('/admins/banned/{idOfUser}', {
     responses: {
@@ -271,7 +271,7 @@ export class AdminController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'users-Managment'],
+    allowedRoles: ['admin', 'Users-Managment'],
   })
   @post('/admins/unbanned/{idOfUser}', {
     responses: {

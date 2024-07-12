@@ -224,7 +224,7 @@ export class OrderController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'order-Managment'],
+    allowedRoles: ['employee', 'Orders-Managment'],
   })
   @post('orders/accepted/order/{idOfOrder}', {
     responses: {
@@ -277,7 +277,7 @@ export class OrderController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'order-Managment'],
+    allowedRoles: ['employee', 'Orders-Managment'],
   })
   @post('orders/inTransist/order/{idOfOrder}', {
     responses: {
@@ -311,7 +311,7 @@ export class OrderController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'order-Managment'],
+    allowedRoles: ['employee', 'Orders-Managment'],
   })
   @post('orders/inTransist2/order/{idOfOrder}', {
     responses: {
@@ -345,7 +345,7 @@ export class OrderController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'order-Managment'],
+    allowedRoles: ['employee', 'Orders-Managment'],
   })
   @post('orders/delivered/order/{idOfOrder}', {
     responses: {
@@ -379,7 +379,7 @@ export class OrderController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'order-Managment'],
+    allowedRoles: ['employee', 'Orders-Managment'],
   })
   @post('orders/prepared/order/{idOfOrder}', {
     responses: {
@@ -413,7 +413,7 @@ export class OrderController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'order-Managment'],
+    allowedRoles: ['employee', 'Orders-Managment'],
   })
   @post('orders/rejected/order/{idOfOrder}', {
     responses: {
@@ -557,7 +557,7 @@ export class OrderController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['employee', 'order-Managment'],
+    allowedRoles: ['employee', 'Orders-Managment'],
   })
   @post('orders/orderInfo/order/{idOfOrder}', {
     responses: {
@@ -730,7 +730,7 @@ export class OrderController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'order-Managment'],
+    allowedRoles: ['admin', 'Orders-Managment'],
   })
   @get('ordersAdmin', {
     responses: {
@@ -762,7 +762,7 @@ export class OrderController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'order-Managment'],
+    allowedRoles: ['admin', 'Orders-Managment'],
   })
   @get('ordersAdmin/days/{numberOfDay}', {
     responses: {
@@ -827,7 +827,7 @@ export class OrderController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'order-Managment'],
+    allowedRoles: ['admin', 'Orders-Managment'],
   })
   @get('ordersAdmin/{id}', {
     responses: {
@@ -855,7 +855,7 @@ export class OrderController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'order-Managment'],
+    allowedRoles: ['admin', 'Orders-Managment'],
   })
   @get('ordersAdmin/count', {
     responses: {

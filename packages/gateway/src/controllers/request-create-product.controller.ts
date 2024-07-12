@@ -257,7 +257,7 @@ export class RequestCreateProductController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'product-Managment'],
+    allowedRoles: ['admin', 'Products-Managment'],
   })
   @post('request-create-products/accepted/{idOfRequest}', {
     responses: {
@@ -297,7 +297,7 @@ export class RequestCreateProductController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'product-Managment'],
+    allowedRoles: ['admin', 'Products-Managment'],
   })
   @post('request-create-products/rejected/{idOfRequest}', {
     responses: {
@@ -513,7 +513,7 @@ export class RequestCreateProductController {
   @authenticate('jwt')
   @authorize({
     voters: [basicAuthorization],
-    allowedRoles: ['admin', 'product-Managment'],
+    allowedRoles: ['admin', 'Products-Managment'],
   })
   @get('request-create-products/count', {
     responses: {
